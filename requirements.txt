@@ -1,0 +1,9 @@
+Flask
+Werkzeug
+pytesseract
+Pillow
+mysql-connector-python
+openpyxl
+scikit-learn
+numpy
+pdf2image

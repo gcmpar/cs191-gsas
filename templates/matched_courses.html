@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matched Courses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #F2F2F2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 60px;
+            height: 60px;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex; justify-content: center; align-items: center;
+        z-index: 1000;
+        }
+
+        .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+        button {
+            background-color: #007B5E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #005f46;
+        }
+        .table-container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: white;
+            box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+            overflow-x: auto;      /* Enables horizontal scroll */
+
+        }
+
+        h2 {
+            color: #003F37;
+            margin-bottom: 10px;
+            font-size : 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            background: #E8F0F2;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .back-button {
+            border: 1px solid black;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: black;
+            background-color: transparent;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .grade-box {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .grade-item {
+            display: flex;
+            justify-content: space-between;  /* Pushes grade box to right */
+            align-items: center;  /* Aligns text vertically */
+            width: 100%;  /* Ensures full-width */
+        }
+
+        .green {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .yellow {
+            background-color: #f6ab1f; /* Orange */
+        }
+
+        .red {
+            background-color: #ff2f00; /* Red */
+        }
+        .purple {
+            background-color: #800080; /* Purple */
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #004d40; /* Deep teal */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .edit-btn:hover {
+            background-color: #00695c; /* Lighter teal on hover */
+        }
+        .top-bar {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end;
+
+        }
+
+        .editable-field {
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .editable-field[contenteditable="true"] {
+            background-color: #eef;
+            border: 1px dashed #888;
+        }
+        .close-button {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .course-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .back1-button {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        color: #004d40;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        }
+
+        .back1-button:hover {
+            color: #00695c;
+        }
+
+        .back1-button i {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='upd_logo.png') }}" alt="University of the Philippines Logo">
+        <img src="{{ url_for('static', filename='dcs_logo.png') }}" alt="Department of Computer Science Logo">
+        <h1>University of the Philippines Diliman<br>Department of Computer Science</h1>
+    </div>
+
+    <h2>Matched Courses for Program Prerequisites</h2>
+    <div style="margin-top: 20px; width: 90%; max-width: 1000px;">
+        <h2>Legend</h2>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <span class="grade-box green">A</span><span style="margin-left: 5px;">Excellent (A+, A, A-, B+ or ≥ 84)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="grade-box yellow">B</span><span style="margin-left: 5px;">Passing (60–83.99 or 2.00–3.00)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="grade-box red">F</span><span style="margin-left: 5px;">Failing (&lt; 60, 4.00, 5.00, DRP)</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="grade-box purple">N/A</span><span style="margin-left: 5px;">No Grade Available</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="addCourseModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Add New Course</h2>
+      <form id="addCourseForm">
+        <label>Course Code: <input type="text" class="course-input" name="course_code" required></label><br>
+        <label>Description: <input type="text" class="course-input" name="description" required></label><br>
+        <label>Grade: <input type="text" class="course-input" name="grade" required></label><br>
+        <label>Units: <input type="number" class="course-input" name="units" required></label><br><br>
+        <button type="submit">Add Course</button>
+      </form>
+    </div>
+  </div>
+
+    <a href="{{ url_for('view_courses', student_id=student_id , program=program) }}" class="back1-button">
+        <i>&larr;</i>Courses 
+    </a>
+    
+    <div class="top-bar">
+        <button id="add-row" class="edit-btn" style="display:none">Add Course</button>
+        <button id="edit-toggle" class="edit-btn">Edit</button>
+        <button id="save-changes" class="edit-btn"style="display:none;">Save</button>
+    </div>
+    
+        
+    <div class="table-container">
+        {% for prereq in results %}
+            <h2>Prerequisite: {{ prereq.prereq_course_code }}</h2>
+            {% if prereq.matched_courses %}
+  
+            <ul>
+                {% for match in prereq.matched_courses %}
+
+                <li class="grade-item" data-id="{{ match.taken_course_id }}" data-units="{{ match.units }}">
+                    <span>
+                        <strong class="editable-field taken-course" contenteditable="false">{{ match.taken_course_code }}</strong> - 
+                        <span class="editable-field taken-description" contenteditable="false">{{ match.taken_description }}</span> -
+                        <span class="editable-field taken-grade" contenteditable="false">{{ match.grade }}</span>
+                        (Similarity: {{ match.similarity_score * 100 | round(2) }}%)
+                    </span>
+
+                    <span class="grade-box 
+                        {% if match.grade == 'N/A' %} purple
+                        {% elif match.grade in ['A+', 'A', 'A-', 'B+'] %} green
+                        {% elif match.grade in ['B', 'B-', 'C+', 'C','C-', 'D+', 'D'] %} yellow
+                        {% elif match.grade in ['F'] %} red
+                        {% elif match.grade|float is not none and (match.grade|float >= 84 or match.grade|float <= 1.75) %} green
+                        {% elif match.grade|float is not none and ((60 <= match.grade|float < 84) or (1.75 < match.grade|float <= 3.00)) %} yellow
+                        {% elif match.grade|float is not none and ((match.grade|float < 60) or (3.00 < match.grade|float <= 4.00)) %} red
+                        {% else %} red {% endif %}">
+                        {{ match.grade }}
+                    </span>
+                    <button class="remove-row edit-only delete-btn" style="display:none" >Remove</button>
+
+                </li>
+                {% endfor %}
+                
+            </ul>
+            
+            
+            {% else %}
+                <p style="margin-bottom: 15px;">No matching courses found.</p>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+  
+    <a href="{{ url_for('teacher_dashboard') }}" class="back-button">Back to Dashboard</a>
+
+<script>
+    const editToggle = document.getElementById('edit-toggle');
+    const saveButton = document.getElementById('save-changes');
+    const addRowBtn = document.getElementById('add-row');
+    let isEditing = false;
+    
+    editToggle.addEventListener('click', () => {
+        isEditing = !isEditing;
+        editToggle.textContent = isEditing ? 'Cancel' : 'Edit';
+        saveButton.style.display = isEditing ? 'inline-block' : 'none';
+        addRowBtn.style.display = isEditing ? 'inline-block' : 'none';
+
+        document.querySelectorAll('.editable-field').forEach(el => {
+            el.contentEditable = isEditing;
+        });
+
+        // Show or hide the "Remove" buttons
+        document.querySelectorAll('.remove-row.edit-only').forEach(btn => {
+            btn.style.display = isEditing ? 'inline-block' : 'none';
+        });
+    });
+
+    saveButton.addEventListener('click', () => {
+        const editedMatches = [];
+    
+        document.querySelectorAll('.grade-item').forEach(item => {
+            editedMatches.push({
+                id: item.dataset.id,
+                course_code: item.querySelector('.taken-course').textContent.trim(),
+                description: item.querySelector('.taken-description').textContent.trim(),
+                grade: item.querySelector('.taken-grade').textContent.trim(),
+                units: item.dataset.units  // pull from hidden data
+
+            });
+        });
+        console.log({
+            student_id: "{{ student_id }}",
+            matched_courses: editedMatches
+        });
+        fetch('/save_courses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: "{{ student_id }}",
+                courses: editedMatches
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || 'Changes saved successfully.');
+            isEditing = false;
+            editToggle.textContent = 'Edit';
+            saveButton.style.display = 'none';
+            addRowBtn.style.display = 'none';
+
+            document.querySelectorAll('.editable-field').forEach(el => {
+                el.contentEditable = false;
+            });
+            document.querySelectorAll('.remove-row.edit-only').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        })
+        .catch(() => alert('Failed to save changes.'));
+    });
+
+// Delete course handler
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-row')) {
+        const item = event.target.closest('.grade-item');
+        const courseId = item.dataset.id;
+
+        fetch(`/delete_course/${courseId}`, {
+            method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                item.remove();
+            } else {
+                alert('Failed to delete course');
+            }
+        })
+        .catch(() => alert('Error deleting course.'));
+    }
+});
+</script>
+
+<script>
+    addRowBtn.addEventListener('click', () => {
+        document.getElementById('addCourseModal').style.display = 'flex';
+    });
+    
+    document.querySelector('.close-button').addEventListener('click', () => {
+        document.getElementById('addCourseModal').style.display = 'none';
+    });
+    
+    document.getElementById('addCourseForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const courseData = {
+            "Course Code": formData.get('course_code'),
+            "Description": formData.get('description'),
+            "Grade": formData.get('grade'),
+            "Units": formData.get('units')
+        };
+    
+        fetch('/add_courses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: "{{ student_id }}",
+                courses: [courseData]
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || "Course added!");
+            location.reload();
+        })
+        .catch(() => alert("Error adding course."));
+    });
+</script>
+
+</body>
+</html>
