@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'student_profiles.apps.StudentProfilesConfig',
-    'django.contrib.admin',
+    'gsas.apps.GsasAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

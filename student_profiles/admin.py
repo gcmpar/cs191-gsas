@@ -1,4 +1,5 @@
-from django.contrib import admin
+from gsas.admin import admin_site
 from .models import Student
 
-admin.site.register(Student)
+
+admin_site.register(Student)
