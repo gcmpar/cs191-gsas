@@ -19,6 +19,8 @@ class YearField(models.PositiveSmallIntegerField):
         name, path, args, kwargs = super().deconstruct()
         kwargs['min_year'] = self.min_year
         kwargs['max_year'] = self.max_year
+        del kwargs['choices']
+        del kwargs['validators']
         return name, path, args, kwargs
 
 
