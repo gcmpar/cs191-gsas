@@ -56,8 +56,10 @@ class Student(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
 
-    student_no = models.CharField('Student Number', primary_key=True, max_length=20)
-    full_name = models.CharField('Full Name', max_length=100)
+    student_number = models.CharField('Student Number', primary_key=True, max_length=20)
+    first_name = models.CharField('First Name', max_length=50)
+    middle_name = models.CharField('Middle Name', max_length=50)
+    last_name = models.CharField('Last Name', max_length=50)
     ay_entry = YearField('AY Entry')
     ay_latest = YearField('AY Latest')
     degree = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)

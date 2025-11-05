@@ -25,8 +25,10 @@ DROP TABLE IF EXISTS `student`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `student` (
-  `student_no` varchar(20) NOT NULL,
-  `full_name` varchar(100) NOT NULL,
+  `student_number` varchar(20) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
   `ay_entry` year NOT NULL,
   `ay_latest` year NOT NULL,
   `degree` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
@@ -40,7 +42,7 @@ CREATE TABLE `student` (
   `adviser_lab` varchar(100) NOT NULL,
   `folder_link` varchar(255) NOT NULL,
   `notes` text,
-  PRIMARY KEY (`student_no`),
+  PRIMARY KEY (`student_number`),
   CONSTRAINT `CHECK_ay` CHECK ((`ay_entry` <= `ay_latest`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -51,7 +53,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('2019-00006','Jose Lim',2019,2022,'MS Bioinfo','jose.lim@example.com','09401234572','Part-Time','None','Discontinued Program',0000,'https://drive.google.com/jose','Dr. Tan / BioLab','https://drive.google.com/folder6','Dropped after proposal'),('2020-00002','Glenn Paragas',2020,2023,'MS CS','glenn.paragas@example.com','09181234568','Full-Time','None','Graduate',2024,'https://drive.google.com/glenn','Dr. Cruz / DataLab','https://drive.google.com/folder2','Graduated with distinction'),('2021-00001','Lara Carrillo',2021,2025,'PhD CS','lara.carrillo@example.com','09171234567','Full-Time','DOST','Thesis Proposal',0000,'https://drive.google.com/lara','Dr. Santos / AI Lab','https://drive.google.com/folder1','On schedule for defense'),('2021-00004','Juancho Coronel',2021,2024,'MS CS','juancho.coronel@example.com','09201234570','Full-Time','None','Thesis Defense',2025,'https://drive.google.com/juancho','Dr. Uy / SysLab','https://drive.google.com/folder4','Ready for defense'),('2022-00003','Jerwyn Angchua',2022,2025,'MS Bioinfo','jerwyn.angchua@example.com','09191234569','Part-Time','University Grant','Pre-Proposal',0000,'https://drive.google.com/jerwyn','Dr. Tan / BioLab','https://drive.google.com/folder3','Delayed due to schedule'),('2023-00005','Kevin Atienza',2023,2025,'PhD CS','kevin.atienza@example.com','09301234571','Full-Time','DOST','Candidacy',0000,'https://drive.google.com/kevin','Dr. Reyes / NLP Lab','https://drive.google.com/folder5','Passed qualifying exam');
+INSERT INTO `student` VALUES ('2019-00006','Jose','X','Lim',2019,2022,'MS Bioinfo','jose.lim@example.com','09401234572','Part-Time','None','Discontinued Program',0000,'https://drive.google.com/jose','Dr. Tan / BioLab','https://drive.google.com/folder6','Dropped after proposal'),('2020-00002','Glenn Carlo','X','Paragas',2020,2023,'MS CS','glenn.paragas@example.com','09181234568','Full-Time','None','Graduate',2024,'https://drive.google.com/glenn','Dr. Cruz / DataLab','https://drive.google.com/folder2','Graduated with distinction'),('2021-00001','Lara','X','Carrillo',2021,2025,'PhD CS','lara.carrillo@example.com','09171234567','Full-Time','DOST','Thesis Proposal',0000,'https://drive.google.com/lara','Dr. Santos / AI Lab','https://drive.google.com/folder1','On schedule for defense'),('2021-00004','Juancho','X','Coronel',2021,2024,'MS CS','juancho.coronel@example.com','09201234570','Full-Time','None','Thesis Defense',2025,'https://drive.google.com/juancho','Dr. Uy / SysLab','https://drive.google.com/folder4','Ready for defense'),('2022-00003','Jerwyn','X','Angchua',2022,2025,'MS Bioinfo','jerwyn.angchua@example.com','09191234569','Part-Time','University Grant','Pre-Proposal',0000,'https://drive.google.com/jerwyn','Dr. Tan / BioLab','https://drive.google.com/folder3','Delayed due to schedule'),('2023-00005','Kevin','X','Atienza',2023,2025,'PhD CS','kevin.atienza@example.com','09301234571','Full-Time','DOST','Candidacy',0000,'https://drive.google.com/kevin','Dr. Reyes / NLP Lab','https://drive.google.com/folder5','Passed qualifying exam');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
