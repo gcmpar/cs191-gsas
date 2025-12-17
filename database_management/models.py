@@ -173,3 +173,22 @@ class Transcript(models.Model):
 
     class Meta:
         db_table = 'transcript'
+
+class GlobalCourse(models.Model):
+    class Status(models.TextChoices):
+        Pass = 'Pass', 'Pass'
+        Fail = 'Fail', 'Fail'
+
+        @classmethod
+        def max_length(cls):
+            return max(len(v) for v in cls.values)
+        
+    up_courseid       = models.CharField('UP Course ID', primary_key=True, max_length=20)
+    up_coursecode     = models.Charfield('UP Course Code', max_length=20)
+    up_coursename     = models.Charfield('UP Course Name', max_length=20)
+    school            = models.Charfield('School', max_length=20)  
+    school_coursecode = models.Charfield('School Course Code', max_length=20) 
+    status            = models.CharField('Status', max_length=Status.max_length(), choices=Status)
+
+    class Meta:
+        db_table = 'globalcourse'
