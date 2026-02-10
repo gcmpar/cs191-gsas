@@ -46,7 +46,7 @@ class Applicant(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
 
-    applicant_number    = models.CharField('Applicant Number', primary_key=True, max_length=20)
+    applicant    = models.CharField('Applicant Number', primary_key=True, max_length=20)
     first_name          = models.CharField('First Name', max_length=50)
     middle_name         = models.CharField('Middle Name', max_length=50)
     last_name           = models.CharField('Last Name', max_length=50)
@@ -90,8 +90,8 @@ class Application(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
     
-    application_no      = models.CharField('Application Number', primary_key=True, max_length=20)
-    applicant_number    = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    application_id      = models.CharField('Application Number', primary_key=True, max_length=20)
+    applicant           = models.ForeignKey(Applicant, on_delete=models.CASCADE)  # db_column is done because django KEEPS APPENDING _ID TO MY STUFF GRGRGRGRGRGRRG
     application_status  = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
     date_applied        = models.DateField('Date Applied')
     program             = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
@@ -172,8 +172,8 @@ class Transcript(models.Model):
             return max(len(v) for v in cls.values)
     
     transcript_entry_id   = models.CharField('Transcript ID', primary_key=True, max_length=20)
-    application_no  = models.ForeignKey(Application, on_delete=models.CASCADE)
-    course_id       = models.ForeignKey(Course, on_delete=models.CASCADE)
+    application     = models.ForeignKey(Application, on_delete=models.CASCADE)
+    course          = models.ForeignKey(Course, on_delete=models.CASCADE)
     academic_year   = YearField('Academic Year')
     semester        = models.CharField('Semester', max_length=Semester.max_length(), choices=Semester)
     grade           = models.CharField('Grade', max_length=Grade.max_length(), choices=Grade)
@@ -183,15 +183,15 @@ class Transcript(models.Model):
 
 class EquivalenceGroup(models.Model):
     group_id    = models.CharField('Group ID', primary_key=True, max_length=20)
-    course_id   = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course      = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'equivalence_groups'
 
 class EquivalenceGroupMap(models.Model):
     map_id      = models.CharField('Map ID', primary_key=True, max_length=20)
-    group_id    = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
-    course_id   = models.ForeignKey(Course, on_delete=models.CASCADE)
+    group       = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
+    course      = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'equivalence_group_map'

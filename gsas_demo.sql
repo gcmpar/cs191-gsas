@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `applicant`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `applicant` (
-  `applicant_number` varchar(20) NOT NULL,
+  `applicant_id` varchar(20) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `middle_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `applicant` (
   `email` varchar(100) NOT NULL,
   `contact_number` varchar(20) NOT NULL,
   `notes` text,
-  PRIMARY KEY (`applicant_number`)
+  PRIMARY KEY (`applicant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -52,16 +52,16 @@ DROP TABLE IF EXISTS `application`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `application` (
-  `application_no` varchar(20) NOT NULL,
-  `applicant_number` varchar(20) NOT NULL,
+  `application_id` varchar(20) NOT NULL,
+  `applicant_id` varchar(20) NOT NULL,
   `application_status` enum('processing','accepted','rejected') NOT NULL,
   `date_applied` date NOT NULL,
   `program` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
   `folder_link` varchar(255) NOT NULL,
   `study_load` enum('Full-Time','Part-Time') NOT NULL,
-  PRIMARY KEY (`application_no`),
-  KEY `applicant_number` (`applicant_number`),
-  CONSTRAINT `application_ibfk_1` FOREIGN KEY (`applicant_number`) REFERENCES `applicant` (`applicant_number`)
+  PRIMARY KEY (`application_id`),
+  KEY `applicant_id` (`applicant_id`),
+  CONSTRAINT `application_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -117,7 +117,7 @@ CREATE TABLE `enrolled` (
   PRIMARY KEY (`enrolled_id`),
   KEY `applicant_id` (`applicant_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_number`),
+  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`),
   CONSTRAINT `enrolled_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -271,15 +271,15 @@ DROP TABLE IF EXISTS `transcript`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `transcript` (
   `transcript_entry_id` varchar(20) NOT NULL,
-  `application_no` varchar(20) NOT NULL,
+  `application_id` varchar(20) NOT NULL,
   `course_id` varchar(20) NOT NULL,
   `academic_year` varchar(10) NOT NULL,
   `semester` enum('1st','2nd','3rd') NOT NULL,
   `grade` enum('1.00','1.25','1.50','1.75','2.00','2.25','2.50','2.75','3.00','4.00','5.00','INC','DROP') NOT NULL,
   PRIMARY KEY (`transcript_entry_id`),
-  KEY `application_no` (`application_no`),
+  KEY `application_id` (`application_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `transcript_ibfk_1` FOREIGN KEY (`application_no`) REFERENCES `application` (`application_no`),
+  CONSTRAINT `transcript_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `application` (`application_id`),
   CONSTRAINT `transcript_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
