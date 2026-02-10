@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `gsas_demo` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `gsas_demo`;
 -- MySQL dump 10.13  Distrib 8.0.43, for macos15 (arm64)
 --
 -- Host: localhost    Database: gsas_demo
@@ -16,65 +18,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `applicant`
---
-
-DROP TABLE IF EXISTS `applicant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `applicant` (
-  `applicant_number` varchar(20) NOT NULL,
-  `first_name` varchar(50) NOT NULL,
-  `middle_name` varchar(50) NOT NULL,
-  `last_name` varchar(50) NOT NULL,
-  `applicant_status` enum('applying','rejected','enrolled','deferred') NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `contact_number` varchar(20) NOT NULL,
-  `notes` text,
-  PRIMARY KEY (`applicant_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `applicant`
---
-
-LOCK TABLES `applicant` WRITE;
-/*!40000 ALTER TABLE `applicant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `applicant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `application`
---
-
-DROP TABLE IF EXISTS `application`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `application` (
-  `application_no` varchar(20) NOT NULL,
-  `applicant_number` varchar(20) NOT NULL,
-  `application_status` enum('processing','accepted','rejected') NOT NULL,
-  `date_applied` date NOT NULL,
-  `program` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
-  `folder_link` varchar(255) NOT NULL,
-  `study_load` enum('Full-Time','Part-Time') NOT NULL,
-  PRIMARY KEY (`application_no`),
-  KEY `applicant_number` (`applicant_number`),
-  CONSTRAINT `application_ibfk_1` FOREIGN KEY (`applicant_number`) REFERENCES `applicant` (`applicant_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `application`
---
-
-LOCK TABLES `application` WRITE;
-/*!40000 ALTER TABLE `application` DISABLE KEYS */;
-/*!40000 ALTER TABLE `application` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `course`
 --
 
@@ -86,7 +29,7 @@ CREATE TABLE `course` (
   `program_id` varchar(20) NOT NULL,
   `course_code` varchar(20) NOT NULL,
   `course_name` varchar(50) NOT NULL,
-  `units` tinyint NOT NULL,
+  `units` tinyint unsigned NOT NULL,
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`course_id`),
   KEY `program_id` (`program_id`),
@@ -100,6 +43,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
+INSERT INTO `course` VALUES ('CS100','MSCS','CS 100','Foundations of CS',3,'Basic foundations of computer science'),('CS200','MSCS','CS 200','Advanced Algorithms',3,'Study of advanced algorithmic techniques');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,13 +55,11 @@ DROP TABLE IF EXISTS `enrolled`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `enrolled` (
-  `enrolled_id` varchar(20) NOT NULL,
-  `applicant_id` varchar(20) NOT NULL,
+  `student_id` varchar(20) NOT NULL,
   `course_id` varchar(20) NOT NULL,
-  PRIMARY KEY (`enrolled_id`),
-  KEY `applicant_id` (`applicant_id`),
+  PRIMARY KEY (`student_id`,`course_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_number`),
+  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_number`),
   CONSTRAINT `enrolled_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -128,60 +70,8 @@ CREATE TABLE `enrolled` (
 
 LOCK TABLES `enrolled` WRITE;
 /*!40000 ALTER TABLE `enrolled` DISABLE KEYS */;
+INSERT INTO `enrolled` VALUES ('2021-00001','CS200');
 /*!40000 ALTER TABLE `enrolled` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `equivalence_group_map`
---
-
-DROP TABLE IF EXISTS `equivalence_group_map`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `equivalence_group_map` (
-  `map_id` varchar(20) NOT NULL,
-  `group_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
-  PRIMARY KEY (`map_id`),
-  KEY `group_id` (`group_id`),
-  KEY `course_id` (`course_id`),
-  CONSTRAINT `equivalence_group_map_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `equivalence_groups` (`group_id`),
-  CONSTRAINT `equivalence_group_map_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `equivalence_group_map`
---
-
-LOCK TABLES `equivalence_group_map` WRITE;
-/*!40000 ALTER TABLE `equivalence_group_map` DISABLE KEYS */;
-/*!40000 ALTER TABLE `equivalence_group_map` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `equivalence_groups`
---
-
-DROP TABLE IF EXISTS `equivalence_groups`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `equivalence_groups` (
-  `group_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `course_id` (`course_id`),
-  CONSTRAINT `equivalence_groups_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `equivalence_groups`
---
-
-LOCK TABLES `equivalence_groups` WRITE;
-/*!40000 ALTER TABLE `equivalence_groups` DISABLE KEYS */;
-/*!40000 ALTER TABLE `equivalence_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -192,11 +82,9 @@ DROP TABLE IF EXISTS `prerequisite`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `prerequisite` (
-  `prereq_entry_id` varchar(20) NOT NULL,
   `course_id` varchar(20) NOT NULL,
   `prereq_id` varchar(20) NOT NULL,
-  PRIMARY KEY (`prereq_entry_id`),
-  KEY `course_id` (`course_id`),
+  PRIMARY KEY (`course_id`,`prereq_id`),
   KEY `prereq_id` (`prereq_id`),
   CONSTRAINT `prerequisite_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`),
   CONSTRAINT `prerequisite_ibfk_2` FOREIGN KEY (`prereq_id`) REFERENCES `course` (`course_id`)
@@ -209,6 +97,7 @@ CREATE TABLE `prerequisite` (
 
 LOCK TABLES `prerequisite` WRITE;
 /*!40000 ALTER TABLE `prerequisite` DISABLE KEYS */;
+INSERT INTO `prerequisite` VALUES ('CS200','CS100');
 /*!40000 ALTER TABLE `prerequisite` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,6 +125,7 @@ CREATE TABLE `program` (
 
 LOCK TABLES `program` WRITE;
 /*!40000 ALTER TABLE `program` DISABLE KEYS */;
+INSERT INTO `program` VALUES ('MSCS','SCI','MS Computer Science','Master of Science in Computer Science');
 /*!40000 ALTER TABLE `program` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +149,48 @@ CREATE TABLE `school` (
 
 LOCK TABLES `school` WRITE;
 /*!40000 ALTER TABLE `school` DISABLE KEYS */;
+INSERT INTO `school` VALUES ('SCI','School of Science');
 /*!40000 ALTER TABLE `school` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `student`
+--
+
+DROP TABLE IF EXISTS `student`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `student` (
+  `student_number` varchar(20) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `ay_entry` year NOT NULL,
+  `ay_latest` year NOT NULL,
+  `degree` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `contact_number` varchar(20) NOT NULL,
+  `study_load` enum('Full-Time','Part-Time') NOT NULL,
+  `scholarship` varchar(50) NOT NULL,
+  `progress_status` enum('Probationary','Pre-Proposal','Thesis Proposal','Thesis Defense','Candidacy','Qualifying Exam','Dissertation Proposal','Dissertation Defense','Graduate','Discontinued Program') NOT NULL,
+  `year_graduation` year NOT NULL,
+  `progress_link` varchar(255) NOT NULL,
+  `adviser_lab` varchar(100) NOT NULL,
+  `folder_link` varchar(255) NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`student_number`),
+  CONSTRAINT `CHECK_ay` CHECK ((`ay_entry` <= `ay_latest`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `student`
+--
+
+LOCK TABLES `student` WRITE;
+/*!40000 ALTER TABLE `student` DISABLE KEYS */;
+INSERT INTO `student` VALUES ('2021-00001','Lara','Obrero','Carrillo',2021,2024,'MS CS','lara.carrillo@example.com','09171234567','Full-Time','DOST Scholar','Thesis Proposal',0000,'https://example.com/progress/2021-00001','AI Research Lab','https://drive.google.com/student/2021-00001','Excellent academic standing');
+/*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -270,16 +201,15 @@ DROP TABLE IF EXISTS `transcript`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `transcript` (
-  `transcript_entry_id` varchar(20) NOT NULL,
-  `application_no` varchar(20) NOT NULL,
+  `transcript_id` varchar(20) NOT NULL,
+  `student_number` varchar(20) NOT NULL,
   `course_id` varchar(20) NOT NULL,
-  `academic_year` varchar(10) NOT NULL,
+  `academic_year` year NOT NULL,
   `semester` enum('1st','2nd','3rd') NOT NULL,
   `grade` enum('1.00','1.25','1.50','1.75','2.00','2.25','2.50','2.75','3.00','4.00','5.00','INC','DROP') NOT NULL,
-  PRIMARY KEY (`transcript_entry_id`),
-  KEY `application_no` (`application_no`),
+  PRIMARY KEY (`transcript_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `transcript_ibfk_1` FOREIGN KEY (`application_no`) REFERENCES `application` (`application_no`),
+  CONSTRAINT `transcript_ibfk_1` FOREIGN KEY (`student_number`) REFERENCES `student` (`student_number`),
   CONSTRAINT `transcript_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -290,6 +220,7 @@ CREATE TABLE `transcript` (
 
 LOCK TABLES `transcript` WRITE;
 /*!40000 ALTER TABLE `transcript` DISABLE KEYS */;
+INSERT INTO `transcript` VALUES ('3','2021-00001','CS200','2023-2024','1st','1.50');
 /*!40000 ALTER TABLE `transcript` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -302,4 +233,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-10 21:26:17
+-- Dump completed on 2025-12-10 20:03:18

@@ -35,7 +35,35 @@ class School(models.Model):
         db_table = 'school'
 
 
-class Student(models.Model):
+class Applicant(models.Model):
+    class Status(models.TextChoices):
+        APPLYING        = 'applying', 'applying'
+        REJECTED        = 'rejected', 'rejected'
+        IS_ENROLLED     = 'enrolled', 'enrolled'
+        DEFERRED        = 'deferred', 'deferred'
+
+        @classmethod
+        def max_length(cls):
+            return max(len(v) for v in cls.values)
+
+    applicant_number    = models.CharField('Applicant Number', primary_key=True, max_length=20)
+    first_name          = models.CharField('First Name', max_length=50)
+    middle_name         = models.CharField('Middle Name', max_length=50)
+    last_name           = models.CharField('Last Name', max_length=50)
+    applicant_status    = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
+    email               = models.CharField('Email', max_length=100)
+    contact_number      = models.CharField('Contact Number', max_length=20)
+    notes               = models.TextField('Notes', blank=True, null=True)
+
+    # def clean(self):
+    #     super().clean()
+    #     if not (self.ay_entry <= self.ay_latest):
+    #         raise ValidationError("CONSTRAINT (ay_entry <= ay_latest)")
+
+    class Meta:
+        db_table = 'applicant'
+
+class Application(models.Model):
     class Degree(models.TextChoices):
         PHD_CS      = 'PhD CS', 'PhD CS' # one  is dropdown text, hte other is actual val
         MS_CS       = 'MS CS', 'MS CS'
@@ -44,7 +72,7 @@ class Student(models.Model):
         @classmethod
         def max_length(cls):
             return max(len(v) for v in cls.values)
-
+        
     class StudyLoad(models.TextChoices):
         FULL_TIME = 'Full-Time', 'Full-Time'
         PART_TIME = 'Part-Time', 'Part-Time'
@@ -52,49 +80,26 @@ class Student(models.Model):
         @classmethod
         def max_length(cls):
             return max(len(v) for v in cls.values)
-
-    class ProgressStatus(models.TextChoices):
-        PROBATIONARY            = 'Probationary', 'Probationary'
-        PRE_PROPOSAL            = 'Pre-Proposal', 'Pre-Proposal'
-        THESIS_PROPOSAL         = 'Thesis Proposal', 'Thesis Proposal'
-        THESIS_DEFENSE          = 'Thesis Defense', 'Thesis Defense'
-        CANDIDACY               = 'Candidacy', 'Candidacy'
-        QUALIFYING_EXAM         = 'Qualifying Exam', 'Qualifying Exam'
-        DISSERTATION_PROPOSAL   = 'Dissertation Proposal', 'Dissertation Proposal'
-        DISSERTATION_DEFENSE    = 'Dissertation Defense', 'Dissertation Defense'
-        GRADUATE                = 'Graduate', 'Graduate'
-        DISCONTINUED_PROGRAM    = 'Discontinued Program', 'Discontinued Program'
-
+        
+    class Status(models.TextChoices):
+        PROCESSING  = 'processing', 'processing'
+        ACCEPTED    = 'accepted', 'accepted'
+        REJECTED    = 'rejected', 'rejected'
+        
         @classmethod
         def max_length(cls):
             return max(len(v) for v in cls.values)
-
-    student_number  = models.CharField('Student Number', primary_key=True, max_length=20)
-    first_name      = models.CharField('First Name', max_length=50)
-    middle_name     = models.CharField('Middle Name', max_length=50)
-    last_name       = models.CharField('Last Name', max_length=50)
-    ay_entry        = YearField('AY Entry')
-    ay_latest       = YearField('AY Latest')
-    degree          = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
-    email           = models.CharField('Email', max_length=100)
-    contact_number  = models.CharField('Contact Number', max_length=20)
-    study_load      = models.CharField('Study Load', max_length=StudyLoad.max_length(), choices=StudyLoad)
-    scholarship     = models.CharField('Scholarship', max_length=50)
-    progress_status = models.CharField('Progress Status', max_length=ProgressStatus.max_length(), choices=ProgressStatus)
-    year_graduation = YearField('Year of Graduation')
-    progress_link   = models.CharField('Progress Link', max_length=255)
-    adviser_lab     = models.CharField('Adviser / Lab', max_length=100)
-    folder_link     = models.CharField('Folder Link', max_length=255)
-    notes           = models.TextField('Notes', blank=True, null=True)
-
-    def clean(self):
-        super().clean()
-        if not (self.ay_entry <= self.ay_latest):
-            raise ValidationError("CONSTRAINT (ay_entry <= ay_latest)")
+    
+    application_no      = models.CharField('Application Number', primary_key=True, max_length=20)
+    applicant_number    = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    applicant_status    = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
+    date_applied        = models.DateField('Date Applied')
+    degree              = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
+    folder_link         = models.CharField('Folder Link', max_length=255)
+    study_load          = models.CharField('Study Load', max_length=StudyLoad.max_length(), choices=StudyLoad)
 
     class Meta:
-        db_table = 'student'
-
+        db_table = 'application'
 
 class Program(models.Model):
     program_id      = models.CharField('Program ID', primary_key=True, max_length=20)
@@ -120,16 +125,18 @@ class Course(models.Model):
 
 
 class Prerequisite(models.Model):
-    course     = models.ForeignKey(Course, on_delete=models.CASCADE)
-    prereq     = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='prereq_id', verbose_name="Prereq ID")
+    prereq_entry_id     = models.CharField('prereq_entry_id', primary_key=True, max_length=20)
+    course              = models.ForeignKey(Course, on_delete=models.CASCADE)
+    prereq              = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='prereq_id', verbose_name="Prereq ID")
 
     class Meta:
         db_table = 'prerequisite'
 
             
 class Enrolled(models.Model):
-    student    = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course     = models.ForeignKey(Course, on_delete=models.CASCADE)
+    enrolled_id     = models.CharField('Enrolled ID', primary_key=True, max_length=20)
+    applicant       = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    course          = models.ForeignKey(Course, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'enrolled'
@@ -163,9 +170,9 @@ class Transcript(models.Model):
         @classmethod
         def max_length(cls):
             return max(len(v) for v in cls.values)
-        
+    
     transcript_id   = models.CharField('Transcript ID', primary_key=True, max_length=20)
-    student         = models.ForeignKey(Student, on_delete=models.CASCADE)
+    application_no  = models.ForeignKey(Application, on_delete=models.CASCADE)
     course          = models.ForeignKey(Course, on_delete=models.CASCADE)
     academic_year   = YearField('Academic Year')
     semester        = models.CharField('Semester', max_length=Semester.max_length(), choices=Semester)
@@ -174,21 +181,17 @@ class Transcript(models.Model):
     class Meta:
         db_table = 'transcript'
 
-class GlobalCourse(models.Model):
-    class Status(models.TextChoices):
-        Pass = 'Pass', 'Pass'
-        Fail = 'Fail', 'Fail'
-
-        @classmethod
-        def max_length(cls):
-            return max(len(v) for v in cls.values)
-        
-    up_courseid       = models.CharField('UP Course ID', primary_key=True, max_length=20)
-    up_coursecode     = models.Charfield('UP Course Code', max_length=20)
-    up_coursename     = models.Charfield('UP Course Name', max_length=20)
-    school            = models.Charfield('School', max_length=20)  
-    school_coursecode = models.Charfield('School Course Code', max_length=20) 
-    status            = models.CharField('Status', max_length=Status.max_length(), choices=Status)
+class EquivalenceGroup(models.Model):
+    group_id    = models.CharField('Group ID', primary_key=True, max_length=20)
+    course_id   = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'globalcourse'
+        db_table = 'equivalence group'
+
+class EquivalenceGroupMap(models.Model):
+    map_id      = models.CharField('Map ID', primary_key=True, max_length=20)
+    group_id    = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
+    course_id   = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'equivalence group map'
