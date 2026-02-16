@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
@@ -54,6 +54,7 @@ class Applicant(models.Model):
     email               = models.CharField('Email', max_length=100)
     contact_number      = models.CharField('Contact Number', max_length=20)
     notes               = models.TextField('Notes', blank=True, null=True)
+    pdf_file            = models.FileField('PDF Upload', upload_to='applicants_pdfs/', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
 
     # def clean(self):
     #     super().clean()
@@ -195,3 +196,10 @@ class EquivalenceGroupMap(models.Model):
 
     class Meta:
         db_table = 'equivalence_group_map'
+
+class TORText(models.Model):
+    applicant = models.OneToOneField(Applicant, on_delete=models.CASCADE, primary_key=True)
+    text = models.TextField()
+
+    class Meta:
+        db_table = 'tor_text'
