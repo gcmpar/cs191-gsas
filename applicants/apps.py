@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DatabaseManagementConfig(AppConfig):
+class ApplicantsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'database_management'
+    name = 'applicants'

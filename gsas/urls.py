@@ -15,8 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from gsas.admin import admin_site
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin_site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

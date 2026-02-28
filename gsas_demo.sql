@@ -107,29 +107,29 @@ UNLOCK TABLES;
 -- Table structure for table `enrolled`
 --
 
-DROP TABLE IF EXISTS `enrolled`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `enrolled` (
-  `enrolled_id` varchar(20) NOT NULL,
-  `applicant_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
-  PRIMARY KEY (`enrolled_id`),
-  KEY `applicant_id` (`applicant_id`),
-  KEY `course_id` (`course_id`),
-  CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`),
-  CONSTRAINT `enrolled_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- DROP TABLE IF EXISTS `enrolled`;
+-- /*!40101 SET @saved_cs_client     = @@character_set_client */;
+-- /*!50503 SET character_set_client = utf8mb4 */;
+-- CREATE TABLE `enrolled` (
+--   `enrolled_id` varchar(20) NOT NULL,
+--   `applicant_id` varchar(20) NOT NULL,
+--   `course_id` varchar(20) NOT NULL,
+--   PRIMARY KEY (`enrolled_id`),
+--   KEY `applicant_id` (`applicant_id`),
+--   KEY `course_id` (`course_id`),
+--   CONSTRAINT `enrolled_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`),
+--   CONSTRAINT `enrolled_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `enrolled`
---
+-- --
+-- -- Dumping data for table `enrolled`
+-- --
 
-LOCK TABLES `enrolled` WRITE;
-/*!40000 ALTER TABLE `enrolled` DISABLE KEYS */;
-/*!40000 ALTER TABLE `enrolled` ENABLE KEYS */;
-UNLOCK TABLES;
+-- LOCK TABLES `enrolled` WRITE;
+-- /*!40000 ALTER TABLE `enrolled` DISABLE KEYS */;
+-- /*!40000 ALTER TABLE `enrolled` ENABLE KEYS */;
+-- UNLOCK TABLES;
 
 --
 -- Table structure for table `equivalence_group_map`
@@ -263,34 +263,34 @@ LOCK TABLES `school` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `transcript`
+-- Table structure for table `application_transcript`
 --
 
-DROP TABLE IF EXISTS `transcript`;
+DROP TABLE IF EXISTS `application_transcript`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `transcript` (
-  `transcript_entry_id` varchar(20) NOT NULL,
+CREATE TABLE `application_transcript` (
+  `transcript_id` varchar(20) NOT NULL,
   `application_id` varchar(20) NOT NULL,
   `course_id` varchar(20) NOT NULL,
   `academic_year` varchar(10) NOT NULL,
   `semester` enum('1st','2nd','3rd') NOT NULL,
   `grade` enum('1.00','1.25','1.50','1.75','2.00','2.25','2.50','2.75','3.00','4.00','5.00','INC','DROP') NOT NULL,
-  PRIMARY KEY (`transcript_entry_id`),
+  PRIMARY KEY (`transcript_id`),
   KEY `application_id` (`application_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `transcript_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `application` (`application_id`),
-  CONSTRAINT `transcript_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
+  CONSTRAINT `application_transcript_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `application` (`application_id`),
+  CONSTRAINT `application_transcript_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `transcript`
+-- Dumping data for table `application_transcript`
 --
 
-LOCK TABLES `transcript` WRITE;
-/*!40000 ALTER TABLE `transcript` DISABLE KEYS */;
-/*!40000 ALTER TABLE `transcript` ENABLE KEYS */;
+LOCK TABLES `application_transcript` WRITE;
+/*!40000 ALTER TABLE `application_transcript` DISABLE KEYS */;
+/*!40000 ALTER TABLE `application_transcript` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
