@@ -40,7 +40,7 @@ class Applicant(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
 
-    applicant_id        = models.CharField('Applicant Number', primary_key=True, max_length=20, db_column='applicant_id')
+    applicant_id        = models.AutoField('Applicant Id', primary_key=True)
     first_name          = models.CharField('First Name', max_length=50)
     middle_name         = models.CharField('Middle Name', max_length=50)
     last_name           = models.CharField('Last Name', max_length=50)
@@ -84,8 +84,9 @@ class Application(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
     
-    application_id      = models.CharField('Application Number', primary_key=True, max_length=20, db_column='application_id')
+    application_id      = models.AutoField('Application Id', primary_key=True)
     applicant           = models.ForeignKey(Applicant, on_delete=models.CASCADE, db_column='applicant_id')  
+    application_number  = models.CharField('Application Number', max_length=20)
     application_status  = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
     date_applied        = models.DateField('Date Applied')
     program             = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
@@ -134,7 +135,7 @@ class ApplicationTranscript(models.Model):
         def max_length(cls):
             return max(len(v) for v in cls.values)
     
-    transcript_id   = models.CharField('Transcript ID', primary_key=True, max_length=20, db_column='transcript_id')
+    transcript_id   = models.AutoField('Application Transcript Id', primary_key=True)
     application     = models.ForeignKey(Application, on_delete=models.CASCADE, db_column='application_id')
     course          = models.ForeignKey(Course, on_delete=models.CASCADE)
     academic_year   = YearField('Academic Year')

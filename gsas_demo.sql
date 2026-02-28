@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `applicant`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `applicant` (
-  `applicant_id` varchar(20) NOT NULL,
+  `applicant_id` int NOT NULL AUTO_INCREMENT,
   `first_name` varchar(50) NOT NULL,
   `middle_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -52,8 +52,8 @@ DROP TABLE IF EXISTS `application`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `application` (
-  `application_id` varchar(20) NOT NULL,
-  `applicant_id` varchar(20) NOT NULL,
+  `application_id` int NOT NULL AUTO_INCREMENT,
+  `applicant_id` int NOT NULL,
   `application_status` enum('processing','accepted','rejected') NOT NULL,
   `date_applied` date NOT NULL,
   `program` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
@@ -82,8 +82,8 @@ DROP TABLE IF EXISTS `course`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course` (
-  `course_id` varchar(20) NOT NULL,
-  `program_id` varchar(20) NOT NULL,
+  `course_id` int NOT NULL AUTO_INCREMENT,
+  `program_id` int NOT NULL,
   `course_code` varchar(20) NOT NULL,
   `course_name` varchar(50) NOT NULL,
   `units` tinyint NOT NULL,
@@ -111,9 +111,9 @@ UNLOCK TABLES;
 -- /*!40101 SET @saved_cs_client     = @@character_set_client */;
 -- /*!50503 SET character_set_client = utf8mb4 */;
 -- CREATE TABLE `enrolled` (
---   `enrolled_id` varchar(20) NOT NULL,
---   `applicant_id` varchar(20) NOT NULL,
---   `course_id` varchar(20) NOT NULL,
+--   `enrolled_id` int NOT NULL AUTO_INCREMENT,
+--   `applicant_id` int NOT NULL,
+--   `course_id` int NOT NULL,
 --   PRIMARY KEY (`enrolled_id`),
 --   KEY `applicant_id` (`applicant_id`),
 --   KEY `course_id` (`course_id`),
@@ -139,9 +139,9 @@ DROP TABLE IF EXISTS `equivalence_group_map`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `equivalence_group_map` (
-  `map_id` varchar(20) NOT NULL,
-  `group_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
+  `map_id` int NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `course_id` int NOT NULL,
   PRIMARY KEY (`map_id`),
   KEY `group_id` (`group_id`),
   KEY `course_id` (`course_id`),
@@ -167,8 +167,8 @@ DROP TABLE IF EXISTS `equivalence_groups`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `equivalence_groups` (
-  `group_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
+  `group_id` int NOT NULL AUTO_INCREMENT,
+  `course_id` int NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `course_id` (`course_id`),
   CONSTRAINT `equivalence_groups_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`)
@@ -192,9 +192,9 @@ DROP TABLE IF EXISTS `prerequisite`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `prerequisite` (
-  `prereq_entry_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
-  `prereq_id` varchar(20) NOT NULL,
+  `prereq_entry_id` int NOT NULL AUTO_INCREMENT,
+  `course_id` int NOT NULL,
+  `prereq_id` int NOT NULL,
   PRIMARY KEY (`prereq_entry_id`),
   KEY `course_id` (`course_id`),
   KEY `prereq_id` (`prereq_id`),
@@ -220,8 +220,8 @@ DROP TABLE IF EXISTS `program`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `program` (
-  `program_id` varchar(20) NOT NULL,
-  `school_id` varchar(20) NOT NULL,
+  `program_id` int NOT NULL AUTO_INCREMENT,
+  `school_id` int NOT NULL,
   `program_name` varchar(50) NOT NULL,
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`program_id`),
@@ -247,7 +247,7 @@ DROP TABLE IF EXISTS `school`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `school` (
-  `school_id` varchar(20) NOT NULL,
+  `school_id` int NOT NULL AUTO_INCREMENT,
   `school_name` varchar(100) NOT NULL,
   PRIMARY KEY (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -270,9 +270,9 @@ DROP TABLE IF EXISTS `application_transcript`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `application_transcript` (
-  `transcript_id` varchar(20) NOT NULL,
-  `application_id` varchar(20) NOT NULL,
-  `course_id` varchar(20) NOT NULL,
+  `transcript_id` int NOT NULL AUTO_INCREMENT,
+  `application_id` int NOT NULL,
+  `course_id` int NOT NULL,
   `academic_year` varchar(10) NOT NULL,
   `semester` enum('1st','2nd','3rd') NOT NULL,
   `grade` enum('1.00','1.25','1.50','1.75','2.00','2.25','2.50','2.75','3.00','4.00','5.00','INC','DROP') NOT NULL,
