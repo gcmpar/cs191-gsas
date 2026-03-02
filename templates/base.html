@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+  <head>
+    {% load django_bootstrap5 %}
+
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+
+    <!-- Title -->
+    <title>{% block title %}Graduate Students Admission System{% endblock title %}</title>
+  </head>
+
+  <body>
+    <header>
+      <!-- Navigation Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+          <div class="navbar-brand">Graduate Students Admission System</div>
+          <div class="collapse navbar-collapse">
+
+          <!-- Applicants -->
+          {% with app="applicants" path="search" text="Applicants" %}
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a
+                  class="nav-link {% if request.resolver_match.app_name == app %}active{% endif %}"
+                  {% if request.resolver_match.app_name == app %}aria-current="page"{% endif %}
+                  href = "{% url app|add:":"|add:path %}"
+                  >
+                  {{ text }}
+                  </a>
+              </li>
+              
+          </ul>
+          {% endwith %}
+
+          <!-- Logout -->
+          {% if user.is_authenticated %}
+          <ul class="navbar-nav">
+            <li class="nav-item">
+                <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="nav-link">Log Out</button>
+            </form>
+            </li>
+          </ul>
+          {% endif %}
+          
+          </div>
+
+      </div>
+      </nav>
+    </header>
+      
+    <main>
+      <!-- Content -->
+      {% block content %}
+      {% endblock content %}
+    </main>
+
+    <!-- Bootstrap JS -->
+    {% bootstrap_javascript %}
+
+  </body>
+</html>

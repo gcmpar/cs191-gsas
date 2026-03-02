@@ -16,65 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `applicant`
---
-
-DROP TABLE IF EXISTS `applicant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `applicant` (
-  `applicant_id` int NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(50) NOT NULL,
-  `middle_name` varchar(50) NOT NULL,
-  `last_name` varchar(50) NOT NULL,
-  `applicant_status` enum('applying','rejected','enrolled','deferred') NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `contact_number` varchar(20) NOT NULL,
-  `notes` text,
-  PRIMARY KEY (`applicant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `applicant`
---
-
-LOCK TABLES `applicant` WRITE;
-/*!40000 ALTER TABLE `applicant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `applicant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `application`
---
-
-DROP TABLE IF EXISTS `application`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `application` (
-  `application_id` int NOT NULL AUTO_INCREMENT,
-  `applicant_id` int NOT NULL,
-  `application_status` enum('processing','accepted','rejected') NOT NULL,
-  `date_applied` date NOT NULL,
-  `program` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
-  `folder_link` varchar(255) NOT NULL,
-  `study_load` enum('Full-Time','Part-Time') NOT NULL,
-  PRIMARY KEY (`application_id`),
-  KEY `applicant_id` (`applicant_id`),
-  CONSTRAINT `application_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `application`
---
-
-LOCK TABLES `application` WRITE;
-/*!40000 ALTER TABLE `application` DISABLE KEYS */;
-/*!40000 ALTER TABLE `application` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `course`
 --
 
@@ -260,6 +201,68 @@ CREATE TABLE `school` (
 LOCK TABLES `school` WRITE;
 /*!40000 ALTER TABLE `school` DISABLE KEYS */;
 /*!40000 ALTER TABLE `school` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `applicant`
+--
+
+DROP TABLE IF EXISTS `applicant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `applicant` (
+  `applicant_id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `applicant_status` enum('applying','rejected','enrolled','deferred') NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `contact_number` varchar(20) NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`applicant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `applicant`
+--
+
+LOCK TABLES `applicant` WRITE;
+/*!40000 ALTER TABLE `applicant` DISABLE KEYS */;
+/*!40000 ALTER TABLE `applicant` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `application`
+--
+
+DROP TABLE IF EXISTS `application`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `application` (
+  `application_id` int NOT NULL AUTO_INCREMENT,
+  `applicant_id` int NOT NULL,
+  `application_number` varchar(20) NOT NULL,
+  `application_status` enum('processing','accepted','rejected') NOT NULL,
+  `date_applied` date NOT NULL,
+  `program` enum('PhD CS','MS CS','MS Bioinfo') NOT NULL,
+  `folder_link` varchar(255) NOT NULL,
+  `study_load` enum('Full-Time','Part-Time') NOT NULL,
+  `notes` text,
+  PRIMARY KEY (`application_id`),
+  KEY `applicant_id` (`applicant_id`),
+  CONSTRAINT `application_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`applicant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `application`
+--
+
+LOCK TABLES `application` WRITE;
+/*!40000 ALTER TABLE `application` DISABLE KEYS */;
+/*!40000 ALTER TABLE `application` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

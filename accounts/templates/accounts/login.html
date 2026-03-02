@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+
+<!-- Cases -->
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+
+<!-- Login Form -->
+<form action="" method=POST>
+    {% csrf_token %}
+
+    <h2 class="mb-3">Login</h2>
+
+    {% bootstrap_form form %}
+
+    {% bootstrap_button "Submit" button_type="submit" %}
+</form>
+
+
+{% endblock content %}

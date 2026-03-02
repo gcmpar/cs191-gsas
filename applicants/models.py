@@ -92,6 +92,7 @@ class Application(models.Model):
     program             = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
     folder_link         = models.CharField('Folder Link', max_length=255)
     study_load          = models.CharField('Study Load', max_length=StudyLoad.max_length(), choices=StudyLoad)
+    notes               = models.TextField('Notes', blank=True, null=True)
 
     class Meta:
         db_table = 'application'
