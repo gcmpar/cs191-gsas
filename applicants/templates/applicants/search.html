@@ -1,1 +1,45 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Applicants</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Applicants</h2>
+  <a href="{% url 'applications:search' %}" class="btn btn-secondary">Applications</a>
+</div>
+
+<div class="card">
+  <div class="card-header"><h5 class="mb-0">All Applicants</h5></div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Contact</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for applicant in applicants %}
+        <tr style="cursor:pointer" onclick="window.location='{% url 'applicants:view' applicant.applicant_id %}'">
+          <td>{{ applicant.applicant_id }}</td>
+          <td>{{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}</td>
+          <td>{{ applicant.email }}</td>
+          <td>{{ applicant.contact_number }}</td>
+          <td>{{ applicant.applicant_status }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">No applicants found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Applicant #{{ applicant.applicant_id }}</title>
+  <title>Edit Applicant #{{ applicant.applicant_id }}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body class="p-4">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <a href="{% url 'applicants:search' %}" class="btn btn-secondary">← Applicants</a>
-  <a href="{% url 'applicants:edit' applicant.applicant_id %}" class="btn btn-primary">Edit</a>
+  <a href="{% url 'applicants:view' applicant.applicant_id %}" class="btn btn-secondary">← Cancel</a>
 </div>
 
 <div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Applicant #{{ applicant.applicant_id }}</h5></div>
+  <div class="card-header"><h5 class="mb-0">Edit Applicant #{{ applicant.applicant_id }}</h5></div>
   <div class="card-body">
-    <p><strong>Name:</strong> {{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}</p>
-    <p><strong>Status:</strong> {{ applicant.applicant_status }}</p>
-    <p><strong>Email:</strong> {{ applicant.email }}</p>
-    <p><strong>Contact:</strong> {{ applicant.contact_number }}</p>
-    <p><strong>Notes:</strong> {{ applicant.notes|default:"—" }}</p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
   </div>
 </div>
 

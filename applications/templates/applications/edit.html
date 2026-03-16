@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Application #{{ application.application_id }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{% url 'applications:view' application.application_id %}" class="btn btn-secondary">← Cancel</a>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Applicant (readonly)</h5></div>
+  <div class="card-body">
+    <a href="{% url 'applicants:view' applicant.applicant_id %}" class="fw-semibold">
+      {{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}
+    </a>
+    <p class="mb-0 text-muted">{{ applicant.email }} · {{ applicant.contact_number }}</p>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Edit Application #{{ application.application_id }}</h5></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Courses (readonly)</h5></div>
+  <div class="card-body p-0">
+    <table class="table mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Course Code</th>
+          <th>Course Name</th>
+          <th>AY</th>
+          <th>Sem</th>
+          <th>Grade</th>
+          <th>Equivalences</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in transcript_rows %}
+        <tr>
+          <td>{{ row.transcript.course.course_code }}</td>
+          <td>{{ row.transcript.course.course_name }}</td>
+          <td>{{ row.transcript.academic_year }}</td>
+          <td>{{ row.transcript.semester }}</td>
+          <td>{{ row.transcript.grade }}</td>
+          <td>
+            {% for eq in row.equiv_courses %}
+              <span class="badge bg-info text-dark">{{ eq.course.course_code }}</span>
+            {% empty %}
+              <span class="text-muted">—</span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-muted">No transcript entries.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

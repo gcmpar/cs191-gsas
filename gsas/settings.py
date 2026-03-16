@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'academics.apps.AcademicsConfig',
     'applicants.apps.ApplicantsConfig',
+    'applications.apps.ApplicationsConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
