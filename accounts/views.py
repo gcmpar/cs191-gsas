@@ -1,4 +1,5 @@
 from django.contrib.auth.views import LoginView
+from django.shortcuts import render
 from django.urls import reverse_lazy
 
 class RedirectorLoginView(LoginView):
@@ -8,6 +9,9 @@ class RedirectorLoginView(LoginView):
         url = self.get_redirect_url()
         if url:
             return url
-        
         else:
-            return reverse_lazy('applicants:search')
+            return reverse_lazy('home')
+
+
+def home(request):
+    return render(request, 'home.html')

@@ -7,7 +7,17 @@
 <body class="p-4">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <a href="{% url 'applicants:view' applicant.applicant_id %}" class="btn btn-secondary">← Cancel</a>
+  <div class="d-flex gap-2">
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">⌂ Home</a>
+    <a href="{% url 'applicants:view' applicant.applicant_id %}" class="btn btn-secondary">← Cancel</a>
+  </div>
+  <form method="post" action="{% url 'applicants:delete' applicant.applicant_id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger"
+      onclick="return confirm('Delete this applicant? This cannot be undone.')">
+      Delete
+    </button>
+  </form>
 </div>
 
 <div class="card mb-4">

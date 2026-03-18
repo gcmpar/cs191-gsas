@@ -25,7 +25,7 @@ class Course(models.Model):
     program         = models.ForeignKey(Program, on_delete=models.CASCADE)
     course_code     = models.CharField('Course Code', max_length=20)
     course_name     = models.CharField('Course Name', max_length=50)
-    units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(20)])
+    units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(1)])
     description     = models.CharField('Description', max_length=200)
 
     class Meta:

@@ -7,7 +7,10 @@
 <body class="p-4">
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+  <div class="d-flex gap-2">
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">⌂ Home</a>
+    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+  </div>
   <a href="{% url 'applications:edit' application.application_id %}" class="btn btn-primary">Edit</a>
 </div>
 

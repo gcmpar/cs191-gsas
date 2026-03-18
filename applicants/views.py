@@ -30,6 +30,19 @@ def applicant_view(request, applicant_id):
     })
 
 
+def applicant_add(request):
+    if request.method == 'POST':
+        form = ApplicantForm(request.POST)
+        if form.is_valid():
+            applicant = form.save()
+            return redirect('applicants:view', applicant_id=applicant.applicant_id)
+    else:
+        form = ApplicantForm()
+    return render(request, 'applicants/add.html', {
+        'form': form,
+    })
+
+
 def applicant_edit(request, applicant_id):
     applicant    = get_object_or_404(Applicant, pk=applicant_id)
     applications = Application.objects.filter(applicant=applicant)
@@ -57,3 +70,11 @@ def applicant_edit(request, applicant_id):
         'applications': applications,
         'course_list':  list(course_map.values()),
     })
+
+
+def applicant_delete(request, applicant_id):
+    applicant = get_object_or_404(Applicant, pk=applicant_id)
+    if request.method == 'POST':
+        applicant.delete()
+        return redirect('applicants:search')
+    return redirect('applicants:edit', applicant_id=applicant_id)
