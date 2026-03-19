@@ -68,7 +68,10 @@
 </div>
 
 <div class="mt-4">
-  <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">Logout</a>
+  <form action="{% url 'accounts:logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="nav-link">Log Out</button>
+  </form>
 </div>
 
 </body>
