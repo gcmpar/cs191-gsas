@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from programs.models import Program
 
 
 class Course(models.Model):

@@ -1,4 +1,5 @@
 from django.db import models
+from schools.models import School
 
 
 class Program(models.Model):
