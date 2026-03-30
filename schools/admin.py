@@ -1,3 +1,5 @@
-from django.contrib import admin
+from gsas.admin import admin_site
+from . import models
 
-# Register your models here.
+
+admin_site.register(models.School)
