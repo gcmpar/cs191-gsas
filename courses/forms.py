@@ -1,5 +1,6 @@
 from django.forms import ModelForm, widgets
-from academics.models import Course, Program
+from programs.models import Program
+from .models import Course
 
 class CourseForm(ModelForm):
     class Meta:

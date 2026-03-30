@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from academics.models import Course
+from .models import Course
 from .forms import CourseForm
 
 

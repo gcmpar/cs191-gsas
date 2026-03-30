@@ -1,5 +1,5 @@
 from django.forms import ModelForm, widgets
-from academics.models import School
+from .models import School
 
 class SchoolForm(ModelForm):
     class Meta:

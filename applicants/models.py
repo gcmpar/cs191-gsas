@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime
 
-from academics.models import Course
+from courses.models import Course
 
 
 # TODO View for AY Entry and AY Latest must have a second side textbox

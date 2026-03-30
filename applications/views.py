@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from applicants.models import Application, ApplicationTranscript
-from academics.models import EquivalenceGroup, EquivalenceGroupMap
+from courses.models import EquivalenceGroup, EquivalenceGroupMap
 from .forms import ApplicationForm
 
 

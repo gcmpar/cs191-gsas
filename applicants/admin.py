@@ -1,8 +1,8 @@
 from gsas.admin import admin_site
-import applicants.models as M
+from . import models
 
 
-admin_site.register(M.Applicant)
-admin_site.register(M.Application)
-# admin_site.register(M.Enrolled)
-admin_site.register(M.ApplicationTranscript)
+admin_site.register(models.Applicant)
+admin_site.register(models.Application)
+# admin_site.register(models.Enrolled)
+admin_site.register(models.ApplicationTranscript)
