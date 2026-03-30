@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+  <head>
+    {% load django_bootstrap5 %}
+
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+
+    <!-- Title -->
+    <title>{% block title %}Graduate Students Admission System{% endblock title %}</title>
+
+    <!-- extra head -->
+    {% block extra_head %}{% endblock extra_head %}
+  </head>
+
+  <body>
+
+    <header>
+      <!-- header -->
+      {% block header %}{% endblock header %}
+    </header>
+      
+    <main>
+      <!-- main -->
+      {% block main %}{% endblock main %}
+    </main>
+
+
+    <!-- Bootstrap JS -->
+    {% bootstrap_javascript %}
+
+    <!-- extra JS -->
+    {% block extra_javascript %}{% endblock extra_javascript %}
+
+  </body>
+</html>

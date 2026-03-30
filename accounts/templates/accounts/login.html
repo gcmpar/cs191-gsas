@@ -1,9 +1,8 @@
-{% extends 'base.html' %}
-
+{% extends "skeleton.html" %}
 {% load django_bootstrap5 %}
 
-{% block content %}
 
+{% block main %}
 
 <!-- Cases -->
 
@@ -32,5 +31,4 @@
     {% bootstrap_button "Submit" button_type="submit" %}
 </form>
 
-
-{% endblock content %}
+{% endblock main %}
