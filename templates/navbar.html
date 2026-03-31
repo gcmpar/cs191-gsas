@@ -4,7 +4,7 @@
     <div class="navbar-brand">Graduate Students Admission System</div>
     <div class="collapse navbar-collapse">
 
-    <!-- Applicants -->
+    {% comment %} <!-- Applicants -->
     {% with app="applicants" path="search" text="Applicants" %}
     <ul class="navbar-nav">
         <li class="nav-item">
@@ -18,17 +18,32 @@
         </li>
         
     </ul>
-    {% endwith %}
+    {% endwith %} {% endcomment %}
+
+    {% for app_name, info in navbar_buttons.items %}
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a
+            class="nav-link {% if request.resolver_match.app_name == app_name %}active{% endif %}"
+            {% if request.resolver_match.app_name == app_name %}aria-current="page"{% endif %}
+            href = "{% url info.url %}"
+            >
+            {{ info.text }}
+            </a>
+        </li>
+        
+    </ul>
+    {% endfor %}
 
     <!-- Logout -->
     {% if user.is_authenticated %}
-    <ul class="navbar-nav">
-      <li class="nav-item">
-          <form action="{% url 'accounts:logout' %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="nav-link">Log Out</button>
-      </form>
-      </li>
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="nav-link">Logout</button>
+        </form>
+        </li>
     </ul>
     {% endif %}
     
