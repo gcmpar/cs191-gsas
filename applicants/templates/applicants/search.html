@@ -9,7 +9,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Applicants</h2>
   <div class="d-flex gap-2">
-    <a href="{% url 'applications:search' %}" class="btn btn-secondary">Applications</a>
     <a href="{% url 'applicants:add' %}" class="btn btn-success">+ Add Applicant</a>
   </div>
 </div>
@@ -28,26 +27,26 @@
         <button type="submit" class="btn btn-light">Search</button>
 
         <label>
-            <input type="checkbox" name="status" value="applying"
-            {% if "applying" in filter_status %}checked{% endif %}>
+            <input type="checkbox" name="status" value="Applying"
+            {% if "Applying" in filter_status %}checked{% endif %}>
             Applying
         </label>
 
         <label>
-            <input type="checkbox" name="status" value="rejected"
-            {% if "rejected" in filter_status %}checked{% endif %}>
+            <input type="checkbox" name="status" value="Rejected"
+            {% if "Rejected" in filter_status %}checked{% endif %}>
             Rejected
         </label>
 
         <label>
-            <input type="checkbox" name="status" value="enrolled"
-            {% if "enrolled" in filter_status %}checked{% endif %}>
+            <input type="checkbox" name="status" value="Enrolled"
+            {% if "Enrolled" in filter_status %}checked{% endif %}>
             Enrolled
         </label>
 
         <label>
-            <input type="checkbox" name="status" value="deferred"
-            {% if "deferred" in filter_status %}checked{% endif %}>
+            <input type="checkbox" name="status" value="Deferred"
+            {% if "Deferred" in filter_status %}checked{% endif %}>
             Deferred
         </label>
 

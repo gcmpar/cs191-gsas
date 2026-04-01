@@ -27,15 +27,22 @@ class Prerequisite(models.Model):
 
 class EquivalenceGroup(models.Model):
     group_id    = models.AutoField('EquivalenceGroup Id', primary_key=True)
-    course      = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'equivalence_groups'
+        db_table = 'equivalence_group'
+
+class EquivalenceGroupCourses(models.Model):
+    group_entry_id    = models.AutoField('EquivalenceGroupCourses Id', primary_key=True)
+    group             = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
+    course            = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'equivalence_group_courses'
 
 class EquivalenceGroupMap(models.Model):
-    map_id      = models.AutoField('EquivalenceGroupMap Id', primary_key=True)
-    group       = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
-    course      = models.ForeignKey(Course, on_delete=models.CASCADE)
+    map_id             = models.AutoField('EquivalenceGroupMap Id', primary_key=True)
+    group              = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
+    target_course      = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'equivalence_group_map'

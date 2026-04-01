@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Applicant, Application, ApplicationTranscript
+from .models import Applicant
+from applications.models import Application, ApplicationTranscript
 from .forms import ApplicantForm
 
 
