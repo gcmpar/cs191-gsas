@@ -9,7 +9,7 @@ SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'emai
 
 def applicants_search(request):
     query = request.GET.get('search')
-    statuses = request.GET.getlist('status')
+    filter_status = request.GET.getlist('status')
 
     applicants = Applicant.objects
 
@@ -19,8 +19,8 @@ def applicants_search(request):
             query_filter |= Q(**{f'{field}__icontains': query})
         applicants = applicants.filter(query_filter)
     
-    if len(statuses) > 0:
-        applicants = applicants.filter(applicant_status__in=statuses)
+    if len(filter_status) > 0:
+        applicants = applicants.filter(applicant_status__in=filter_status)
     
     applicants = applicants.order_by('applicant_id')
 
@@ -31,7 +31,7 @@ def applicants_search(request):
     context = {
         'applicants_page': page,
         'search_query': query,
-        'statuses': statuses
+        'filter_status': filter_status
     }
     return render(request, 'applicants/search.html', context)
 

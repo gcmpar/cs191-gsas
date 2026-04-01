@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
+
 {% block title %}Applicants{% endblock title %}
 
 {% block content %}
@@ -28,25 +29,25 @@
 
         <label>
             <input type="checkbox" name="status" value="applying"
-            {% if "applying" in statuses %}checked{% endif %}>
+            {% if "applying" in filter_status %}checked{% endif %}>
             Applying
         </label>
 
         <label>
             <input type="checkbox" name="status" value="rejected"
-            {% if "rejected" in statuses %}checked{% endif %}>
+            {% if "rejected" in filter_status %}checked{% endif %}>
             Rejected
         </label>
 
         <label>
             <input type="checkbox" name="status" value="enrolled"
-            {% if "enrolled" in statuses %}checked{% endif %}>
+            {% if "enrolled" in filter_status %}checked{% endif %}>
             Enrolled
         </label>
 
         <label>
             <input type="checkbox" name="status" value="deferred"
-            {% if "deferred" in statuses %}checked{% endif %}>
+            {% if "deferred" in filter_status %}checked{% endif %}>
             Deferred
         </label>
 
