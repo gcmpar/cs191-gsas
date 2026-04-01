@@ -1,22 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Applicants</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body class="p-4">
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Applicants{% endblock title %}
+
+{% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Applicants</h2>
   <div class="d-flex gap-2">
-    <a href="{% url 'home' %}" class="btn btn-outline-secondary">⌂ Home</a>
     <a href="{% url 'applications:search' %}" class="btn btn-secondary">Applications</a>
     <a href="{% url 'applicants:add' %}" class="btn btn-success">+ Add Applicant</a>
   </div>
 </div>
 
+{% querystring page=None as filters %}
 <div class="card">
-  <div class="card-header"><h5 class="mb-0">All Applicants</h5></div>
+  <div class="card-header d-flex justify-content-between align-items-center p-0">
+    
+    <div class="d-flex p-3 gap-3 align-items-center">
+
+      <h5 class="">All Applicants</h5>
+
+      <form method="get">
+
+        <input type="text" name="search" value="{{ search_query }}">
+        <button type="submit" class="btn btn-light">Search</button>
+
+        <label>
+            <input type="checkbox" name="status" value="applying"
+            {% if "applying" in statuses %}checked{% endif %}>
+            Applying
+        </label>
+
+        <label>
+            <input type="checkbox" name="status" value="rejected"
+            {% if "rejected" in statuses %}checked{% endif %}>
+            Rejected
+        </label>
+
+        <label>
+            <input type="checkbox" name="status" value="enrolled"
+            {% if "enrolled" in statuses %}checked{% endif %}>
+            Enrolled
+        </label>
+
+        <label>
+            <input type="checkbox" name="status" value="deferred"
+            {% if "deferred" in statuses %}checked{% endif %}>
+            Deferred
+        </label>
+
+        <button type="submit" class="btn btn-light">Apply</button>
+      </form>
+    </div>
+    <div class="d-flex ms-auto">
+      {% bootstrap_pagination applicants_page pages_to_show=5 extra=filters %}
+    </div>
+
+  </div>
+  
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
       <thead class="table-dark">
@@ -24,26 +66,28 @@
           <th>ID</th>
           <th>Name</th>
           <th>Email</th>
-          <th>Contact</th>
+          <th>Contact Number</th>
           <th>Status</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody>
-        {% for applicant in applicants %}
+        {% for applicant in applicants_page %}
         <tr style="cursor:pointer" onclick="window.location='{% url 'applicants:view' applicant.applicant_id %}'">
           <td>{{ applicant.applicant_id }}</td>
           <td>{{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}</td>
           <td>{{ applicant.email }}</td>
           <td>{{ applicant.contact_number }}</td>
           <td>{{ applicant.applicant_status }}</td>
+          <td><span class="d-inline-block text-truncate" style="max-width: 20ch;">{{ applicant.notes }}</span></td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="text-muted">No applicants found.</td></tr>
+        <tr><td colspan="6" class="text-muted">No applicants found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
+    <div class="d-flex justify-content-end">{% bootstrap_pagination applicants_page pages_to_show=5 extra=filters %}</div>
   </div>
 </div>
 
-</body>
-</html>
+{% endblock content %}

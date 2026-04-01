@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Edit Applicant #{{ applicant.applicant_id }}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body class="p-4">
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}Edit Applicant #{{ applicant.applicant_id }}{%endblock title %}
+
+{% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="d-flex gap-2">
-    <a href="{% url 'home' %}" class="btn btn-outline-secondary">⌂ Home</a>
     <a href="{% url 'applicants:view' applicant.applicant_id %}" class="btn btn-secondary">← Cancel</a>
   </div>
   <form method="post" action="{% url 'applicants:delete' applicant.applicant_id %}">
@@ -25,79 +24,14 @@
   <div class="card-body">
     <form method="post">
       {% csrf_token %}
-      {% for field in form %}
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger small">{{ field.errors }}</div>
-          {% endif %}
-        </div>
-      {% endfor %}
+      {% bootstrap_form form %}
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </div>
 </div>
 
-<div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Applications</h5></div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>App Number</th>
-          <th>Program</th>
-          <th>Date Applied</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for app in applications %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'applications:view' app.application_id %}'">
-          <td>{{ app.application_id }}</td>
-          <td>{{ app.application_number }}</td>
-          <td>{{ app.program }}</td>
-          <td>{{ app.date_applied }}</td>
-          <td>{{ app.application_status }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-muted">No applications.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+{% include "applicants/applications_list.html" %}
 
-<div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Courses across all applications</h5></div>
-  <div class="card-body p-0">
-    <table class="table mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Course Code</th>
-          <th>Course Name</th>
-          <th>Found in Applications</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for entry in course_list %}
-        <tr>
-          <td>{{ entry.course.course_code }}</td>
-          <td>{{ entry.course.course_name }}</td>
-          <td>
-            {% for app_id in entry.app_ids %}
-              <span class="badge bg-secondary">#{{ app_id }}</span>
-            {% endfor %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3" class="text-muted">No courses found.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+{% include "applicants/found_courses_list.html" %}
 
-</body>
-</html>
+{% endblock content %}

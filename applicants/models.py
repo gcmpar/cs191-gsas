@@ -31,10 +31,10 @@ class YearField(models.PositiveSmallIntegerField):
 
 class Applicant(models.Model):
     class Status(models.TextChoices):
-        APPLYING        = 'applying', 'applying'
-        REJECTED        = 'rejected', 'rejected'
-        IS_ENROLLED     = 'enrolled', 'enrolled'
-        DEFERRED        = 'deferred', 'deferred'
+        APPLYING        = 'applying', 'Applying'
+        REJECTED        = 'rejected', 'Rejected'
+        IS_ENROLLED     = 'enrolled', 'Enrolled'
+        DEFERRED        = 'deferred', 'Deferred'
 
         @classmethod
         def max_length(cls):
