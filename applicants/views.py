@@ -11,7 +11,7 @@ def applicants_search(request):
     query = request.GET.get('search')
     statuses = request.GET.getlist('status')
 
-    applicants = Applicant.objects.all()
+    applicants = Applicant.objects
 
     if query:
         query_filter = Q()
