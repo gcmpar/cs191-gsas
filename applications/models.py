@@ -92,3 +92,6 @@ class ApplicationTranscript(models.Model):
 
     class Meta:
         db_table = 'application_transcript'
+        constraints = [
+            models.UniqueConstraint(fields=['application', 'course'], name='CPK_application_transcript')
+        ]

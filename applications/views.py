@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Application, ApplicationTranscript
 from .forms import ApplicationForm
-from courses.models import EquivalenceGroup, EquivalenceGroupCourses, EquivalenceGroupMap
+from courses.models import EquivalenceMapCourses, EquivalenceMap
 
 
 SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
@@ -17,21 +17,20 @@ def get_transcript_entries(application):
         
         equivalences = []
 
-        # Probe which equivalence groups this course is part of.
-        associated_entries = EquivalenceGroupCourses.objects.filter(course=t.course).select_related('group', 'course')
-        for entry in associated_entries:
+        # Probe which equivalence maps this course is part of.
+        associated_entries = EquivalenceMapCourses.objects.filter(course=t.course).select_related('map')
+        for a_entry in associated_entries:
+            
+            map = a_entry.map
 
-            # Get the courses of this particular group.
-            group_entries = EquivalenceGroupCourses.objects.filter(group=entry.group).select_related('group', 'course')
+            # Get the courses of this particular map.
+            map_entries = EquivalenceMapCourses.objects.filter(map=map).select_related('course')
 
-            # Won't really make sense for 1 group to have multiple target courses,
-            # but whatever lol let's do a for-loop just in case...
-            for equiv_map in EquivalenceGroupMap.objects.filter(group=entry.group).select_related('group', 'target_course'):
-                equivalences.append({
-                    'group': [entry.course for entry in group_entries],
-                    'target_course': equiv_map.target_course,
-                    'map': equiv_map,
-                })
+            equivalences.append({
+                'group': [entry.course for entry in map_entries],
+                'target_course': map.target_course,
+                'map': map,
+            })
 
         transcript_entries.append({'transcript': t, 'equivalences': equivalences})
 

@@ -23,26 +23,25 @@ class Prerequisite(models.Model):
 
     class Meta:
         db_table = 'prerequisite'
+        constraints = [
+            models.UniqueConstraint(fields=['course', 'prereq'], name='CPK_prerequisite')
+        ]
 
 
-class EquivalenceGroup(models.Model):
-    group_id    = models.AutoField('EquivalenceGroup Id', primary_key=True)
-
-    class Meta:
-        db_table = 'equivalence_group'
-
-class EquivalenceGroupCourses(models.Model):
-    group_entry_id    = models.AutoField('EquivalenceGroupCourses Id', primary_key=True)
-    group             = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
-    course            = models.ForeignKey(Course, on_delete=models.CASCADE)
+class EquivalenceMap(models.Model):
+    map_id        = models.AutoField('EquivalenceMap Id', primary_key=True)
+    target_course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'equivalence_group_courses'
+        db_table = 'equivalence_map'
 
-class EquivalenceGroupMap(models.Model):
-    map_id             = models.AutoField('EquivalenceGroupMap Id', primary_key=True)
-    group              = models.ForeignKey(EquivalenceGroup, on_delete=models.CASCADE)
-    target_course      = models.ForeignKey(Course, on_delete=models.CASCADE)
+class EquivalenceMapCourses(models.Model):
+    map_entry_id = models.AutoField('EequivalenceMapCourses Id', primary_key=True)
+    map          = models.ForeignKey(EquivalenceMap, on_delete=models.CASCADE)
+    course       = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'equivalence_group_map'
+        db_table = 'equivalence_map_courses'
+        constraints = [
+            models.UniqueConstraint(fields=['map', 'course'], name='CPK_equivalence_map_courses')
+        ]
