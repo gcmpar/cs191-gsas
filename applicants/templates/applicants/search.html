@@ -23,7 +23,7 @@
 
       <form method="get">
 
-        <input type="text" name="search" value="{{ search_query }}">
+        <input type="text" name="search" {% if search_query %}value="{{ search_query }}"{% endif %}>
         <button type="submit" class="btn btn-light">Search</button>
 
         <label>

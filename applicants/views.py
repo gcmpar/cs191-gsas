@@ -23,7 +23,6 @@ def applicants_search(request):
         applicants = applicants.filter(applicant_status__in=statuses)
     
     applicants = applicants.order_by('applicant_id')
-    print(applicants)
 
     paginator = Paginator(applicants, 15)
     page_number = request.GET.get('page')
