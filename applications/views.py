@@ -2,39 +2,33 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Application, ApplicationTranscript
-from .forms import ApplicationForm
-from courses.models import EquivalenceMapCourses, EquivalenceMap
+from .forms import ApplicationForm, ApplicationTranscriptFormSet
+from courses.models import EquivalenceMapCourses
 
 
 SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
 
 
-def get_transcript_entries(application):
-    transcript_entries = []
+def get_equivalences(entry):
+    
+    equivalences = []
 
-    transcripts = ApplicationTranscript.objects.filter(application=application).select_related('course')
-    for t in transcripts:
+    # Probe which equivalence maps this course is part of.
+    associated_entries = EquivalenceMapCourses.objects.filter(course=entry.course).select_related('map')
+    for a_entry in associated_entries:
         
-        equivalences = []
+        map = a_entry.map
 
-        # Probe which equivalence maps this course is part of.
-        associated_entries = EquivalenceMapCourses.objects.filter(course=t.course).select_related('map')
-        for a_entry in associated_entries:
-            
-            map = a_entry.map
+        # Get the courses of this particular map.
+        map_entries = EquivalenceMapCourses.objects.filter(map=map).select_related('course')
 
-            # Get the courses of this particular map.
-            map_entries = EquivalenceMapCourses.objects.filter(map=map).select_related('course')
+        equivalences.append({
+            'group': [m_entry.course for m_entry in map_entries],
+            'target_course': map.target_course,
+            'map': map,
+        })
 
-            equivalences.append({
-                'group': [entry.course for entry in map_entries],
-                'target_course': map.target_course,
-                'map': map,
-            })
-
-        transcript_entries.append({'transcript': t, 'equivalences': equivalences})
-
-    return transcript_entries
+    return equivalences
 
 
 def applications_search(request):
@@ -70,10 +64,12 @@ def application_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
+    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
+
     return render(request, 'applications/view.html', {
         'applicant':       applicant,
         'application':     application,
-        'transcript_entries': get_transcript_entries(application),
+        'transcript_entries': {entry: get_equivalences(entry) for entry in entries},
     })
 
 
@@ -96,17 +92,28 @@ def application_edit(request, application_id):
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST, instance=application)
-        if form.is_valid():
-            form.save()
+        formset = ApplicationTranscriptFormSet(request.POST, instance=application)
+
+        if form.is_valid() and formset.is_valid():
+            application = form.save()
+            formset.instance = application
+            formset.save()
             return redirect('applications:view', application_id=application_id)
     else:
         form = ApplicationForm(instance=application)
+        formset = ApplicationTranscriptFormSet(instance=application)
+
+    for entry_form in formset:
+        if entry_form.instance.pk:
+            entry_form.equivalences = get_equivalences(entry_form.instance)
+        else:
+            entry_form.equivalences = []
 
     return render(request, 'applications/edit.html', {
         'applicant':       applicant,
         'application':     application,
         'form':            form,
-        'transcript_entries': get_transcript_entries(application),
+        'formset':         formset,
     })
 
 

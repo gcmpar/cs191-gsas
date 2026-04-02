@@ -11,4 +11,6 @@ urlpatterns = [
     path('schools/', include('schools.urls')),  
     path('programs/', include('programs.urls')),
     path('courses/', include('courses.urls')),
+
+    path("select2/", include("django_select2.urls")),
 ]
