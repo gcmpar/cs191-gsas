@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Batch Import{% endblock title %}
+
+{% block content %}
+<div class="row pt-4 mb-4">
+    <div class="col-8">
+        <h2>Confirm Batch Import</h2>
+        <p class="text-muted">Please review the entries to be created below. Click 'Save to Database' if correct.</p>
+    </div>
+</div>
+
+<div>
+    <div class="mb-3">
+        <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline-primary me-2">Create New Applicant</a>
+        <a href="{% url 'applications:batch_import_confirm' %}" class="btn btn-sm btn-outline-secondary">Refresh Applicants</a>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="card p-3 mb-4">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle" style="min-width: 1600px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">Application No.</th>
+                            <th style="width: 14%;">Scanned Name</th>
+                            <th style="width: 15%;">Scanned Contact Info</th>
+                            <th style="width: 25%;">Applicant Link</th>
+                            <th style="width: 10%;">Program</th>
+                            <th style="width: 10%;">Study Load</th>
+                            <th style="width: 8%;">Status</th>
+                            <th style="width: 8%;">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                        <tr>
+                            <td><input type="text" name="application_number[]" class="form-control" value="{{ row.application_number }}" required></td>
+                            <td>{{ row.last_name }}, {{ row.first_name }} {{ row.middle_name }}</td>
+                            <td>
+                                {{ row.email }}<br>
+                                <small class="text-muted">{{ row.contact_number }}</small>
+                            </td>
+                            <td>
+                                <select name="applicant_id[]" class="form-select" required>
+                                    <option value="" selected disabled>Select Applicant...</option>
+                                    {% for app in applicants %}
+                                    <option value="{{ app.applicant_id }}" {% if app.email == row.email %}selected{% endif %}>{{ app.last_name }}, {{ app.first_name }} ({{ app.email }})</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="program[]" class="form-select border">
+                                    <option value="MS CS" {% if row.program == 'MS CS' %}selected{% endif %}>MS CS</option>
+                                    <option value="PhD CS" {% if row.program == 'PhD CS' %}selected{% endif %}>PhD CS</option>
+                                    <option value="MS Bioinfo" {% if row.program == 'MS Bioinfo' %}selected{% endif %}>MS Bioinfo</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="study_load[]" class="form-select border">
+                                    <option value="Full-Time" {% if row.study_load == 'Full-Time' %}selected{% endif %}>Full-Time</option>
+                                    <option value="Part-Time" {% if row.study_load == 'Part-Time' %}selected{% endif %}>Part-Time</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="application_status[]" class="form-select border">
+                                    <option value="Processing" {% if row.application_status == 'Processing' %}selected{% endif %}>Processing</option>
+                                    <option value="Accepted" {% if row.application_status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                                    <option value="Rejected" {% if row.application_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </td>
+                            <td><input type="text" name="notes[]" class="form-control" value="{{ row.notes }}"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="submit" name="confirm" class="btn btn-success">Save to Database</button>
+        <a href="{% url 'applications:batch_import_upload' %}" class="btn btn-secondary">Cancel / Re-upload</a>
+    </form>
+</div>
+
+{% endblock content %}

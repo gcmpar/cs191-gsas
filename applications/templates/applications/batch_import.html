@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Import Applications{% endblock title %}
+
+{% block content %}
+<div class="row pt-4 mb-4">
+    <div class="col-8">
+        <h2>Batch Import Applications from NGSE Excel</h2>
+    </div>
+</div>
+
+<div class="card p-5">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="excelFile" class="form-label">Upload NGSE Excel File (.xlsx)</label>
+            <input class="form-control" type="file" id="excelFile" name="excel_file" accept=".xlsx" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Parse File</button>
+        <a href="{% url 'applications:batch_import_history' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock content %}

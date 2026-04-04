@@ -4,6 +4,14 @@ from applicants.models import Applicant
 from courses.models import Course
 
 
+class BatchImport(models.Model):
+    import_id       = models.AutoField('Import Id', primary_key=True)
+    date_imported   = models.DateTimeField('Date Imported', auto_now_add=True)
+
+    class Meta:
+        db_table = 'batch_import'
+
+
 class Application(models.Model):
     class Degree(models.TextChoices):
         PHD_CS      = 'PhD CS', 'PhD CS'
@@ -33,6 +41,7 @@ class Application(models.Model):
     
     application_id      = models.AutoField('Application Id', primary_key=True)
     applicant           = models.ForeignKey(Applicant, on_delete=models.CASCADE)  
+    batch_import        = models.ForeignKey(BatchImport, on_delete=models.SET_NULL, null=True, blank=True, related_name='applications')
     application_number  = models.CharField('Application Number', max_length=20)
     application_status  = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
     date_applied        = models.DateField('Date Applied')
