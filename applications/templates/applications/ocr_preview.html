@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}OCR Preview — Application #{{ application.application_id }}{% endblock title %}
+
+{% block content %}
+
+<div class="row pt-4 mb-3">
+  <div class="col">
+    <h2>Review Scanned Courses</h2>
+    <p class="text-muted">
+      Application #{{ application.application_id }} &mdash;
+      The table below shows what was extracted from the uploaded TOR PDF.
+      Match each scanned course to an existing UP course using the dropdown,
+      edit the grade if needed, and uncheck rows you want to skip.
+      Click <strong>Save to Application</strong> when done.
+    </p>
+  </div>
+</div>
+
+{# ── Action bar (mirrors batch_import_confirm pattern) ──────────────── #}
+<div class="mb-3 d-flex gap-2 flex-wrap">
+  <a href="{% url 'courses:add' %}"
+     target="_blank"
+     class="btn btn-sm btn-outline-primary">
+    ＋ Create Course
+  </a>
+  <a href="{% url 'applications:ocr_preview' application.application_id %}"
+     class="btn btn-sm btn-outline-secondary">
+    ↺ Refresh Courses
+  </a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+
+  <div class="card p-3 mb-4">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle" style="min-width: 1100px;">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 4%;">✓</th>
+            <th style="width: 12%;">Scanned Code</th>
+            <th style="width: 20%;">Scanned Course Name</th>
+            <th style="width: 35%;">Course Link</th>
+            <th style="width: 10%;">Grade</th>
+            <th style="width: 6%;">Units</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            {# Include checkbox — value is the row index used in POST processing #}
+            <td class="text-center">
+              <input type="checkbox"
+                     name="include[]"
+                     value="{{ row.index }}"
+                     class="form-check-input"
+                     checked>
+            </td>
+
+            {# Verbatim OCR output — read-only #}
+            <td>
+              <span class="font-monospace small">{{ row.course_code }}</span>
+            </td>
+            <td>
+              <span class="small text-muted">{{ row.description }}</span>
+            </td>
+
+            {# Course dropdown — auto-selects if a match was found #}
+            <td>
+              <select name="course_id_{{ row.index }}" class="form-select form-select-sm">
+                <option value="" {% if not row.matched_course %}selected{% endif %}>— Select course —</option>
+                {% for course in all_courses %}
+                  <option value="{{ course.course_id }}"
+                    {% if row.matched_course and row.matched_course.course_id == course.course_id %}selected{% endif %}>
+                    {{ course.course_code }} — {{ course.course_name }}
+                    ({{ course.program.school.school_name }})
+                  </option>
+                {% endfor %}
+              </select>
+            </td>
+
+            {# Grade — editable, pre-filled from OCR #}
+            <td>
+              <input type="text"
+                     name="grade_{{ row.index }}"
+                     value="{{ row.grade }}"
+                     class="form-control form-control-sm"
+                     maxlength="5"
+                     placeholder="e.g. 1.75">
+            </td>
+
+            {# Units — display only #}
+            <td class="text-center text-muted small">{{ row.units }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">No courses were extracted. Try uploading again.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-success">Save to Application</button>
+    <a href="{% url 'applications:edit' application.application_id %}"
+       class="btn btn-secondary">← Back to Edit</a>
+  </div>
+</form>
+
+{% endblock content %}

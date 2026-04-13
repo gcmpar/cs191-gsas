@@ -14,6 +14,17 @@
 
 {% block content %}
 
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div class="d-flex gap-2">
     <a href="{% url 'applications:view' application.application_id %}" class="btn btn-secondary">← Cancel</a>
@@ -29,9 +40,41 @@
 
 {% include "applications/applicant_view.html" %}
 
-<form method="post">
+{# ── Scan TOR card — kept OUTSIDE the main edit form to avoid nested-form issues ── #}
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Scan TOR (PDF)</h5>
+    <button class="btn btn-sm btn-outline-secondary" type="button"
+            data-bs-toggle="collapse" data-bs-target="#scanTorCard">
+      Toggle
+    </button>
+  </div>
+  <div class="collapse show" id="scanTorCard">
+    <div class="card-body">
+      <p class="text-muted small mb-3">
+        Upload a Transcript of Records PDF to automatically extract courses.
+        You will be able to review, edit, and confirm the results before they are saved.
+      </p>
+      <form method="post"
+            action="{% url 'applications:scan_tor' application.application_id %}"
+            enctype="multipart/form-data"
+            id="scanTorForm">
+        {% csrf_token %}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <input type="file" name="tor_pdf" accept=".pdf" class="form-control" style="max-width: 380px;" required>
+          <button type="submit" class="btn btn-primary" id="scanTorBtn">
+            Scan TOR
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{# ── Main edit form ── #}
+<form method="post" id="mainEditForm">
   {% csrf_token %}
-  
+
   <div class="card mb-4">
     <div class="card-header"><h5 class="mb-0">Edit Application #{{ application.application_id }}</h5></div>
     <div class="card-body">
@@ -44,7 +87,7 @@
   <div id="formset-template" style="display: none;">
       {{ formset.empty_form }}
   </div>
-  
+
   <div class="card mb-4">
     <div class="card-header"><h5 class="mb-0">Courses</h5></div>
     <div class="card-body p-0">
@@ -69,7 +112,9 @@
               {% endfor %}
               <td>
                 {% for equiv in equivalences %}
-                  <span class="text-dark" style="cursor:pointer" onclick="window.location='{% url 'applications:view' application.application_id %}'">[{% for course in equiv.group %}{% if course == entry.course %}<span style="text-decoration: underline; font-weight: bold;">{{ course.course_code }}</span>{% else %}{{ course.course_code }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}] equivalent to {{ equiv.target_course.course_code }}</span>
+                  <span class="text-dark" style="cursor:pointer" onclick="window.location='{% url 'applications:view' application.application_id %}'">
+                    [{% for course in equiv.group %}{% if course == entry.course %}<span style="text-decoration: underline; font-weight: bold;">{{ course.course_code }}</span>{% else %}{{ course.course_code }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}] equivalent to {{ equiv.target_course.course_code }}
+                  </span>
                 {% empty %}
                   <span class="text-muted">—</span>
                 {% endfor %}
@@ -80,7 +125,6 @@
         </tbody>
       </table>
       {% bootstrap_formset_errors formset %}
-
     </div>
   </div>
 
@@ -112,12 +156,22 @@
 
 <script>
   let isSubmitting = false;
-  document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', () => {
-          isSubmitting = true;
-      });
+
+  // Set the flag on the main save form.
+  document.getElementById('mainEditForm').addEventListener('submit', function () {
+    isSubmitting = true;
   });
-  window.addEventListener('beforeunload', (e) => {
+
+  // Set the flag on the scan TOR form and show a loading state on the button.
+  document.getElementById('scanTorForm').addEventListener('submit', function () {
+    isSubmitting = true;
+    var btn = document.getElementById('scanTorBtn');
+    btn.disabled = true;
+    btn.textContent = 'Scanning…';
+  });
+
+  // Warn before leaving only if neither form has been submitted.
+  window.addEventListener('beforeunload', function (e) {
     if (!isSubmitting) {
       e.preventDefault();
       e.returnValue = '';

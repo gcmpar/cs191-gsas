@@ -1,13 +1,17 @@
 import json
+import tempfile
+import os
 import openpyxl
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.contrib import messages
 from .models import Application, ApplicationTranscript
 from applicants.models import Applicant
 from .forms import ApplicationForm, ApplicationTranscriptFormSet
-from courses.models import EquivalenceMapCourses
+from courses.models import Course, EquivalenceMapCourses
+from common.ocr import extract_courses_from_pdf
 
 
 SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
@@ -127,6 +131,135 @@ def application_delete(request, application_id):
         application.delete()
         return redirect('applications:search')
     return redirect('applications:edit', application_id=application_id)
+
+
+def application_scan_tor(request, application_id):
+    """POST: Accept a TOR PDF upload, run OCR, store results in session, redirect to preview."""
+    application = get_object_or_404(Application, pk=application_id)
+
+    if request.method != 'POST':
+        return redirect('applications:edit', application_id=application_id)
+
+    uploaded = request.FILES.get('tor_pdf')
+    if not uploaded:
+        messages.error(request, 'No PDF file was uploaded.')
+        return redirect('applications:edit', application_id=application_id)
+
+    if not uploaded.name.lower().endswith('.pdf'):
+        messages.error(request, 'Only PDF files are supported for TOR scanning.')
+        return redirect('applications:edit', application_id=application_id)
+
+    # Write to a temporary file, run OCR, then immediately delete.
+    try:
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+            tmp_path = tmp.name
+            for chunk in uploaded.chunks():
+                tmp.write(chunk)
+
+        courses = extract_courses_from_pdf(tmp_path)
+    except Exception as exc:
+        messages.error(request, f'OCR failed: {exc}')
+        return redirect('applications:edit', application_id=application_id)
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+    if not courses:
+        messages.warning(request, 'No courses could be extracted from the PDF. Please check the file and try again.')
+        return redirect('applications:edit', application_id=application_id)
+
+    request.session[f'ocr_preview_{application_id}'] = courses
+    return redirect('applications:ocr_preview', application_id=application_id)
+
+
+def application_ocr_preview(request, application_id):
+    """GET: Show editable OCR preview table. POST: Save confirmed rows as ApplicationTranscript."""
+    application = get_object_or_404(Application, pk=application_id)
+
+    session_key = f'ocr_preview_{application_id}'
+    scanned_courses = request.session.get(session_key)
+
+    if not scanned_courses:
+        messages.error(request, 'No OCR data found. Please upload the TOR again.')
+        return redirect('applications:edit', application_id=application_id)
+
+    all_courses = Course.objects.select_related('program__school').order_by('course_code')
+
+    if request.method == 'POST':
+        # Collect checked-row indices from the POST data.
+        included_indices = set(request.POST.getlist('include[]'))
+
+        saved = 0
+        errors = []
+        for idx_str in included_indices:
+            try:
+                idx = int(idx_str)
+                row = scanned_courses[idx]
+            except (ValueError, IndexError):
+                continue
+
+            course_id = request.POST.get(f'course_id_{idx}')
+            grade     = request.POST.get(f'grade_{idx}', '').strip()
+
+            if not course_id:
+                errors.append(f"Row {idx + 1}: no course selected, skipped.")
+                continue
+
+            try:
+                course = Course.objects.get(pk=course_id)
+            except Course.DoesNotExist:
+                errors.append(f"Row {idx + 1}: course not found, skipped.")
+                continue
+
+            # Map free-text grade to a valid choice; fall back to closest or skip.
+            valid_grades = [g[0] for g in ApplicationTranscript.Grade.choices]
+            if grade not in valid_grades:
+                grade = 'INC'  # fallback for unrecognisable grades
+
+            # Avoid duplicate transcript entries for the same application+course.
+            ApplicationTranscript.objects.get_or_create(
+                application=application,
+                course=course,
+                defaults={
+                    'academic_year': date.today().year,
+                    'semester':      ApplicationTranscript.Semester.Sem_1,
+                    'grade':         grade,
+                },
+            )
+            saved += 1
+
+        # Clear session data after saving.
+        if session_key in request.session:
+            del request.session[session_key]
+
+        for err in errors:
+            messages.warning(request, err)
+
+        messages.success(request, f'{saved} course(s) added to the transcript.')
+        return redirect('applications:edit', application_id=application_id)
+
+    # GET: build context — attempt auto-match on course_code for each scanned row.
+    rows_context = []
+    for idx, row in enumerate(scanned_courses):
+        # Try exact match first, then case-insensitive prefix.
+        matched_course = (
+            Course.objects.filter(course_code__iexact=row['course_code']).first()
+            or Course.objects.filter(course_code__istartswith=row['course_code'].split()[0]).first()
+        )
+        rows_context.append({
+            'index':           idx,
+            'course_code':     row['course_code'],
+            'description':     row['description'],
+            'grade':           row['grade'],
+            'units':           row['units'],
+            'matched_course':  matched_course,
+        })
+
+    return render(request, 'applications/ocr_preview.html', {
+        'application':  application,
+        'rows':         rows_context,
+        'all_courses':  all_courses,
+    })
 
 
 def batch_import_upload(request):
