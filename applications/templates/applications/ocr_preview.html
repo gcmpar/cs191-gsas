@@ -41,10 +41,10 @@
           <tr>
             <th style="width: 4%;">✓</th>
             <th style="width: 12%;">Scanned Code</th>
-            <th style="width: 20%;">Scanned Course Name</th>
-            <th style="width: 35%;">Course Link</th>
+            <th style="width: 18%;">Scanned Course Name</th>
+            <th style="width: 6%;">Scanned Units</th>
+            <th style="width: 34%;">Course Link</th>
             <th style="width: 10%;">Grade</th>
-            <th style="width: 6%;">Units</th>
           </tr>
         </thead>
         <tbody>
@@ -67,6 +67,9 @@
               <span class="small text-muted">{{ row.description }}</span>
             </td>
 
+            {# Scanned Units — display only, now next to course name #}
+            <td class="text-center text-muted small">{{ row.units }}</td>
+
             {# Course dropdown — auto-selects if a match was found #}
             <td>
               <select name="course_id_{{ row.index }}" class="form-select form-select-sm">
@@ -81,18 +84,18 @@
               </select>
             </td>
 
-            {# Grade — editable, pre-filled from OCR #}
+            {# Grade — dropdown using ApplicationTranscript.Grade choices #}
             <td>
-              <input type="text"
-                     name="grade_{{ row.index }}"
-                     value="{{ row.grade }}"
-                     class="form-control form-control-sm"
-                     maxlength="5"
-                     placeholder="e.g. 1.75">
+              <select name="grade_{{ row.index }}" class="form-select form-select-sm">
+                <option value="" disabled>— Grade —</option>
+                {% for value, label in grade_choices %}
+                  <option value="{{ value }}"
+                    {% if row.grade == value %}selected{% endif %}>
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
             </td>
-
-            {# Units — display only #}
-            <td class="text-center text-muted small">{{ row.units }}</td>
           </tr>
           {% empty %}
           <tr>

@@ -256,9 +256,10 @@ def application_ocr_preview(request, application_id):
         })
 
     return render(request, 'applications/ocr_preview.html', {
-        'application':  application,
-        'rows':         rows_context,
-        'all_courses':  all_courses,
+        'application':   application,
+        'rows':          rows_context,
+        'all_courses':   all_courses,
+        'grade_choices': ApplicationTranscript.Grade.choices,
     })
 
 
