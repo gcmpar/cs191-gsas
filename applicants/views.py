@@ -41,19 +41,39 @@ def applicant_view(request, applicant_id):
     applicant    = get_object_or_404(Applicant, pk=applicant_id)
     applications = Application.objects.filter(applicant=applicant)
 
+    school_map = {}
+    program_map = {}
     course_map = {}
+    
     for app in applications:
-        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course')
+        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course', 'course__program', 'course__program__school')
         for transcript in transcripts:
             c = transcript.course
+            p = c.program
+            s = p.school
+            
+            if s.pk not in school_map:
+                school_map[s.pk] = {'school': s, 'app_ids': set()}
+            school_map[s.pk]['app_ids'].add(app.application_id)
+            
+            if p.pk not in program_map:
+                program_map[p.pk] = {'program': p, 'app_ids': set()}
+            program_map[p.pk]['app_ids'].add(app.application_id)
+
             if c.pk not in course_map:
-                course_map[c.pk] = {'course': c, 'app_ids': []}
-            course_map[c.pk]['app_ids'].append(app.application_id)
+                course_map[c.pk] = {'course': c, 'app_ids': set()}
+            course_map[c.pk]['app_ids'].add(app.application_id)
+
+    school_list = [{'school': v['school'], 'app_ids': sorted(list(v['app_ids']))} for v in school_map.values()]
+    program_list = [{'program': v['program'], 'app_ids': sorted(list(v['app_ids']))} for v in program_map.values()]
+    course_list = [{'course': v['course'], 'app_ids': sorted(list(v['app_ids']))} for v in course_map.values()]
 
     return render(request, 'applicants/view.html', {
         'applicant':    applicant,
         'applications': applications,
-        'course_list':  list(course_map.values()),
+        'school_list':  school_list,
+        'program_list': program_list,
+        'course_list':  course_list,
     })
 
 
@@ -74,14 +94,32 @@ def applicant_edit(request, applicant_id):
     applicant    = get_object_or_404(Applicant, pk=applicant_id)
     applications = Application.objects.filter(applicant=applicant)
 
+    school_map = {}
+    program_map = {}
     course_map = {}
+    
     for app in applications:
-        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course')
+        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course', 'course__program', 'course__program__school')
         for transcript in transcripts:
             c = transcript.course
+            p = c.program
+            s = p.school
+            
+            if s.pk not in school_map:
+                school_map[s.pk] = {'school': s, 'app_ids': set()}
+            school_map[s.pk]['app_ids'].add(app.application_id)
+            
+            if p.pk not in program_map:
+                program_map[p.pk] = {'program': p, 'app_ids': set()}
+            program_map[p.pk]['app_ids'].add(app.application_id)
+
             if c.pk not in course_map:
-                course_map[c.pk] = {'course': c, 'app_ids': []}
-            course_map[c.pk]['app_ids'].append(app.application_id)
+                course_map[c.pk] = {'course': c, 'app_ids': set()}
+            course_map[c.pk]['app_ids'].add(app.application_id)
+
+    school_list = [{'school': v['school'], 'app_ids': sorted(list(v['app_ids']))} for v in school_map.values()]
+    program_list = [{'program': v['program'], 'app_ids': sorted(list(v['app_ids']))} for v in program_map.values()]
+    course_list = [{'course': v['course'], 'app_ids': sorted(list(v['app_ids']))} for v in course_map.values()]
 
     if request.method == 'POST':
         form = ApplicantForm(request.POST, instance=applicant)
@@ -95,7 +133,9 @@ def applicant_edit(request, applicant_id):
         'applicant':    applicant,
         'form':         form,
         'applications': applications,
-        'course_list':  list(course_map.values()),
+        'school_list':  school_list,
+        'program_list': program_list,
+        'course_list':  course_list,
     })
 
 

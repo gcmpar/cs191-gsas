@@ -1,29 +1,91 @@
 <div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Courses across all applications</h5></div>
+  <div class="card-header"><h5 class="mb-0">Previous Schools</h5></div>
   <div class="card-body p-0">
-    <table class="table mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Course Code</th>
-          <th>Course Name</th>
-          <th>Found in Applications</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for entry in course_list %}
-        <tr>
-          <td>{{ entry.course.course_code }}</td>
-          <td>{{ entry.course.course_name }}</td>
-          <td>
-            {% for app_id in entry.app_ids %}
-              <span class="badge bg-secondary">#{{ app_id }}</span>
-            {% endfor %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3" class="text-muted">No courses found.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>School Name</th>
+            <th>Found in Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in school_list %}
+          <tr>
+            <td>{{ entry.school.school_name }}</td>
+            <td>
+              {% for app_id in entry.app_ids %}
+                <span class="badge bg-secondary">#{{ app_id }}</span>
+              {% endfor %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="text-muted">No schools found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Previous Programs</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Program Name</th>
+            <th>Found in Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in program_list %}
+          <tr>
+            <td>{{ entry.program.program_name }}</td>
+            <td>
+              {% for app_id in entry.app_ids %}
+                <span class="badge bg-secondary">#{{ app_id }}</span>
+              {% endfor %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="text-muted">No programs found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Previous Courses</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Course Code</th>
+            <th>Course Name</th>
+            <th>Found in Applications</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in course_list %}
+          <tr>
+            <td>{{ entry.course.course_code }}</td>
+            <td>{{ entry.course.course_name }}</td>
+            <td>
+              {% for app_id in entry.app_ids %}
+                <span class="badge bg-secondary">#{{ app_id }}</span>
+              {% endfor %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-muted">No courses found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

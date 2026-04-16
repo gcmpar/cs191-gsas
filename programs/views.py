@@ -1,4 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
+from django.db.models import Q
+from applications.models import Application
+from courses.models import Course
 from .models import Program
 from .forms import ProgramForm
 
@@ -12,8 +16,38 @@ def programs_search(request):
 
 def program_view(request, program_id):
     program = get_object_or_404(Program.objects.select_related('school'), pk=program_id)
+    
+    courses = Course.objects.filter(program=program)
+    course_search = request.GET.get('course_search', '')
+    if course_search:
+        courses = courses.filter(
+            Q(course_code__icontains=course_search) |
+            Q(course_name__icontains=course_search) |
+            Q(description__icontains=course_search)
+        )
+    course_paginator = Paginator(courses, 10)
+    course_page_number = request.GET.get('course_page')
+    courses_page = course_paginator.get_page(course_page_number)
+    
+    applications = Application.objects.filter(applicationtranscript__course__program=program).select_related('applicant').distinct()
+    applicant_search = request.GET.get('applicant_search', '')
+    if applicant_search:
+        applications = applications.filter(
+            Q(applicant__first_name__icontains=applicant_search) |
+            Q(applicant__last_name__icontains=applicant_search) |
+            Q(application_number__icontains=applicant_search)
+        )
+    
+    applicant_paginator = Paginator(applications, 10)
+    applicant_page_number = request.GET.get('applicant_page')
+    applicants_page = applicant_paginator.get_page(applicant_page_number)
+    
     return render(request, 'programs/view.html', {
         'program': program,
+        'courses_page': courses_page,
+        'course_search': course_search,
+        'applicants_page': applicants_page,
+        'applicant_search': applicant_search,
     })
 
 
