@@ -78,7 +78,11 @@
                   <option value="{{ course.course_id }}"
                     {% if row.matched_course and row.matched_course.course_id == course.course_id %}selected{% endif %}>
                     {{ course.course_code }} — {{ course.course_name }}
-                    ({{ course.program.school.school_name }})
+                    (
+                    {% for program in course.programs.all %}
+                      {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    )
                   </option>
                 {% endfor %}
               </select>

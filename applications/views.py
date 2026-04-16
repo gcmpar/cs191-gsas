@@ -183,7 +183,7 @@ def application_ocr_preview(request, application_id):
         messages.error(request, 'No OCR data found. Please upload the TOR again.')
         return redirect('applications:edit', application_id=application_id)
 
-    all_courses = Course.objects.select_related('program__school').order_by('course_code')
+    all_courses = Course.objects.prefetch_related('programs__school').order_by('course_code')
 
     if request.method == 'POST':
         # Collect checked-row indices from the POST data.

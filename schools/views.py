@@ -28,7 +28,7 @@ def school_view(request, school_id):
     program_page_number = request.GET.get('program_page')
     programs_page = program_paginator.get_page(program_page_number)
     
-    applications = Application.objects.filter(applicationtranscript__course__program__school=school).select_related('applicant').distinct()
+    applications = Application.objects.filter(applicationtranscript__course__programs__school=school).select_related('applicant').distinct()
     applicant_search = request.GET.get('applicant_search', '')
     if applicant_search:
         applications = applications.filter(

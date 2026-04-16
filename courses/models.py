@@ -6,7 +6,7 @@ from programs.models import Program
 class Course(models.Model):
 
     course_id       = models.AutoField('Course Id', primary_key=True)
-    program         = models.ForeignKey(Program, on_delete=models.CASCADE)
+    programs        = models.ManyToManyField(Program, related_name='courses')
     course_code     = models.CharField('Course Code', max_length=20)
     course_name     = models.CharField('Course Name', max_length=50)
     units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(1)])

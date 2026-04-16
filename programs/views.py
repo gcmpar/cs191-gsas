@@ -17,7 +17,7 @@ def programs_search(request):
 def program_view(request, program_id):
     program = get_object_or_404(Program.objects.select_related('school'), pk=program_id)
     
-    courses = Course.objects.filter(program=program)
+    courses = Course.objects.filter(programs=program)
     course_search = request.GET.get('course_search', '')
     if course_search:
         courses = courses.filter(
@@ -29,7 +29,7 @@ def program_view(request, program_id):
     course_page_number = request.GET.get('course_page')
     courses_page = course_paginator.get_page(course_page_number)
     
-    applications = Application.objects.filter(applicationtranscript__course__program=program).select_related('applicant').distinct()
+    applications = Application.objects.filter(applicationtranscript__course__programs=program).select_related('applicant').distinct()
     applicant_search = request.GET.get('applicant_search', '')
     if applicant_search:
         applications = applications.filter(

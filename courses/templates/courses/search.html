@@ -33,8 +33,20 @@
           <td>{{ course.course_id }}</td>
           <td>{{ course.course_code }}</td>
           <td>{{ course.course_name }}</td>
-          <td>{{ course.program.school.school_name }}</td>
-          <td>{{ course.program.program_name }}</td>
+          <td>
+            {% for program in course.programs.all %}
+              {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              &mdash;
+            {% endfor %}
+          </td>
+          <td>
+            {% for program in course.programs.all %}
+              {{ program.program_name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              &mdash;
+            {% endfor %}
+          </td>
           <td>{{ course.units }}</td>
         </tr>
         {% empty %}

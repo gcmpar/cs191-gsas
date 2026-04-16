@@ -8,7 +8,7 @@ from .forms import CourseForm
 
 
 def courses_search(request):
-    courses = Course.objects.select_related('program__school').all()
+    courses = Course.objects.prefetch_related('programs__school').all()
     return render(request, 'courses/search.html', {
         'courses': courses,
     })
@@ -16,7 +16,7 @@ def courses_search(request):
 
 def course_view(request, course_id):
     course = get_object_or_404(
-        Course.objects.select_related('program__school'),
+        Course.objects.prefetch_related('programs__school'),
         pk=course_id
     )
     return render(request, 'courses/view.html', {
@@ -69,10 +69,11 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
 
         grouped = {}
         for course in context['object_list']:
-            group_name = f'{course.program.school.school_name} - {course.program.program_name}'
-            if group_name not in grouped:
-                grouped[group_name] = []
-            grouped[group_name].append(self.widget.result_from_instance(course, request))
+            for program in course.programs.all():
+                group_name = f'{program.school.school_name} - {program.program_name}'
+                if group_name not in grouped:
+                    grouped[group_name] = []
+                grouped[group_name].append(self.widget.result_from_instance(course, request))
             
         return JsonResponse(
             {

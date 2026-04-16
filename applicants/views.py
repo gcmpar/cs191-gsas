@@ -46,23 +46,24 @@ def applicant_view(request, applicant_id):
     course_map = {}
     
     for app in applications:
-        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course', 'course__program', 'course__program__school')
+        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course').prefetch_related('course__programs__school')
         for transcript in transcripts:
             c = transcript.course
-            p = c.program
-            s = p.school
             
-            if s.pk not in school_map:
-                school_map[s.pk] = {'school': s, 'app_ids': set()}
-            school_map[s.pk]['app_ids'].add(app.application_id)
-            
-            if p.pk not in program_map:
-                program_map[p.pk] = {'program': p, 'app_ids': set()}
-            program_map[p.pk]['app_ids'].add(app.application_id)
-
             if c.pk not in course_map:
                 course_map[c.pk] = {'course': c, 'app_ids': set()}
             course_map[c.pk]['app_ids'].add(app.application_id)
+
+            for p in c.programs.all():
+                s = p.school
+                
+                if s.pk not in school_map:
+                    school_map[s.pk] = {'school': s, 'app_ids': set()}
+                school_map[s.pk]['app_ids'].add(app.application_id)
+                
+                if p.pk not in program_map:
+                    program_map[p.pk] = {'program': p, 'app_ids': set()}
+                program_map[p.pk]['app_ids'].add(app.application_id)
 
     school_list = [{'school': v['school'], 'app_ids': sorted(list(v['app_ids']))} for v in school_map.values()]
     program_list = [{'program': v['program'], 'app_ids': sorted(list(v['app_ids']))} for v in program_map.values()]
@@ -99,23 +100,24 @@ def applicant_edit(request, applicant_id):
     course_map = {}
     
     for app in applications:
-        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course', 'course__program', 'course__program__school')
+        transcripts = ApplicationTranscript.objects.filter(application=app).select_related('course').prefetch_related('course__programs__school')
         for transcript in transcripts:
             c = transcript.course
-            p = c.program
-            s = p.school
             
-            if s.pk not in school_map:
-                school_map[s.pk] = {'school': s, 'app_ids': set()}
-            school_map[s.pk]['app_ids'].add(app.application_id)
-            
-            if p.pk not in program_map:
-                program_map[p.pk] = {'program': p, 'app_ids': set()}
-            program_map[p.pk]['app_ids'].add(app.application_id)
-
             if c.pk not in course_map:
                 course_map[c.pk] = {'course': c, 'app_ids': set()}
             course_map[c.pk]['app_ids'].add(app.application_id)
+
+            for p in c.programs.all():
+                s = p.school
+                
+                if s.pk not in school_map:
+                    school_map[s.pk] = {'school': s, 'app_ids': set()}
+                school_map[s.pk]['app_ids'].add(app.application_id)
+                
+                if p.pk not in program_map:
+                    program_map[p.pk] = {'program': p, 'app_ids': set()}
+                program_map[p.pk]['app_ids'].add(app.application_id)
 
     school_list = [{'school': v['school'], 'app_ids': sorted(list(v['app_ids']))} for v in school_map.values()]
     program_list = [{'program': v['program'], 'app_ids': sorted(list(v['app_ids']))} for v in program_map.values()]

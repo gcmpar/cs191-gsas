@@ -22,8 +22,20 @@
 <div class="card mb-4">
   <div class="card-header"><h5 class="mb-0">Current Program</h5></div>
   <div class="card-body">
-    <p class="mb-1"><strong>School:</strong> {{ course.program.school.school_name }}</p>
-    <p class="mb-0"><strong>Program:</strong> {{ course.program.program_name }}</p>
+    <p class="mb-1"><strong>Schools:</strong>
+      {% for program in course.programs.all %}
+        {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        &mdash;
+      {% endfor %}
+    </p>
+    <p class="mb-0"><strong>Programs:</strong>
+      {% for program in course.programs.all %}
+        {{ program.program_name }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        &mdash;
+      {% endfor %}
+    </p>
   </div>
 </div>
 

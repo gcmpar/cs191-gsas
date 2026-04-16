@@ -10,9 +10,9 @@ COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
 class CourseForm(ModelForm):
     class Meta:
         model = Course
-        fields = ['program', 'course_code', 'course_name', 'units', 'description']
+        fields = ['programs', 'course_code', 'course_name', 'units', 'description']
         widgets = {
-            'program':     widgets.Select(attrs={'class': 'form-select'}),
+            'programs':    widgets.CheckboxSelectMultiple(),
             'course_code': widgets.TextInput(attrs={'class': 'form-control'}),
             'course_name': widgets.TextInput(attrs={'class': 'form-control'}),
             'units':       widgets.NumberInput(attrs={'class': 'form-control'}),
@@ -21,8 +21,8 @@ class CourseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['program'].queryset = Program.objects.select_related('school').all()
-        self.fields['program'].label_from_instance = lambda obj: f"{obj.school.school_name} — {obj.program_name}"
+        self.fields['programs'].queryset = Program.objects.select_related('school').all()
+        self.fields['programs'].label_from_instance = lambda obj: f"{obj.school.school_name} — {obj.program_name}"
 
 class CoursesWidget(ModelSelect2Widget):
     model = Course
@@ -30,7 +30,7 @@ class CoursesWidget(ModelSelect2Widget):
     data_url = reverse_lazy('courses:select2_courses_grouped')
 
     def get_queryset(self):
-        return Course.objects.select_related('program__school').all()
+        return Course.objects.prefetch_related('programs__school').all()
 
     def label_from_instance(self, course):
         return f"{course.course_code} - {course.course_name}"
