@@ -72,6 +72,43 @@
   </div>
 </div>
 
+{# ── Prerequisite Mappings ── #}
+<div class="card mb-4" id="prereq-mappings-section">
+  <div class="card-header"><h5 class="mb-0">Prerequisite Mappings</h5></div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Source Courses</th>
+          <th></th>
+          <th>Target Prerequisite</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app_mapping in app_prereq_mappings %}
+        <tr>
+          <td>
+            {% for src in app_mapping.mapping.source_courses.all %}
+              <a href="{% url 'courses:view' src.course.course_id %}">
+                <span class="badge bg-secondary">{{ src.course.course_code }}</span>
+              </a>
+            {% endfor %}
+          </td>
+          <td>→</td>
+          <td>
+            <a href="{% url 'courses:view' app_mapping.mapping.target_course.course_id %}">
+              <strong>{{ app_mapping.mapping.target_course.course_code }}</strong>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-muted">No mappings applied yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 {% endblock content %}
 
 
