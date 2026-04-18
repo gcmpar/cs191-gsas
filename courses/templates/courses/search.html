@@ -28,20 +28,28 @@
       </thead>
       <tbody>
         {% for course in courses %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'courses:view' course.course_id %}'">
+        <tr>
           <td>{{ course.course_id }}</td>
-          <td>{{ course.course_code }}</td>
-          <td>{{ course.course_name }}</td>
+          <td>
+            <a href="{% url 'courses:view' course.course_id %}">{{ course.course_code }}</a>
+          </td>
+          <td>
+            <a href="{% url 'courses:view' course.course_id %}">{{ course.course_name }}</a>
+          </td>
           <td>
             {% for program in course.programs.all %}
-              {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
+              <a href="{% url 'schools:view' program.school.school_id %}">
+                {{ program.school.school_name }}
+              </a>{% if not forloop.last %}, {% endif %}
             {% empty %}
               &mdash;
             {% endfor %}
           </td>
           <td>
             {% for program in course.programs.all %}
-              {{ program.program_name }}{% if not forloop.last %}, {% endif %}
+              <a href="{% url 'programs:view' program.program_id %}">
+                {{ program.program_name }}
+              </a>{% if not forloop.last %}, {% endif %}
             {% empty %}
               &mdash;
             {% endfor %}

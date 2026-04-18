@@ -24,16 +24,20 @@
       <hr>
       <p><strong>Schools:</strong>
         {% for program in course.programs.all %}
-        {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
+          <a href="{% url 'schools:view' program.school.school_id %}">
+            {{ program.school.school_name }}
+          </a>{% if not forloop.last %}, {% endif %}
         {% empty %}
-        &mdash;
+          &mdash;
         {% endfor %}
       </p>
       <p><strong>Programs:</strong>
         {% for program in course.programs.all %}
-        {{ program.program_name }}{% if not forloop.last %}, {% endif %}
+          <a href="{% url 'programs:view' program.program_id %}">
+            {{ program.program_name }}
+          </a>{% if not forloop.last %}, {% endif %}
         {% empty %}
-        &mdash;
+          &mdash;
         {% endfor %}
       </p>
     </div>

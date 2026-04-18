@@ -12,7 +12,11 @@
         <tbody>
           {% for entry in school_list %}
           <tr>
-            <td>{{ entry.school.school_name }}</td>
+            <td>
+              <a href="{% url 'schools:view' entry.school.school_id %}">
+                {{ entry.school.school_name }}
+              </a>
+            </td>
             <td>
               {% for app_id in entry.app_ids %}
                 <span class="badge bg-secondary">#{{ app_id }}</span>
@@ -42,7 +46,11 @@
         <tbody>
           {% for entry in program_list %}
           <tr>
-            <td>{{ entry.program.program_name }}</td>
+            <td>
+              <a href="{% url 'programs:view' entry.program.program_id %}">
+                {{ entry.program.program_name }}
+              </a>
+            </td>
             <td>
               {% for app_id in entry.app_ids %}
                 <span class="badge bg-secondary">#{{ app_id }}</span>
@@ -67,14 +75,42 @@
           <tr>
             <th>Course Code</th>
             <th>Course Name</th>
+            <th>School</th>
+            <th>Program(s)</th>
             <th>Found in Applications</th>
           </tr>
         </thead>
         <tbody>
           {% for entry in course_list %}
           <tr>
-            <td>{{ entry.course.course_code }}</td>
-            <td>{{ entry.course.course_name }}</td>
+            <td>
+              <a href="{% url 'courses:view' entry.course.course_id %}">
+                {{ entry.course.course_code }}
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'courses:view' entry.course.course_id %}">
+                {{ entry.course.course_name }}
+              </a>
+            </td>
+            <td>
+              {% for program in entry.course.programs.all %}
+                <a href="{% url 'schools:view' program.school.school_id %}">
+                  {{ program.school.school_name }}
+                </a>{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                &mdash;
+              {% endfor %}
+            </td>
+            <td>
+              {% for program in entry.course.programs.all %}
+                <a href="{% url 'programs:view' program.program_id %}">
+                  {{ program.program_name }}
+                </a>{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                &mdash;
+              {% endfor %}
+            </td>
             <td>
               {% for app_id in entry.app_ids %}
                 <span class="badge bg-secondary">#{{ app_id }}</span>
@@ -82,7 +118,7 @@
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="3" class="text-muted">No courses found.</td></tr>
+          <tr><td colspan="5" class="text-muted">No courses found.</td></tr>
           {% endfor %}
         </tbody>
       </table>
