@@ -48,7 +48,11 @@
               <tbody>
                 {% for program in programs_page %}
                 <tr>
-                  <td>{{ program.program_name }}</td>
+                  <td>
+                    <a href="{% url 'programs:view' program.program_id %}">
+                      {{ program.program_name }}
+                    </a>
+                  </td>
                   <td>{{ program.description|default:"—" }}</td>
                 </tr>
                 {% empty %}
