@@ -43,4 +43,67 @@
     </div>
   </div>
 
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Equivalence Mappings</h5>
+    </div>
+    <div class="card-body">
+      
+      <h6>Equivalence Groups this Course is part of (Source)</h6>
+      <ul>
+        {% for map_course in member_of_maps %}
+          <li>
+            Mapping to <strong><a href="{% url 'courses:view' map_course.map.target_course.course_id %}">{{ map_course.map.target_course.course_code }}</a></strong> 
+            (together with: 
+            {% for c in map_course.map.equivalencemapcourses_set.all %}
+              {% if c.course.course_id != course.course_id %}
+                <a href="{% url 'courses:view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %}, {% endif %}
+              {% endif %}
+            {% endfor %})
+          </li>
+        {% empty %}
+          <li class="text-muted">None</li>
+        {% endfor %}
+      </ul>
+
+      <hr>
+
+      <h6>Equivalence Groups equivalent to this Course (Target)</h6>
+      <ul>
+        {% for m in equivalent_to_this %}
+          <li>
+            {% for c in m.equivalencemapcourses_set.all %}
+              <a href="{% url 'courses:view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %} + {% endif %}
+            {% endfor %}
+            = <strong>{{ course.course_code }}</strong>
+          </li>
+        {% empty %}
+          <li class="text-muted">None</li>
+        {% endfor %}
+      </ul>
+
+      <hr>
+
+      <h6>Create Equivalence Mapping equivalent to this Course</h6>
+      <form method="post" action="{% url 'courses:save_equivalence' course.course_id %}" class="row gx-2 gy-2 align-items-end">
+        {% csrf_token %}
+        <div class="col-md-9">
+          <label class="form-label small">Source Courses</label>
+          <select name="source_course_ids[]" class="form-select form-select-sm" multiple required>
+            {% for c in all_courses %}
+              {% if c.course_id != course.course_id %}
+              <option value="{{ c.course_id }}">{{ c.course_code }} - {{ c.course_name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <div class="form-text mt-0" style="font-size: 0.75rem;">Hold Ctrl/Cmd to select multiple.</div>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-sm btn-success w-100">Save new mapping</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
 {% endblock content %}
