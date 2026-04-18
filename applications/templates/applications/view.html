@@ -51,8 +51,8 @@
       <tbody>
         {% for entry, equivalences in transcript_entries.items %}
         <tr>
-          <td>{{ entry.course.course_code }}</td>
-          <td>{{ entry.course.course_name }}</td>
+          <td><a href="{% url 'courses:view' entry.course.course_id %}">{{ entry.course.course_code }}</a></td>
+          <td><a href="{% url 'courses:view' entry.course.course_id %}">{{ entry.course.course_name }}</a></td>
           <td>{{ entry.academic_year }}</td>
           <td>{{ entry.semester }}</td>
           <td>{{ entry.grade }}</td>
