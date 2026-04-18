@@ -19,7 +19,11 @@
       </div>
       <div class="card-body">
         <p><strong>Program Name:</strong> {{ program.program_name }}</p>
-        <p><strong>School:</strong> {{ program.school.school_name }}</p>
+        <p><strong>School:</strong>
+          <a href="{% url 'schools:view' program.school.school_id %}">
+            {{ program.school.school_name }}
+          </a>
+        </p>
         <p><strong>Description:</strong> {{ program.description }}</p>
       </div>
     </div>
@@ -51,7 +55,11 @@
               <tbody>
                 {% for course in courses_page %}
                 <tr>
-                  <td>{{ course.course_code }}</td>
+                  <td>
+                    <a href="{% url 'courses:view' course.course_id %}">
+                      {{ course.course_code }}
+                    </a>
+                  </td>
                   <td>
                     <a href="{% url 'courses:view' course.course_id %}">
                       {{ course.course_name }}
