@@ -1,0 +1,14 @@
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'general' %}active{% endif %}" 
+       href="{% if mode == 'edit' %}{% url 'courses:edit' course.course_id %}{% else %}{% url 'courses:view' course.course_id %}{% endif %}">
+       General Info
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'equiv' %}active{% endif %}" 
+       href="{% if mode == 'edit' %}{% url 'courses:equiv_edit' course.course_id %}{% else %}{% url 'courses:equiv_view' course.course_id %}{% endif %}">
+       Equivalence Mapping
+    </a>
+  </li>
+</ul>

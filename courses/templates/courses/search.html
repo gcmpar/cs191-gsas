@@ -12,8 +12,50 @@
   </div>
 </div>
 
+{% querystring page=None as filters %}
 <div class="card">
-  <div class="card-header"><h5 class="mb-0">All Courses</h5></div>
+  <div class="card-header d-flex justify-content-between align-items-center p-0">
+
+    <div class="d-flex p-3 gap-3 align-items-center flex-wrap">
+      <h5 class="mb-0">All Courses</h5>
+
+      <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
+        <input type="text" name="search" class="form-control form-control-sm" style="width:200px;"
+               placeholder="Search code / name…"
+               {% if search_query %}value="{{ search_query }}"{% endif %}>
+
+        <select name="school" class="form-select form-select-sm" style="width:220px;">
+          <option value="">— All Schools —</option>
+          {% for school in all_schools %}
+          <option value="{{ school.school_id }}"
+            {% if filter_school == school.school_id|stringformat:"s" %}selected{% endif %}>
+            {{ school.school_name }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <select name="program" class="form-select form-select-sm" style="width:220px;">
+          <option value="">— All Programs —</option>
+          {% for program in all_programs %}
+          <option value="{{ program.program_id }}"
+            {% if filter_program == program.program_id|stringformat:"s" %}selected{% endif %}>
+            {{ program.school.school_name }} — {{ program.program_name }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+        {% if search_query or filter_school or filter_program %}
+          <a href="{% url 'courses:search' %}" class="btn btn-sm btn-secondary">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="d-flex ms-auto pe-3">
+      {% bootstrap_pagination courses_page pages_to_show=5 extra=filters %}
+    </div>
+  </div>
+
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
       <thead class="table-dark">
@@ -27,19 +69,15 @@
         </tr>
       </thead>
       <tbody>
-        {% for course in courses %}
-        <tr>
+        {% for course in courses_page %}
+        <tr style="cursor:pointer;" onclick="window.location='{% url 'courses:view' course.course_id %}'">
           <td>{{ course.course_id }}</td>
+          <td>{{ course.course_code }}</td>
+          <td>{{ course.course_name }}</td>
           <td>
-            <a href="{% url 'courses:view' course.course_id %}">{{ course.course_code }}</a>
-          </td>
-          <td>
-            <a href="{% url 'courses:view' course.course_id %}">{{ course.course_name }}</a>
-          </td>
-          <td>
-            {% for program in course.programs.all %}
-              <a href="{% url 'schools:view' program.school.school_id %}">
-                {{ program.school.school_name }}
+            {% for school in course.unique_schools %}
+              <a href="{% url 'schools:view' school.school_id %}" onclick="event.stopPropagation();">
+                {{ school.school_name }}
               </a>{% if not forloop.last %}, {% endif %}
             {% empty %}
               &mdash;
@@ -47,7 +85,7 @@
           </td>
           <td>
             {% for program in course.programs.all %}
-              <a href="{% url 'programs:view' program.program_id %}">
+              <a href="{% url 'programs:view' program.program_id %}" onclick="event.stopPropagation();">
                 {{ program.program_name }}
               </a>{% if not forloop.last %}, {% endif %}
             {% empty %}
@@ -61,6 +99,9 @@
         {% endfor %}
       </tbody>
     </table>
+    <div class="d-flex justify-content-end">
+      {% bootstrap_pagination courses_page pages_to_show=5 extra=filters %}
+    </div>
   </div>
 </div>
 

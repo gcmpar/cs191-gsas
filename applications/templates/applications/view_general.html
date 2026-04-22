@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Application #{{ application.application_id }} - General{% endblock title %}
+
+{% block content %}
+
+{% include "applications/navigation_tabs.html" %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+  </div>
+  <a href="{% url 'applications:edit' application.application_id %}" class="btn btn-primary">Edit General Info</a>
+</div>
+
+{% include "applications/applicant_view.html" %}
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Application #{{ application.application_id }}</h5></div>
+  <div class="card-body">
+    <p><strong>Application Number:</strong> {{ application.application_number }}</p>
+    <p><strong>Status:</strong> {{ application.application_status }}</p>
+    <p><strong>Date Applied:</strong> {{ application.date_applied }}</p>
+    <p><strong>Program:</strong> {{ application.program }}</p>
+    <p><strong>Study Load:</strong> {{ application.study_load }}</p>
+    <p><strong>Folder Link:</strong> <a href="{{ application.folder_link }}" target="_blank">{{ application.folder_link }}</a></p>
+    <p><strong>Notes:</strong> {{ application.notes|default:"—" }}</p>
+  </div>
+</div>
+
+{% endblock content %}

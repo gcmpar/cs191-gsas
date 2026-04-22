@@ -12,6 +12,17 @@ class Course(models.Model):
     units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(1)])
     description     = models.CharField('Description', max_length=200)
 
+    @property
+    def unique_schools(self):
+        seen = set()
+        schools = []
+        for program in self.programs.all():
+            school = program.school
+            if school.school_id not in seen:
+                seen.add(school.school_id)
+                schools.append(school)
+        return schools
+
     class Meta:
         db_table = 'course'
 

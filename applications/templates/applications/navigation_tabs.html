@@ -1,0 +1,20 @@
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'general' %}active{% endif %}" 
+       href="{% if mode == 'edit' %}{% url 'applications:edit' application.application_id %}{% else %}{% url 'applications:view' application.application_id %}{% endif %}">
+       General
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'transcripts' %}active{% endif %}" 
+       href="{% if mode == 'edit' %}{% url 'applications:transcripts_edit' application.application_id %}{% else %}{% url 'applications:transcripts_view' application.application_id %}{% endif %}">
+       Past Course Transcripts
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'prereq' %}active{% endif %}" 
+       href="{% if mode == 'edit' %}{% url 'applications:prereq_edit' application.application_id %}{% else %}{% url 'applications:prereq_view' application.application_id %}{% endif %}">
+       Prerequisite Mapping
+    </a>
+  </li>
+</ul>

@@ -8,9 +8,20 @@ from applications.models import Application
 
 
 def schools_search(request):
+    query = request.GET.get('search', '')
     schools = School.objects.all()
+
+    if query:
+        schools = schools.filter(Q(school_name__icontains=query))
+
+    schools = schools.order_by('school_id')
+    paginator = Paginator(schools, 15)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+
     return render(request, 'schools/search.html', {
-        'schools': schools,
+        'schools_page': page,
+        'search_query': query,
     })
 
 

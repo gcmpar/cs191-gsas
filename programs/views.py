@@ -8,9 +8,31 @@ from .forms import ProgramForm
 
 
 def programs_search(request):
+    from schools.models import School
+    query = request.GET.get('search', '')
+    filter_school = request.GET.get('school', '')
+
     programs = Program.objects.select_related('school').all()
+
+    if query:
+        programs = programs.filter(
+            Q(program_name__icontains=query) | Q(description__icontains=query)
+        )
+    if filter_school:
+        programs = programs.filter(school__school_id=filter_school)
+
+    programs = programs.order_by('program_id')
+    paginator = Paginator(programs, 15)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+
+    all_schools = School.objects.all().order_by('school_name')
+
     return render(request, 'programs/search.html', {
-        'programs': programs,
+        'programs_page': page,
+        'search_query': query,
+        'filter_school': filter_school,
+        'all_schools': all_schools,
     })
 
 

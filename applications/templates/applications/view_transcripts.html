@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Application #{{ application.application_id }} - Transcripts{% endblock title %}
+
+{% block content %}
+
+{% include "applications/navigation_tabs.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+  </div>
+  <a href="{% url 'applications:transcripts_edit' application.application_id %}" class="btn btn-primary">Edit Transcripts</a>
+</div>
+
+{% include "applications/applicant_view.html" %}
+
+<div class="card mb-4">
+  <div class="card-header"><h5 class="mb-0">Past Course Transcripts</h5></div>
+  <div class="card-body p-0">
+    <table class="table mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Course Code</th>
+          <th>Course Name</th>
+          <th>AY</th>
+          <th>Semester</th>
+          <th>Grade</th>
+          <th>Equivalences</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry, equivalences in transcript_entries.items %}
+        <tr>
+          <td><a href="{% url 'courses:view' entry.course.course_id %}">{{ entry.course.course_code }}</a></td>
+          <td><a href="{% url 'courses:view' entry.course.course_id %}">{{ entry.course.course_name }}</a></td>
+          <td>{{ entry.academic_year }}</td>
+          <td>{{ entry.semester }}</td>
+          <td>{{ entry.grade }}</td>
+          <td>
+            {% for equiv in equivalences %}
+              <span class="text-dark" style="cursor:pointer" onclick="window.location='{% url 'applications:transcripts_view' application.application_id %}'">[{% for course in equiv.group %}{% if course == entry.course %}<span style="text-decoration: underline; font-weight: bold;">{{ course.course_code }}</span>{% else %}{{ course.course_code }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}] equivalent to {{ equiv.target_course.course_code }}</span>
+            {% empty %}
+              <span class="text-muted">—</span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-muted">No transcript entries.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock content %}

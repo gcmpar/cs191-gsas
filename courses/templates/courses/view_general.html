@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Course #{{ course.course_id }} - General{% endblock title %}
+
+{% block content %}
+
+{% include "courses/navigation_tabs.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'courses:search' %}" class="btn btn-secondary">← Courses</a>
+  </div>
+  <a href="{% url 'courses:edit' course.course_id %}" class="btn btn-primary">Edit General Info</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Course #{{ course.course_id }}</h5>
+  </div>
+  <div class="card-body">
+    <p><strong>Course Code:</strong> {{ course.course_code }}</p>
+    <p><strong>Course Name:</strong> {{ course.course_name }}</p>
+    <p><strong>Units:</strong> {{ course.units }}</p>
+    <p><strong>Description:</strong> {{ course.description }}</p>
+    <hr>
+    <p><strong>Schools:</strong>
+      {% for school in course.unique_schools %}
+      <a href="{% url 'schools:view' school.school_id %}">
+        {{ school.school_name }}
+      </a>{% if not forloop.last %}, {% endif %}
+      {% empty %}
+      &mdash;
+      {% endfor %}
+    </p>
+    <p><strong>Programs:</strong>
+      {% for program in course.programs.all %}
+      <a href="{% url 'programs:view' program.program_id %}">
+        {{ program.program_name }}
+      </a>{% if not forloop.last %}, {% endif %}
+      {% empty %}
+      &mdash;
+      {% endfor %}
+    </p>
+  </div>
+</div>
+
+{% endblock content %}

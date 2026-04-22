@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Edit Course #{{ course.course_id }} - Equivalence Mapping{% endblock title %}
+
+{% block extra_head %}
+{{ new_map_formset.media.css }}
+{% endblock extra_head %}
+
+{% block content %}
+
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% include "courses/navigation_tabs.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'courses:equiv_view' course.course_id %}" class="btn btn-secondary">← Cancel</a>
+  </div>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+
+  <h4 class="mb-4">Edit Equivalence Mappings for {{ course.course_code }}</h4>
+
+  {% for map_obj, map_formset in map_formsets %}
+    {{ map_formset.management_form }}
+    <div class="card mb-4 border-primary">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Existing Mapping (ID: {{ map_obj.map_id }})</h5>
+        <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('delete-map-{{ map_obj.map_id }}').submit();">
+          Delete Entire Mapping
+        </button>
+      </div>
+      <div class="card-body p-0">
+        <table class="table mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Source Course</th>
+              <th style="width: 100px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for eform in map_formset %}
+            <tr class="equiv-row-tr-{{ map_obj.map_id }}">
+              {% for field in eform.visible_fields %}
+                {% if field.name != 'DELETE' %}
+                <td>{% bootstrap_field field show_label=False %}</td>
+                {% endif %}
+              {% endfor %}
+              <td>{{ eform.DELETE }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% bootstrap_formset_errors map_formset %}
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="card mb-4 border-success">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Add New Mapping</h5>
+    </div>
+    <div class="card-body p-0">
+      {{ new_map_formset.management_form }}
+      <table class="table mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Source Course</th>
+            <th style="width: 100px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for nform in new_map_formset %}
+          <tr class="new-equiv-row-tr">
+            {% for field in nform.visible_fields %}
+              {% if field.name != 'DELETE' %}
+              <td>{% bootstrap_field field show_label=False %}</td>
+              {% endif %}
+            {% endfor %}
+            <td>{{ nform.DELETE }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% bootstrap_formset_errors new_map_formset %}
+      <div class="p-3 text-muted small">
+        Filling out rows in this section will create a <strong>new</strong> mapping group targeting {{ course.course_code }}.
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-lg w-100">Save All Changes</button>
+</form>
+
+{# Hidden forms for entirely deleting a mapping #}
+{% for map_obj, _ in map_formsets %}
+<form id="delete-map-{{ map_obj.map_id }}" method="post" action="{% url 'courses:delete_equivalence' course.course_id map_obj.map_id %}" style="display:none;">
+    {% csrf_token %}
+</form>
+{% endfor %}
+
+{% endblock content %}
+
+{% block extra_javascript %}
+<script src="{% static 'js/jquery.formset.js' %}"></script>
+<script>
+  $(function () {
+    // Initialise jquery.formset.js for EACH existing mapping formset
+    {% for map_obj, map_formset in map_formsets %}
+      $('.equiv-row-tr-{{ map_obj.map_id }}').formset({
+        addText: 'add course to mapping',
+        deleteText: 'remove',
+        prefix: '{{ map_formset.prefix }}',
+        added: function (row) {
+          row.find('.django-select2').val(null).trigger('change').djangoSelect2();
+        }
+      });
+    {% endfor %}
+
+    // Initialise jquery.formset.js for the NEW mapping formset
+    $('.new-equiv-row-tr').formset({
+      addText: 'add course to new mapping',
+      deleteText: 'remove',
+      prefix: '{{ new_map_formset.prefix }}',
+      added: function (row) {
+        row.find('.django-select2').val(null).trigger('change').djangoSelect2();
+      }
+    });
+  });
+</script>
+{{ new_map_formset.media.js }}
+{% endblock extra_javascript %}

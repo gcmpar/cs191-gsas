@@ -12,8 +12,29 @@
   </div>
 </div>
 
+{% querystring page=None as filters %}
 <div class="card">
-  <div class="card-header"><h5 class="mb-0">All Schools</h5></div>
+  <div class="card-header d-flex justify-content-between align-items-center p-0">
+
+    <div class="d-flex p-3 gap-3 align-items-center flex-wrap">
+      <h5 class="mb-0">All Schools</h5>
+
+      <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
+        <input type="text" name="search" class="form-control form-control-sm" style="width:200px;"
+               placeholder="Search school name…"
+               {% if search_query %}value="{{ search_query }}"{% endif %}>
+        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+        {% if search_query %}
+          <a href="{% url 'schools:search' %}" class="btn btn-sm btn-secondary">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="d-flex ms-auto pe-3">
+      {% bootstrap_pagination schools_page pages_to_show=5 extra=filters %}
+    </div>
+  </div>
+
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
       <thead class="table-dark">
@@ -23,7 +44,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for school in schools %}
+        {% for school in schools_page %}
         <tr style="cursor:pointer" onclick="window.location='{% url 'schools:view' school.school_id %}'">
           <td>{{ school.school_id }}</td>
           <td>{{ school.school_name }}</td>
@@ -33,6 +54,9 @@
         {% endfor %}
       </tbody>
     </table>
+    <div class="d-flex justify-content-end">
+      {% bootstrap_pagination schools_page pages_to_show=5 extra=filters %}
+    </div>
   </div>
 </div>
 
