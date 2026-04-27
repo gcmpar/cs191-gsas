@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import School
-from .forms import SchoolForm, SchoolsFilterForm
+from .forms import SchoolForm, SchoolsFilterForm, RelatedProgramsFilterForm, RelatedAppsFilterForm
 from programs.models import Program
 from applications.models import Application
 
@@ -32,23 +32,28 @@ def school_view(request, school_id):
     school = get_object_or_404(School, pk=school_id)
     
     programs = Program.objects.filter(school=school)
-    program_search = request.GET.get('program_search', '')
-    if program_search:
-        programs = programs.filter(
-            Q(program_name__icontains=program_search) | 
-            Q(description__icontains=program_search)
-        )
+    programs_filter_form = RelatedProgramsFilterForm(request.GET, prefix='programs')
+    if programs_filter_form.is_valid():
+        programs_query = programs_filter_form.cleaned_data.get('search')
+        if programs_query:
+            programs = programs.filter(
+                Q(program_name__icontains=programs_query) | 
+                Q(description__icontains=programs_query)
+            )
     program_paginator = Paginator(programs, 10)
     program_page_number = request.GET.get('program_page')
     programs_page = program_paginator.get_page(program_page_number)
     
     applications = Application.objects.filter(applicationtranscript__course__programs__school=school).select_related('applicant').distinct()
-    applicant_search = request.GET.get('applicant_search', '')
-    if applicant_search:
-        applications = applications.filter(
-            Q(applicant__first_name__icontains=applicant_search) |
-            Q(applicant__last_name__icontains=applicant_search) |
-            Q(application_number__icontains=applicant_search)
+    apps_filter_form = RelatedAppsFilterForm(request.GET, prefix='apps')
+    if apps_filter_form.is_valid():
+        apps_query = apps_filter_form.cleaned_data.get('search')
+        if apps_query:
+            applications = applications.filter(
+                Q(applicant__first_name__icontains=apps_query) |
+                Q(applicant__last_name__icontains=apps_query) |
+                Q(application_number__icontains=apps_query) |
+                Q(program__icontains=apps_query)
         )
     applicant_paginator = Paginator(applications, 10)
     applicant_page_number = request.GET.get('applicant_page')
@@ -57,9 +62,9 @@ def school_view(request, school_id):
     return render(request, 'schools/view.html', {
         'school': school,
         'programs_page': programs_page,
-        'program_search': program_search,
+        'programs_filter_form': programs_filter_form,
         'applicants_page': applicants_page,
-        'applicant_search': applicant_search,
+        'apps_filter_form': apps_filter_form,
     })
 
 

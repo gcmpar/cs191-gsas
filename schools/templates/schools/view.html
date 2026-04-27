@@ -28,12 +28,7 @@
           <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Programs</h5>
             <form method="get" class="d-flex gap-2">
-              <!-- Hidden field to preserve applicant search -->
-              {% if applicant_search %}
-              <input type="hidden" name="applicant_search" value="{{ applicant_search }}">
-              {% endif %}
-              <input type="text" name="program_search" class="form-control form-control-sm"
-                placeholder="Search programs..." value="{{ program_search }}">
+              {% bootstrap_field programs_filter_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
             </form>
           </div>
@@ -75,12 +70,7 @@
           <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Applicants</h5>
             <form method="get" class="d-flex gap-2">
-              <!-- Hidden field to preserve program search -->
-              {% if program_search %}
-              <input type="hidden" name="program_search" value="{{ program_search }}">
-              {% endif %}
-              <input type="text" name="applicant_search" class="form-control form-control-sm"
-                placeholder="Search applicants..." value="{{ applicant_search }}">
+              {% bootstrap_field apps_filter_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
             </form>
           </div>

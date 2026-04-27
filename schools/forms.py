@@ -12,3 +12,9 @@ class SchoolForm(ModelForm):
 
 class SchoolsFilterForm(Form):
     search = CharField(required=False)
+
+class RelatedProgramsFilterForm(Form):
+    search = CharField(required=False)
+
+class RelatedAppsFilterForm(Form):
+    search = CharField(required=False)
