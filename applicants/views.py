@@ -3,25 +3,27 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Applicant
 from applications.models import Application, ApplicationTranscript
-from .forms import ApplicantForm
+from .forms import ApplicantForm, ApplicantsFilterForm
 
 
 SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'notes']
 
 def applicants_search(request):
-    query = request.GET.get('search')
-    filter_status = request.GET.getlist('status')
+    applicants = Applicant.objects.all()
 
-    applicants = Applicant.objects
+    filter_form = ApplicantsFilterForm(request.GET)
+    if filter_form.is_valid():
+        query = filter_form.cleaned_data.get('search')
+        status = filter_form.cleaned_data.get('status')
 
-    if query:
-        query_filter = Q()
-        for field in SEARCH_FIELDS:
-            query_filter |= Q(**{f'{field}__icontains': query})
-        applicants = applicants.filter(query_filter)
-    
-    if len(filter_status) > 0:
-        applicants = applicants.filter(applicant_status__in=filter_status)
+        if query:
+            query_filter = Q()
+            for field in SEARCH_FIELDS:
+                query_filter |= Q(**{f'{field}__icontains': query})
+            applicants = applicants.filter(query_filter)
+        
+        if status:
+            applicants = applicants.filter(applicant_status=status)
     
     applicants = applicants.order_by('applicant_id')
 
@@ -32,7 +34,7 @@ def applicants_search(request):
     context = {
         'applicants_page': page,
         'search_query': query,
-        'filter_status': filter_status
+        'filter_form': filter_form
     }
     return render(request, 'applicants/search.html', context)
 

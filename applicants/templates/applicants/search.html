@@ -4,6 +4,10 @@
 
 {% block title %}Applicants{% endblock title %}
 
+{% block extra_head %}
+{{ filter_form.media.css }}
+{% endblock extra_head %}
+
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,36 +27,13 @@
 
       <form method="get">
 
-        <input type="text" name="search" placeholder="Search applicant info..." {% if search_query %}value="{{ search_query }}"{% endif %}>
+        {% bootstrap_field filter_form.search show_label=False %}
         <button type="submit" class="btn btn-light">Search</button>
 
-        <label>
-            <input type="checkbox" name="status" value="Applying"
-            {% if "Applying" in filter_status %}checked{% endif %}>
-            Applying
-        </label>
-
-        <label>
-            <input type="checkbox" name="status" value="Rejected"
-            {% if "Rejected" in filter_status %}checked{% endif %}>
-            Rejected
-        </label>
-
-        <label>
-            <input type="checkbox" name="status" value="Enrolled"
-            {% if "Enrolled" in filter_status %}checked{% endif %}>
-            Enrolled
-        </label>
-
-        <label>
-            <input type="checkbox" name="status" value="Deferred"
-            {% if "Deferred" in filter_status %}checked{% endif %}>
-            Deferred
-        </label>
-
+        {% bootstrap_field filter_form.status show_label=False %}
         <button type="submit" class="btn btn-light">Apply</button>
 
-        {% if search_query %}
+        {% if filter_form.search.value or filter_form.status.value %}
           <a href="{% url 'applicants:search' %}" class="btn btn-sm btn-secondary">Clear</a>
         {% endif %}
       </form>
@@ -95,3 +76,10 @@
 </div>
 
 {% endblock content %}
+
+
+{% block extra_javascript %}
+
+{{ filter_form.media.js }}
+
+{% endblock extra_javascript %}

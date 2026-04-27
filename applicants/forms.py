@@ -1,11 +1,10 @@
 from django_select2.forms import Select2Widget
-from django.forms import ModelForm
+from django.forms import ModelForm, Form, CharField, ChoiceField
 from django_select2.forms import ModelSelect2Widget
 from .models import Applicant
 
 
 APPLICANT_SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name']
-
 class ApplicantForm(ModelForm):
     class Meta:
         model = Applicant
@@ -17,6 +16,14 @@ class ApplicantForm(ModelForm):
                 }
             ),
         }
+
+class ApplicantsFilterForm(Form):
+    search = CharField(required=False)
+    status = ChoiceField(
+        choices=Applicant.Status.choices,
+        required=False,
+        widget=Select2Widget(attrs={'data-placeholder': 'Filter by Status'})
+    )
 
 class ApplicantsWidget(ModelSelect2Widget):
     model = Applicant

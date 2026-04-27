@@ -2,17 +2,20 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import School
-from .forms import SchoolForm
+from .forms import SchoolForm, SchoolsFilterForm
 from programs.models import Program
 from applications.models import Application
 
 
 def schools_search(request):
-    query = request.GET.get('search', '')
     schools = School.objects.all()
 
-    if query:
-        schools = schools.filter(Q(school_name__icontains=query))
+    filter_form = SchoolsFilterForm(request.GET)
+    if filter_form.is_valid():
+        query = filter_form.cleaned_data.get('search')
+
+        if query:
+            schools = schools.filter(Q(school_name__icontains=query))
 
     schools = schools.order_by('school_id')
     paginator = Paginator(schools, 15)
@@ -21,7 +24,7 @@ def schools_search(request):
 
     return render(request, 'schools/search.html', {
         'schools_page': page,
-        'search_query': query,
+        'filter_form': filter_form,
     })
 
 

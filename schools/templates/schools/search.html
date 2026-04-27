@@ -20,11 +20,9 @@
       <h5 class="mb-0">All Schools</h5>
 
       <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
-        <input type="text" name="search" class="form-control form-control-sm" style="width:200px;"
-               placeholder="Search school name..."
-               {% if search_query %}value="{{ search_query }}"{% endif %}>
+        {% bootstrap_field filter_form.search show_label=False %}
         <button type="submit" class="btn btn-sm btn-primary">Search</button>
-        {% if search_query %}
+        {% if filter_form.search.value %}
           <a href="{% url 'schools:search' %}" class="btn btn-sm btn-secondary">Clear</a>
         {% endif %}
       </form>
