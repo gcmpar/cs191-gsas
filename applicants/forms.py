@@ -1,3 +1,4 @@
+from django_select2.forms import Select2Widget
 from django.forms import ModelForm
 from django_select2.forms import ModelSelect2Widget
 from .models import Applicant
@@ -9,6 +10,13 @@ class ApplicantForm(ModelForm):
     class Meta:
         model = Applicant
         fields = ['first_name', 'middle_name', 'last_name', 'applicant_status', 'email', 'contact_number', 'notes']
+        widgets = {
+            'applicant_status': Select2Widget(
+                attrs={
+                    'data-placeholder': 'Applicant Status',
+                }
+            ),
+        }
 
 class ApplicantsWidget(ModelSelect2Widget):
     model = Applicant
