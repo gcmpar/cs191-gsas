@@ -32,7 +32,7 @@
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
 
               {% if programs_filter_form.search.value %}
-                <a href="{% querystring programs_filter_form_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+                <a href="{% querystring programs_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
               {% endif %}
             </form>
           </div>
@@ -78,7 +78,7 @@
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
 
               {% if apps_filter_form.search.value %}
-                <a href="{% querystring apps_filter_form_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+                <a href="{% querystring apps_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
               {% endif %}
             </form>
           </div>

@@ -31,7 +31,10 @@ def programs_search(request):
     return render(request, 'programs/search.html', {
         'programs_page': page,
         'search_query': query,
-        'filter_form': filter_form
+        'filter_form': filter_form,
+        'clearfilters': {
+            field.html_name: None for field in filter_form
+        }
     })
 
 

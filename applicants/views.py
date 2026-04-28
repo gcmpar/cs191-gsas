@@ -34,7 +34,10 @@ def applicants_search(request):
     context = {
         'applicants_page': page,
         'search_query': query,
-        'filter_form': filter_form
+        'filter_form': filter_form,
+        'clearfilters': {
+            field.html_name: None for field in filter_form
+        }
     }
     return render(request, 'applicants/search.html', context)
 

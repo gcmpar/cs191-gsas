@@ -25,6 +25,9 @@ def schools_search(request):
     return render(request, 'schools/search.html', {
         'schools_page': page,
         'filter_form': filter_form,
+        'clearfilters': {
+            field.html_name: None for field in filter_form
+        }
     })
 
 
@@ -67,10 +70,10 @@ def school_view(request, school_id):
         'apps_filter_form': apps_filter_form,
 
         # Form prefixes add a hyphen '-' which cannot be passed to querystring smh
-        'programs_filter_form_clearfilters': {
+        'programs_clearfilters': {
             field.html_name: None for field in programs_filter_form
         },
-        'apps_filter_form_clearfilters': {
+        'apps_clearfilters': {
             field.html_name: None for field in programs_filter_form
         }
     })

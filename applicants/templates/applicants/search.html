@@ -34,7 +34,7 @@
         <button type="submit" class="btn btn-light">Apply</button>
 
         {% if filter_form.search.value or filter_form.status.value %}
-          <a href="{% url 'applicants:search' %}" class="btn btn-sm btn-secondary">Clear</a>
+          <a href="{% querystring clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
         {% endif %}
       </form>
     </div>
