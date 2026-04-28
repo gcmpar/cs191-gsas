@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
+{% load widget_tweaks %}
 
 {% block title %}Programs{% endblock title %}
+
+{% block extra_head %}
+{{ filter_form.media.css }}
+{% endblock extra_head %}
 
 {% block content %}
 
@@ -20,22 +25,13 @@
       <h5 class="mb-0">All Programs</h5>
 
       <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
-        <input type="text" name="search" class="form-control form-control-sm" style="width:200px;"
-               placeholder="Search name / description…"
-               {% if search_query %}value="{{ search_query }}"{% endif %}>
+        
+        {% bootstrap_field filter_form.search show_label=False %}
 
-        <select name="school" class="form-select form-select-sm" style="width:220px;">
-          <option value="">— All Schools —</option>
-          {% for school in all_schools %}
-          <option value="{{ school.school_id }}"
-            {% if filter_school == school.school_id|stringformat:"s" %}selected{% endif %}>
-            {{ school.school_name }}
-          </option>
-          {% endfor %}
-        </select>
+        {% render_field filter_form.school class="form-control" data-width="100%" %}
 
         <button type="submit" class="btn btn-sm btn-primary">Apply</button>
-        {% if search_query or filter_school %}
+        {% if filter_form.search.value or filter_form.school.value %}
           <a href="{% url 'programs:search' %}" class="btn btn-sm btn-secondary">Clear</a>
         {% endif %}
       </form>
@@ -76,3 +72,10 @@
 </div>
 
 {% endblock content %}
+
+
+{% block extra_javascript %}
+
+{{ filter_form.media.js }}
+
+{% endblock extra_javascript %}

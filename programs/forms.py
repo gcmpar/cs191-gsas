@@ -1,5 +1,6 @@
-from django.forms import ModelForm, widgets
+from django.forms import ModelForm, Form, CharField, ModelChoiceField, widgets
 from schools.models import School
+from schools.forms import SchoolsWidget
 from .models import Program
 
 class ProgramForm(ModelForm):
@@ -17,3 +18,16 @@ class ProgramForm(ModelForm):
         # Show school names in the dropdown instead of the default "School object (1)"
         self.fields['school'].queryset = School.objects.all()
         self.fields['school'].label_from_instance = lambda obj: obj.school_name
+
+class ProgramsFilterForm(Form):
+    search = CharField(required=False)
+    school = ModelChoiceField(
+        queryset=School.objects.all(),
+        required=False,
+        widget=SchoolsWidget(
+            attrs={
+                'data-placeholder': 'Filter by School',
+                'data-minimum-input-length': 0
+            }
+        )
+    )

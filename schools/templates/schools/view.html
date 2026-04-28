@@ -30,6 +30,10 @@
             <form method="get" class="d-flex gap-2">
               {% bootstrap_field programs_filter_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
+
+              {% if programs_filter_form.search.value %}
+                <a href="{% querystring programs_filter_form_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+              {% endif %}
             </form>
           </div>
           <div class="card-body p-0">
@@ -72,6 +76,10 @@
             <form method="get" class="d-flex gap-2">
               {% bootstrap_field apps_filter_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
+
+              {% if apps_filter_form.search.value %}
+                <a href="{% querystring apps_filter_form_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+              {% endif %}
             </form>
           </div>
           <div class="card-body p-0">

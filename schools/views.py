@@ -65,6 +65,14 @@ def school_view(request, school_id):
         'programs_filter_form': programs_filter_form,
         'applicants_page': applicants_page,
         'apps_filter_form': apps_filter_form,
+
+        # Form prefixes add a hyphen '-' which cannot be passed to querystring smh
+        'programs_filter_form_clearfilters': {
+            field.html_name: None for field in programs_filter_form
+        },
+        'apps_filter_form_clearfilters': {
+            field.html_name: None for field in programs_filter_form
+        }
     })
 
 

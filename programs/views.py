@@ -4,35 +4,34 @@ from django.db.models import Q
 from applications.models import Application
 from courses.models import Course
 from .models import Program
-from .forms import ProgramForm
+from schools.models import School
+from .forms import ProgramForm, ProgramsFilterForm
 
 
 def programs_search(request):
-    from schools.models import School
-    query = request.GET.get('search', '')
-    filter_school = request.GET.get('school', '')
-
     programs = Program.objects.select_related('school').all()
 
-    if query:
-        programs = programs.filter(
-            Q(program_name__icontains=query) | Q(description__icontains=query)
-        )
-    if filter_school:
-        programs = programs.filter(school__school_id=filter_school)
+    filter_form = ProgramsFilterForm(request.GET)
+    if filter_form.is_valid():
+        query = filter_form.cleaned_data.get('search')
+        school = filter_form.cleaned_data.get('school')
+        
+        if query:
+            programs = programs.filter(
+                Q(program_name__icontains=query) | Q(description__icontains=query)
+            )
+        if school:
+            programs = programs.filter(school=school)
 
     programs = programs.order_by('program_id')
     paginator = Paginator(programs, 15)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    all_schools = School.objects.all().order_by('school_name')
-
     return render(request, 'programs/search.html', {
         'programs_page': page,
         'search_query': query,
-        'filter_school': filter_school,
-        'all_schools': all_schools,
+        'filter_form': filter_form
     })
 
 
