@@ -11,10 +11,10 @@ SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'emai
 def applicants_search(request):
     applicants = Applicant.objects.all()
 
-    filter_form = ApplicantsFilterForm(request.GET)
-    if filter_form.is_valid():
-        query = filter_form.cleaned_data.get('search')
-        status = filter_form.cleaned_data.get('status')
+    query_form = ApplicantsFilterForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+        status = query_form.cleaned_data.get('status')
 
         if query:
             query_filter = Q()
@@ -34,9 +34,9 @@ def applicants_search(request):
     context = {
         'applicants_page': page,
         'search_query': query,
-        'filter_form': filter_form,
-        'clearfilters': {
-            field.html_name: None for field in filter_form
+        'query_form': query_form,
+        'query_clear': {
+            field.html_name: None for field in query_form
         }
     }
     return render(request, 'applicants/search.html', context)
