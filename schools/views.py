@@ -10,9 +10,9 @@ from applications.models import Application
 def schools_search(request):
     schools = School.objects.all()
 
-    filter_form = SchoolsFilterForm(request.GET)
-    if filter_form.is_valid():
-        query = filter_form.cleaned_data.get('search')
+    query_form = SchoolsFilterForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
 
         if query:
             schools = schools.filter(Q(school_name__icontains=query))
@@ -24,9 +24,9 @@ def schools_search(request):
 
     return render(request, 'schools/search.html', {
         'schools_page': page,
-        'filter_form': filter_form,
-        'clearfilters': {
-            field.html_name: None for field in filter_form
+        'query_form': query_form,
+        'query_clear': {
+            field.html_name: None for field in query_form
         }
     })
 
@@ -35,22 +35,24 @@ def school_view(request, school_id):
     school = get_object_or_404(School, pk=school_id)
     
     programs = Program.objects.filter(school=school)
-    programs_filter_form = RelatedProgramsFilterForm(request.GET, prefix='programs')
-    if programs_filter_form.is_valid():
-        programs_query = programs_filter_form.cleaned_data.get('search')
+    programs_query_form = RelatedProgramsFilterForm(request.GET, prefix='programs')
+    if programs_query_form.is_valid():
+        programs_query = programs_query_form.cleaned_data.get('search')
+        
         if programs_query:
             programs = programs.filter(
                 Q(program_name__icontains=programs_query) | 
                 Q(description__icontains=programs_query)
             )
     program_paginator = Paginator(programs, 10)
-    program_page_number = request.GET.get('program_page')
+    program_page_number = request.GET.get('programs_page')
     programs_page = program_paginator.get_page(program_page_number)
     
     applications = Application.objects.filter(applicationtranscript__course__programs__school=school).select_related('applicant').distinct()
-    apps_filter_form = RelatedAppsFilterForm(request.GET, prefix='apps')
-    if apps_filter_form.is_valid():
-        apps_query = apps_filter_form.cleaned_data.get('search')
+    apps_query_form = RelatedAppsFilterForm(request.GET, prefix='apps')
+    if apps_query_form.is_valid():
+        apps_query = apps_query_form.cleaned_data.get('search')
+        
         if apps_query:
             applications = applications.filter(
                 Q(applicant__first_name__icontains=apps_query) |
@@ -58,23 +60,22 @@ def school_view(request, school_id):
                 Q(application_number__icontains=apps_query) |
                 Q(program__icontains=apps_query)
         )
-    applicant_paginator = Paginator(applications, 10)
-    applicant_page_number = request.GET.get('applicant_page')
-    applicants_page = applicant_paginator.get_page(applicant_page_number)
+    apps_paginator = Paginator(applications, 10)
+    apps_page_number = request.GET.get('apps_page')
+    apps_page = apps_paginator.get_page(apps_page_number)
 
     return render(request, 'schools/view.html', {
         'school': school,
         'programs_page': programs_page,
-        'programs_filter_form': programs_filter_form,
-        'applicants_page': applicants_page,
-        'apps_filter_form': apps_filter_form,
-
-        # Form prefixes add a hyphen '-' which cannot be passed to querystring smh
-        'programs_clearfilters': {
-            field.html_name: None for field in programs_filter_form
+        'programs_query_form': programs_query_form,
+        'apps_page': apps_page,
+        'apps_query_form': apps_query_form,
+        
+        'programs_query_clear': {
+            field.html_name: None for field in programs_query_form
         },
-        'apps_clearfilters': {
-            field.html_name: None for field in programs_filter_form
+        'apps_query_clear': {
+            field.html_name: None for field in apps_query_form
         }
     })
 

@@ -1,38 +1,39 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
-
-{% block title %}School #{{ school.school_id }}{% endblock title %}
-
+{% block title %}
+  School #{{ school.school_id }}
+{% endblock title %}
 {% block content %}
-
+  {% querystring as query_params %}
   <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="d-flex gap-2">
         <a href="{% url 'schools:search' %}" class="btn btn-secondary">← Schools</a>
       </div>
-      <a href="{% url 'schools:edit' school.school_id %}" class="btn btn-primary">Edit</a>
+      <a href="{% url 'schools:edit' school.school_id %}"
+         class="btn btn-primary">Edit</a>
     </div>
-
     <div class="card mb-4 shadow-sm">
       <div class="card-header bg-white">
         <h5 class="mb-0">School #{{ school.school_id }}</h5>
       </div>
       <div class="card-body">
-        <p class="mb-0"><strong>School Name:</strong> {{ school.school_name }}</p>
+        <p class="mb-0">
+          <strong>School Name:</strong> {{ school.school_name }}
+        </p>
       </div>
     </div>
-
     <div class="row">
       <div class="col-md-6 mb-4">
         <div class="card shadow-sm h-100">
           <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Programs</h5>
             <form method="get" class="d-flex gap-2">
-              {% bootstrap_field programs_filter_form.search show_label=False %}
+              {% bootstrap_field programs_query_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
-
-              {% if programs_filter_form.search.value %}
-                <a href="{% querystring programs_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+              {% if programs_query_form.search.value %}
+                <a href="{% querystring programs_query_clear %}"
+                   class="btn btn-sm btn-secondary">Clear</a>
               {% endif %}
             </form>
           </div>
@@ -46,39 +47,35 @@
               </thead>
               <tbody>
                 {% for program in programs_page %}
-                <tr>
-                  <td>
-                    <a href="{% url 'programs:view' program.program_id %}">
-                      {{ program.program_name }}
-                    </a>
-                  </td>
-                  <td>{{ program.description|default:"—" }}</td>
-                </tr>
+                  <tr>
+                    <td>
+                      <a href="{% url 'programs:view' program.program_id %}">{{ program.program_name }}</a>
+                    </td>
+                    <td>{{ program.description|default:"—" }}</td>
+                  </tr>
                 {% empty %}
-                <tr>
-                  <td colspan="2" class="text-muted">No programs found.</td>
-                </tr>
+                  <tr>
+                    <td colspan="2" class="text-muted">No programs found.</td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
           <div class="card-footer bg-white text-end">
-            {% querystring program_page=None as program_filters %}
-            {% bootstrap_pagination programs_page pages_to_show=5 size="sm" extra=program_filters %}
+            {% bootstrap_pagination programs_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name="programs_page" %}
           </div>
         </div>
       </div>
-
       <div class="col-md-6 mb-4">
         <div class="card shadow-sm h-100">
           <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Applicants</h5>
             <form method="get" class="d-flex gap-2">
-              {% bootstrap_field apps_filter_form.search show_label=False %}
+              {% bootstrap_field apps_query_form.search show_label=False %}
               <button type="submit" class="btn btn-sm btn-light border">Search</button>
-
-              {% if apps_filter_form.search.value %}
-                <a href="{% querystring apps_clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
+              {% if apps_query_form.search.value %}
+                <a href="{% querystring apps_query_clear %}"
+                   class="btn btn-sm btn-secondary">Clear</a>
               {% endif %}
             </form>
           </div>
@@ -92,31 +89,29 @@
                 </tr>
               </thead>
               <tbody>
-                {% for application in applicants_page %}
-                <tr>
-                  <td>{{ application.application_number }}</td>
-                  <td>
-                    <a href="{% url 'applicants:view' application.applicant.applicant_id %}">
-                      {{ application.applicant.first_name }} {{ application.applicant.last_name }}
-                    </a>
-                  </td>
-                  <td>{{ application.program }}</td>
-                </tr>
+                {% for application in apps_page %}
+                  <tr>
+                    <td>{{ application.application_number }}</td>
+                    <td>
+                      <a href="{% url 'applicants:view' application.applicant.applicant_id %}">
+                        {{ application.applicant.first_name }} {{ application.applicant.last_name }}
+                      </a>
+                    </td>
+                    <td>{{ application.program }}</td>
+                  </tr>
                 {% empty %}
-                <tr>
-                  <td colspan="3" class="text-muted">No applicants found.</td>
-                </tr>
+                  <tr>
+                    <td colspan="3" class="text-muted">No applicants found.</td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
           <div class="card-footer bg-white text-end">
-            {% querystring applicant_page=None as applicant_filters %}
-            {% bootstrap_pagination applicants_page pages_to_show=5 size="sm" extra=applicant_filters %}
+            {% bootstrap_pagination apps_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name="apps_page" %}
           </div>
         </div>
       </div>
     </div>
   </div>
-
 {% endblock content %}
