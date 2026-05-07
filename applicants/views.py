@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Applicant
 from applications.models import Application, ApplicationTranscript
-from .forms import ApplicantForm, ApplicantsFilterForm
+from .forms import ApplicantForm, ApplicantsQueryForm
 
 
 SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'notes']
@@ -11,7 +11,7 @@ SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'emai
 def applicants_search(request):
     applicants = Applicant.objects.all()
 
-    query_form = ApplicantsFilterForm(request.GET)
+    query_form = ApplicantsQueryForm(request.GET)
     if query_form.is_valid():
         query = query_form.cleaned_data.get('search')
         status = query_form.cleaned_data.get('status')

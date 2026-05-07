@@ -4,13 +4,13 @@ from django.db.models import Q
 from applications.models import Application
 from courses.models import Course
 from .models import Program
-from .forms import ProgramForm, ProgramsFilterForm, RelatedCoursesFilterForm, RelatedAppsFilterForm
+from .forms import ProgramForm, ProgramsQueryForm, RelatedCoursesQueryForm, RelatedAppsQueryForm
 
 
 def programs_search(request):
     programs = Program.objects.select_related('school').all()
 
-    query_form = ProgramsFilterForm(request.GET)
+    query_form = ProgramsQueryForm(request.GET)
     if query_form.is_valid():
         query = query_form.cleaned_data.get('search')
         school = query_form.cleaned_data.get('school')
@@ -47,7 +47,7 @@ def program_view(request, program_id):
     program = get_object_or_404(Program.objects.select_related('school'), pk=program_id)
     
     courses = Course.objects.filter(programs=program)
-    courses_query_form = RelatedCoursesFilterForm(request.GET)
+    courses_query_form = RelatedCoursesQueryForm(request.GET)
     if courses_query_form.is_valid():
         query = courses_query_form.cleaned_data.get('search')
 
@@ -68,7 +68,7 @@ def program_view(request, program_id):
     courses_query_clear[courses_page_param_name] = None
     
     applications = Application.objects.filter(applicationtranscript__course__programs=program).select_related('applicant').distinct()
-    apps_query_form = RelatedAppsFilterForm(request.GET)
+    apps_query_form = RelatedAppsQueryForm(request.GET)
     if apps_query_form.is_valid():
         if query:
             applications = applications.filter(

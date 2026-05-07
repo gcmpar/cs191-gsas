@@ -19,7 +19,7 @@ class ProgramForm(ModelForm):
         self.fields['school'].queryset = School.objects.all()
         self.fields['school'].label_from_instance = lambda obj: obj.school_name
 
-class ProgramsFilterForm(Form):
+class ProgramsQueryForm(Form):
     search = CharField(required=False)
     school = ModelChoiceField(
         queryset=School.objects.all(),
@@ -32,8 +32,8 @@ class ProgramsFilterForm(Form):
         )
     )
 
-class RelatedCoursesFilterForm(Form):
+class RelatedCoursesQueryForm(Form):
     search = CharField(required=False)
 
-class RelatedAppsFilterForm(Form):
+class RelatedAppsQueryForm(Form):
     search = CharField(required=False)

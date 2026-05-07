@@ -7,13 +7,13 @@ class SchoolForm(ModelForm):
         model = School
         fields = ['school_name']
 
-class SchoolsFilterForm(Form):
+class SchoolsQueryForm(Form):
     search = CharField(required=False)
 
-class RelatedProgramsFilterForm(Form):
+class RelatedProgramsQueryForm(Form):
     search = CharField(required=False)
 
-class RelatedAppsFilterForm(Form):
+class RelatedAppsQueryForm(Form):
     search = CharField(required=False)
 
 class SchoolsWidget(ModelSelect2Widget):

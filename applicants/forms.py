@@ -17,7 +17,7 @@ class ApplicantForm(ModelForm):
             ),
         }
 
-class ApplicantsFilterForm(Form):
+class ApplicantsQueryForm(Form):
     search = CharField(required=False)
     status = ChoiceField(
         choices=Applicant.Status.choices,

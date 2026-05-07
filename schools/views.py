@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import School
-from .forms import SchoolForm, SchoolsFilterForm, RelatedProgramsFilterForm, RelatedAppsFilterForm
+from .forms import SchoolForm, SchoolsQueryForm, RelatedProgramsQueryForm, RelatedAppsQueryForm
 from programs.models import Program
 from applications.models import Application
 
@@ -10,7 +10,7 @@ from applications.models import Application
 def schools_search(request):
     schools = School.objects.all()
 
-    query_form = SchoolsFilterForm(request.GET)
+    query_form = SchoolsQueryForm(request.GET)
     if query_form.is_valid():
         query = query_form.cleaned_data.get('search')
 
@@ -40,7 +40,7 @@ def school_view(request, school_id):
     school = get_object_or_404(School, pk=school_id)
     
     programs = Program.objects.filter(school=school)
-    programs_query_form = RelatedProgramsFilterForm(request.GET, prefix='programs')
+    programs_query_form = RelatedProgramsQueryForm(request.GET, prefix='programs')
     if programs_query_form.is_valid():
         programs_query = programs_query_form.cleaned_data.get('search')
         
@@ -59,7 +59,7 @@ def school_view(request, school_id):
     programs_query_clear[programs_page_param_name] = None
     
     applications = Application.objects.filter(applicationtranscript__course__programs__school=school).select_related('applicant').distinct()
-    apps_query_form = RelatedAppsFilterForm(request.GET, prefix='apps')
+    apps_query_form = RelatedAppsQueryForm(request.GET, prefix='apps')
     if apps_query_form.is_valid():
         apps_query = apps_query_form.cleaned_data.get('search')
         
