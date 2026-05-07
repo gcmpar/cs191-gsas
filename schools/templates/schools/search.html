@@ -24,7 +24,7 @@
         </form>
       </div>
       <div class="d-flex ms-auto pe-3">
-        {% bootstrap_pagination schools_page pages_to_show=5 extra=query_params|cut:"?" %}
+        {% bootstrap_pagination schools_page pages_to_show=5 extra=query_params|cut:"?" parameter_name=page_param_name %}
       </div>
     </div>
     <div class="card-body p-0">
@@ -50,7 +50,7 @@
         </tbody>
       </table>
       <div class="d-flex justify-content-end">
-        {% bootstrap_pagination schools_page pages_to_show=5 extra=query_params|cut:"?" %}
+        {% bootstrap_pagination schools_page pages_to_show=5 extra=query_params|cut:"?" parameter_name=page_param_name %}
       </div>
     </div>
   </div>

@@ -62,7 +62,7 @@
             </table>
           </div>
           <div class="card-footer bg-white text-end">
-            {% bootstrap_pagination programs_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name="programs_page" %}
+            {% bootstrap_pagination programs_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name=programs_page_param_name %}
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@
             </table>
           </div>
           <div class="card-footer bg-white text-end">
-            {% bootstrap_pagination apps_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name="apps_page" %}
+            {% bootstrap_pagination apps_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name=apps_page_param_name %}
           </div>
         </div>
       </div>
