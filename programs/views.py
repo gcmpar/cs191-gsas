@@ -4,17 +4,16 @@ from django.db.models import Q
 from applications.models import Application
 from courses.models import Course
 from .models import Program
-from schools.models import School
-from .forms import ProgramForm, ProgramsFilterForm
+from .forms import ProgramForm, ProgramsFilterForm, RelatedCoursesFilterForm, RelatedAppsFilterForm
 
 
 def programs_search(request):
     programs = Program.objects.select_related('school').all()
 
-    filter_form = ProgramsFilterForm(request.GET)
-    if filter_form.is_valid():
-        query = filter_form.cleaned_data.get('search')
-        school = filter_form.cleaned_data.get('school')
+    query_form = ProgramsFilterForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+        school = query_form.cleaned_data.get('school')
         
         if query:
             programs = programs.filter(
@@ -24,17 +23,23 @@ def programs_search(request):
             programs = programs.filter(school=school)
 
     programs = programs.order_by('program_id')
+
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
     paginator = Paginator(programs, 15)
-    page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
+
     return render(request, 'programs/search.html', {
+        'page_param_name': page_param_name,
         'programs_page': page,
         'search_query': query,
-        'filter_form': filter_form,
-        'clearfilters': {
-            field.html_name: None for field in filter_form
-        }
+        'query_form': query_form,
+        'query_clear': query_clear
     })
 
 
@@ -42,36 +47,58 @@ def program_view(request, program_id):
     program = get_object_or_404(Program.objects.select_related('school'), pk=program_id)
     
     courses = Course.objects.filter(programs=program)
-    course_search = request.GET.get('course_search', '')
-    if course_search:
-        courses = courses.filter(
-            Q(course_code__icontains=course_search) |
-            Q(course_name__icontains=course_search) |
-            Q(description__icontains=course_search)
-        )
-    course_paginator = Paginator(courses, 10)
-    course_page_number = request.GET.get('course_page')
-    courses_page = course_paginator.get_page(course_page_number)
+    courses_query_form = RelatedCoursesFilterForm(request.GET)
+    if courses_query_form.is_valid():
+        query = courses_query_form.cleaned_data.get('search')
+
+        if query:
+            courses = courses.filter(
+                Q(course_code__icontains=query) |
+                Q(course_name__icontains=query) |
+                Q(description__icontains=query)
+            )
+    courses_page_param_name = 'courses_page'
+    courses_page_number = request.GET.get(courses_page_param_name)
+    courses_paginator = Paginator(courses, 10)
+    courses_page = courses_paginator.get_page(courses_page_number)
+
+    courses_query_clear = {
+        field.html_name: None for field in courses_query_form
+    }
+    courses_query_clear[courses_page_param_name] = None
     
     applications = Application.objects.filter(applicationtranscript__course__programs=program).select_related('applicant').distinct()
-    applicant_search = request.GET.get('applicant_search', '')
-    if applicant_search:
-        applications = applications.filter(
-            Q(applicant__first_name__icontains=applicant_search) |
-            Q(applicant__last_name__icontains=applicant_search) |
-            Q(application_number__icontains=applicant_search)
+    apps_query_form = RelatedAppsFilterForm(request.GET)
+    if apps_query_form.is_valid():
+        if query:
+            applications = applications.filter(
+                Q(applicant__first_name__icontains=query) |
+                Q(applicant__last_name__icontains=query) |
+                Q(application_number__icontains=query)
         )
-    
-    applicant_paginator = Paginator(applications, 10)
-    applicant_page_number = request.GET.get('applicant_page')
-    applicants_page = applicant_paginator.get_page(applicant_page_number)
+    apps_page_param_name = 'apps_page'
+    apps_page_number = request.GET.get(apps_page_param_name)
+    apps_paginator = Paginator(applications, 10)
+    apps_page = apps_paginator.get_page(apps_page_number)
+
+    apps_query_clear = {
+        field.html_name: None for field in apps_query_form
+    }
+    apps_query_clear[apps_page_param_name] = None
     
     return render(request, 'programs/view.html', {
         'program': program,
+
+        'courses_page_param_name': courses_page_param_name,
         'courses_page': courses_page,
-        'course_search': course_search,
-        'applicants_page': applicants_page,
-        'applicant_search': applicant_search,
+        'courses_query_form': courses_query_form,
+
+        'apps_page_param_name': apps_page_param_name,
+        'apps_page': apps_page,
+        'apps_query_form': apps_query_form,
+
+        'courses_query_clear': courses_query_clear,
+        'apps_query_clear': apps_query_clear,
     })
 
 

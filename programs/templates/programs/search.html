@@ -2,80 +2,85 @@
 {% load django_bootstrap5 %}
 {% load widget_tweaks %}
 
-{% block title %}Programs{% endblock title %}
+{% block title %}
+  Programs
+{% endblock title %}
 
 {% block extra_head %}
-{{ filter_form.media.css }}
+  {{ query_form.media.css }}
 {% endblock extra_head %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Programs</h2>
-  <div class="d-flex gap-2">
-    <a href="{% url 'programs:add' %}" class="btn btn-success">+ Add Program</a>
-  </div>
-</div>
-
-{% querystring page=None as filters %}
-<div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center p-0">
-
-    <div class="d-flex p-3 gap-3 align-items-center flex-wrap">
-      <h5 class="mb-0">All Programs</h5>
-
-      <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
-        
-        {% bootstrap_field filter_form.search show_label=False %}
-
-        {% render_field filter_form.school class="form-control" data-width="100%" %}
-
-        <button type="submit" class="btn btn-sm btn-primary">Apply</button>
-        {% if filter_form.search.value or filter_form.school.value %}
-          <a href="{% querystring clearfilters %}" class="btn btn-sm btn-secondary">Clear</a>
-        {% endif %}
-      </form>
-    </div>
-
-    <div class="d-flex ms-auto pe-3">
-      {% bootstrap_pagination programs_page pages_to_show=5 extra=filters %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Programs</h2>
+    <div class="d-flex gap-2">
+      <a href="{% url 'programs:add' %}" class="btn btn-success">+ Add Program</a>
     </div>
   </div>
 
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Program Name</th>
-          <th>School</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for program in programs_page %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'programs:view' program.program_id %}'">
-          <td>{{ program.program_id }}</td>
-          <td>{{ program.program_name }}</td>
-          <td>{{ program.school.school_name }}</td>
-          <td>{{ program.description }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4" class="text-muted">No programs found.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-end">
-      {% bootstrap_pagination programs_page pages_to_show=5 extra=filters %}
+  {% querystring as query_params %}
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center p-0">
+
+      <div class="d-flex p-3 gap-3 align-items-center flex-wrap">
+        <h5 class="mb-0">All Programs</h5>
+
+        <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
+
+          {% bootstrap_field query_form.search show_label=False %}
+
+          {% render_field query_form.school class="form-control" data-width="100%" %}
+
+          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+          {% if query_form.search.value or query_form.school.value %}
+            <a href="{% querystring query_clear %}" class="btn btn-sm btn-secondary">Clear</a>
+          {% endif %}
+        </form>
+      </div>
+
+      <div class="d-flex ms-auto pe-3">
+        {% bootstrap_pagination programs_page pages_to_show=5 extra=query_params|cut:"?" parameter_name=page_param_name %}
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Program Name</th>
+            <th>School</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for program in programs_page %}
+            <tr style="cursor:pointer"
+                onclick="window.location='{% url 'programs:view' program.program_id %}'">
+              <td>{{ program.program_id }}</td>
+              <td>{{ program.program_name }}</td>
+              <td>{{ program.school.school_name }}</td>
+              <td>{{ program.description }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-muted">No programs found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-end">
+        {% bootstrap_pagination programs_page pages_to_show=5 extra=query_params|cut:"?" parameter_name=page_param_name %}
+      </div>
     </div>
   </div>
-</div>
 
 {% endblock content %}
 
 
 {% block extra_javascript %}
 
-{{ filter_form.media.js }}
+  {{ query_form.media.js }}
 
 {% endblock extra_javascript %}

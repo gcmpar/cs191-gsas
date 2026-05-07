@@ -31,3 +31,9 @@ class ProgramsFilterForm(Form):
             }
         )
     )
+
+class RelatedCoursesFilterForm(Form):
+    search = CharField(required=False)
+
+class RelatedAppsFilterForm(Form):
+    search = CharField(required=False)
