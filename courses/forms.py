@@ -1,11 +1,14 @@
 from django.forms import (
-    ModelForm, widgets, Form, ModelChoiceField,
+    ModelForm, widgets, Form, CharField, ModelChoiceField,
     formset_factory, inlineformset_factory
 )
 from django_select2.forms import ModelSelect2Widget
 from django.urls import reverse_lazy
-from programs.models import Program
 from .models import Course, EquivalenceMap, EquivalenceMapCourses
+from schools.models import School
+from schools.forms import SchoolsWidget
+from programs.models import Program
+from programs.forms import ProgramsWidget
 
 
 COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
@@ -24,6 +27,30 @@ class CourseForm(ModelForm):
             'units':       widgets.NumberInput(attrs={'class': 'form-control'}),
             'description': widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+class CoursesQueryForm(Form):
+    search = CharField(required=False)
+    program = ModelChoiceField(
+        queryset=Program.objects.all(),
+        required=False,
+        widget=ProgramsWidget(
+            attrs={
+                'data-placeholder': 'Filter by Program',
+                'data-minimum-input-length': 0
+            },
+            dependent_fields={'school': 'school'}
+        )
+    )
+    school = ModelChoiceField(
+        queryset=School.objects.all(),
+        required=False,
+        widget=SchoolsWidget(
+            attrs={
+                'data-placeholder': 'Filter by School',
+                'data-minimum-input-length': 0
+            }
+        )
+    )
 
 # ---------------------------------------------------------------------------
 # Programs ACT-style formset

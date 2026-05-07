@@ -1,4 +1,3 @@
-import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -7,9 +6,11 @@ from django.http import JsonResponse
 from django.utils.module_loading import import_string
 from django_select2.conf import settings
 from django_select2.views import AutoResponseView
+from django.db.models import Q
 from .models import Course, EquivalenceMap, EquivalenceMapCourses
 from .forms import (
     CourseForm,
+    CoursesQueryForm,
     CourseProgramFormSet,
     EquivMapInlineFormSet,
     NewEquivMappingFormSet,
@@ -17,41 +18,41 @@ from .forms import (
 
 
 def courses_search(request):
-    from schools.models import School
-    from programs.models import Program as ProgramModel
-    query = request.GET.get('search', '')
-    filter_school = request.GET.get('school', '')
-    filter_program = request.GET.get('program', '')
-
     courses = Course.objects.prefetch_related('programs__school').all()
 
-    if query:
-        from django.db.models import Q
-        courses = courses.filter(
-            Q(course_code__icontains=query) |
-            Q(course_name__icontains=query) |
-            Q(description__icontains=query)
-        )
-    if filter_school:
-        courses = courses.filter(programs__school__school_id=filter_school).distinct()
-    if filter_program:
-        courses = courses.filter(programs__program_id=filter_program).distinct()
+    query_form = CoursesQueryForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+        school = query_form.cleaned_data.get('school')
+        program = query_form.cleaned_data.get('program')
+        
+        if query:
+            courses = courses.filter(
+                Q(course_code__icontains=query) | Q(course_name__icontains=query) | Q(description__icontains=query)
+            )
+        if program:
+            courses = courses.filter(programs=program)
+        if school:
+            courses = courses.filter(programs__school=school)
 
-    courses = courses.order_by('course_id')
+    courses = courses.order_by('course_code')
+
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
     paginator = Paginator(courses, 15)
-    page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    all_schools = School.objects.all().order_by('school_name')
-    all_programs = ProgramModel.objects.select_related('school').order_by('school__school_name', 'program_name')
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
 
     return render(request, 'courses/search.html', {
+        'page_param_name': page_param_name,
         'courses_page': page,
         'search_query': query,
-        'filter_school': filter_school,
-        'filter_program': filter_program,
-        'all_schools': all_schools,
-        'all_programs': all_programs,
+        'query_form': query_form,
+        'query_clear': query_clear
     })
 
 

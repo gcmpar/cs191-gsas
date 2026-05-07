@@ -1,3 +1,4 @@
+from django_select2.forms import ModelSelect2Widget
 from django.forms import ModelForm, Form, CharField, ModelChoiceField
 from schools.models import School
 from schools.forms import SchoolsWidget
@@ -34,3 +35,10 @@ class RelatedCoursesQueryForm(Form):
 
 class RelatedAppsQueryForm(Form):
     search = CharField(required=False)
+
+class ProgramsWidget(ModelSelect2Widget):
+    model = Program
+    search_fields = ['program_name__icontains', 'description__icontains']
+
+    def label_from_instance(self, program):
+        return f"{program.program_name}"
