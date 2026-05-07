@@ -27,17 +27,20 @@ def applicants_search(request):
     
     applicants = applicants.order_by('applicant_id')
 
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
     paginator = Paginator(applicants, 15)
-    page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
     context = {
         'applicants_page': page,
         'search_query': query,
         'query_form': query_form,
-        'query_clear': {
-            field.html_name: None for field in query_form
-        }
+        'query_clear': query_clear
     }
     return render(request, 'applicants/search.html', context)
 
