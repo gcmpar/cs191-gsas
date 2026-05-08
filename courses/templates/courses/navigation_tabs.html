@@ -1,14 +1,16 @@
+{% with request.resolver_match.view_name as view_name %}
 <ul class="nav nav-tabs mb-4">
   <li class="nav-item">
-    <a class="nav-link {% if active_tab == 'general' %}active{% endif %}" 
-       href="{% if mode == 'edit' %}{% url 'courses:general_edit' course.course_id %}{% else %}{% url 'courses:general_view' course.course_id %}{% endif %}">
+    <a class="nav-link {% if view_name == 'courses:general_view' or view_name == 'courses:general_edit' %}active{% endif %}" 
+       href="{% url 'courses:general_view' course.course_id %}">
        General Info
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {% if active_tab == 'equiv' %}active{% endif %}" 
-       href="{% if mode == 'edit' %}{% url 'courses:equiv_edit' course.course_id %}{% else %}{% url 'courses:equiv_view' course.course_id %}{% endif %}">
+    <a class="nav-link {% if view_name == 'courses:equiv_view' or view_name == 'courses:equiv_edit' %}active{% endif %}" 
+       href="{% url 'courses:equiv_view' course.course_id %}">
        Equivalence Mapping
     </a>
   </li>
 </ul>
+{% endwith %}

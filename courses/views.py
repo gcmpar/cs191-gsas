@@ -63,8 +63,6 @@ def course_general_view(request, course_id):
     )
     return render(request, 'courses/general_view.html', {
         'course': course,
-        'active_tab': 'general',
-        'mode': 'view',
     })
 
 
@@ -93,8 +91,6 @@ def course_general_edit(request, course_id):
         'course': course,
         'form': form,
         'prog_formset': prog_formset,
-        'active_tab': 'general',
-        'mode': 'edit',
     })
 
 
@@ -115,8 +111,6 @@ def course_equiv_view(request, course_id):
         'course': course,
         'as_target': as_target,
         'as_source': as_source,
-        'active_tab': 'equiv',
-        'mode': 'view',
     })
 
 
@@ -171,8 +165,6 @@ def course_equiv_edit(request, course_id):
         'course': course,
         'map_formsets': map_formsets,
         'new_map_formset': new_map_formset,
-        'active_tab': 'equiv',
-        'mode': 'edit',
     })
 
 
