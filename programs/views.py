@@ -1,3 +1,7 @@
+from django_select2.views import AutoResponseView
+from django.http import JsonResponse
+from django.utils.module_loading import import_string
+from django_select2.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -136,3 +140,31 @@ def program_delete(request, program_id):
         program.delete()
         return redirect('programs:search')
     return redirect('programs:edit', program_id=program_id)
+
+
+class ProgramsGroupedAutoResponseView(AutoResponseView):
+    def get(self, request, *args, **kwargs):
+        self.widget = self.get_widget_or_404()
+        self.term = kwargs.get('term', request.GET.get('term', ''))
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        grouped = {}
+        for program in context['object_list']:
+            group_name = program.school.school_name
+            if group_name not in grouped:
+                grouped[group_name] = []
+            grouped[group_name].append(self.widget.result_from_instance(program, request))
+
+        return JsonResponse(
+            {
+                'results': [
+                    {'text': group_name, 'children': items}
+                    for group_name, items in grouped.items()
+                ],
+                'more': context['page_obj'].has_next(),
+            },
+            encoder=import_string(settings.SELECT2_JSON_ENCODER),
+        )
+    def get_queryset(self):
+        return Program.objects.select_related('school')

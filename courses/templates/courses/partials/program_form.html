@@ -1,0 +1,14 @@
+{% load widget_tweaks %}
+
+<div class="program-form flex flex-row">
+    {% render_field program_form.program class="w-25" %}
+
+    <button
+        type="button"
+        class="btn"
+        onclick="this.closest('.program-form').remove()"
+    >
+        Remove
+    </button>
+
+</div>

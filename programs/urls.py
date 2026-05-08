@@ -8,4 +8,6 @@ urlpatterns = [
     path('<int:program_id>/', views.program_view, name='view'),
     path('<int:program_id>/edit/', views.program_edit, name='edit'),
     path('<int:program_id>/delete/', views.program_delete, name='delete'),
+
+    path('select2_programs_grouped/', views.ProgramsGroupedAutoResponseView.as_view(), name='select2_programs_grouped'),
 ]

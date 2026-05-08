@@ -17,4 +17,5 @@ urlpatterns = [
     path('<int:course_id>/delete/', views.course_delete, name='delete'),
 
     path('select2_courses_grouped/', views.CoursesGroupedAutoResponseView.as_view(), name='select2_courses_grouped'),
+    path('partials/general-program-form', views.course_general_program_form, name='partial_general_program_form')
 ]

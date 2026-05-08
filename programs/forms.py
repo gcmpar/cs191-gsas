@@ -1,5 +1,6 @@
-from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from django.forms import ModelForm, Form, CharField, ModelChoiceField
+from django.urls import reverse_lazy
 from schools.models import School
 from schools.forms import SchoolsWidget
 from .models import Program
@@ -38,7 +39,11 @@ class RelatedAppsQueryForm(Form):
 
 class ProgramsWidget(ModelSelect2Widget):
     model = Program
-    search_fields = ['program_name__icontains', 'description__icontains']
+    search_fields = ['program_name__icontains', 'school__school_name__icontains']
+    data_url = reverse_lazy('programs:select2_programs_grouped')
+
+    def get_queryset(self):
+        return Program.objects.select_related('school').all()
 
     def label_from_instance(self, program):
         return f"{program.program_name}"

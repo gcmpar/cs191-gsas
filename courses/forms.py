@@ -1,5 +1,5 @@
 from django.forms import (
-    ModelForm, widgets, Form, CharField, ModelChoiceField,
+    ModelForm, Form, CharField, ModelChoiceField,
     formset_factory, inlineformset_factory
 )
 from django_select2.forms import ModelSelect2Widget
@@ -13,20 +13,10 @@ from programs.forms import ProgramsWidget
 
 COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
 
-# ---------------------------------------------------------------------------
-# Course general-info form 
-# ---------------------------------------------------------------------------
-
 class CourseForm(ModelForm):
     class Meta:
         model = Course
         fields = ['course_code', 'course_name', 'units', 'description']
-        widgets = {
-            'course_code': widgets.TextInput(attrs={'class': 'form-control'}),
-            'course_name': widgets.TextInput(attrs={'class': 'form-control'}),
-            'units':       widgets.NumberInput(attrs={'class': 'form-control'}),
-            'description': widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
 
 class CoursesQueryForm(Form):
     search = CharField(required=False)
@@ -52,31 +42,18 @@ class CoursesQueryForm(Form):
         )
     )
 
-# ---------------------------------------------------------------------------
-# Programs ACT-style formset
-# ---------------------------------------------------------------------------
-
-class ProgramsWidget(ModelSelect2Widget):
-    model = Program
-    search_fields = ['program_name__icontains', 'school__school_name__icontains']
-
-    def get_queryset(self):
-        return Program.objects.select_related('school').all()
-
-    def label_from_instance(self, program):
-        return f"{program.school.school_name} — {program.program_name}"
-
-class CourseProgramRowForm(Form):
+class ProgramRowForm(Form):
     program = ModelChoiceField(
-        queryset=Program.objects.select_related('school').all(),
-        widget=ProgramsWidget(attrs={
-            'data-placeholder': 'Program',
-            'data-minimum-input-length': 0,
-        }),
+        queryset=Program.objects.all(),
         required=False,
+        widget=ProgramsWidget(
+            attrs={
+                'data-placeholder': 'Select associated Program',
+                'data-minimum-input-length': 0,
+                'name': 'programs[]'
+            }
+        ),
     )
-
-CourseProgramFormSet = formset_factory(CourseProgramRowForm, extra=1, can_delete=True)
 
 # ---------------------------------------------------------------------------
 # Courses Select2 widget 

@@ -11,11 +11,12 @@ from .models import Course, EquivalenceMap, EquivalenceMapCourses
 from .forms import (
     CourseForm,
     CoursesQueryForm,
-    CourseProgramFormSet,
+    ProgramRowForm,
     EquivMapInlineFormSet,
     NewEquivMappingFormSet,
 )
 
+PROGRAMS_PARAM_PREFIX = 'programs'
 
 def courses_search(request):
     courses = Course.objects.prefetch_related('programs__school').all()
@@ -71,28 +72,46 @@ def course_general_edit(request, course_id):
 
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
-        prog_formset = CourseProgramFormSet(request.POST, prefix='programs')
 
-        if form.is_valid() and prog_formset.is_valid():
+        if form.is_valid():
             form.save()
-            programs = [
-                f.cleaned_data['program']
-                for f in prog_formset
-                if f.cleaned_data.get('program') and not f.cleaned_data.get('DELETE')
-            ]
-            course.programs.set(programs)
+
+            program_ids = set()
+            for param, program_id in request.POST.items():
+                if param.startswith(PROGRAMS_PARAM_PREFIX) and program_id:
+                    program_ids.add(program_id)
+            course.programs.set(program_ids)
+        
             return redirect('courses:general_view', course_id=course_id)
     else:
         form = CourseForm(instance=course)
-        initial = [{'program': p} for p in course.programs.all()]
-        prog_formset = CourseProgramFormSet(prefix='programs', initial=initial)
+    
+    program_forms = []
+    for i, program in enumerate(course.programs.all()):
+        program_form = ProgramRowForm(prefix=f'{PROGRAMS_PARAM_PREFIX}_{i}', initial={'program': program})
+        program_forms.append(program_form)
+    
+    if len(program_forms) == 0:
+        program_forms.append(ProgramRowForm())
 
     return render(request, 'courses/general_edit.html', {
         'course': course,
         'form': form,
-        'prog_formset': prog_formset,
+        'program_forms': program_forms,
+        'next_index': len(program_forms),
     })
+def course_general_program_form(request):
+    index = int(request.GET.get('index', 0))
 
+    program_form = ProgramRowForm(prefix=f'{PROGRAMS_PARAM_PREFIX}_{index}')
+    return render(
+        request,
+        'courses/partials/program_form.html',
+        {
+            'program_form': program_form,
+            'next_index': index,
+        }
+    )
 
 def course_equiv_view(request, course_id):
     course = get_object_or_404(
@@ -221,3 +240,5 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
             },
             encoder=import_string(settings.SELECT2_JSON_ENCODER),
         )
+    def get_queryset(self):
+        return Course.objects.prefetch_related('programs__school')
