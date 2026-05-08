@@ -7,8 +7,8 @@ urlpatterns = [
     path('add/', views.course_add, name='add'),
     
     # Restructured course pages
-    path('<int:course_id>/', views.course_general_view, name='view'),
-    path('<int:course_id>/edit/', views.course_general_edit, name='edit'),
+    path('<int:course_id>/', views.course_general_view, name='general_view'),
+    path('<int:course_id>/edit/', views.course_general_edit, name='general_edit'),
     
     path('<int:course_id>/equiv/', views.course_equiv_view, name='equiv_view'),
     path('<int:course_id>/equiv/edit/', views.course_equiv_edit, name='equiv_edit'),
