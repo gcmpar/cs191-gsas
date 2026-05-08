@@ -61,7 +61,7 @@ def course_general_view(request, course_id):
         Course.objects.prefetch_related('programs__school'),
         pk=course_id,
     )
-    return render(request, 'courses/view_general.html', {
+    return render(request, 'courses/general_view.html', {
         'course': course,
         'active_tab': 'general',
         'mode': 'view',
@@ -83,13 +83,13 @@ def course_general_edit(request, course_id):
                 if f.cleaned_data.get('program') and not f.cleaned_data.get('DELETE')
             ]
             course.programs.set(programs)
-            return redirect('courses:view', course_id=course_id)
+            return redirect('courses:general_view', course_id=course_id)
     else:
         form = CourseForm(instance=course)
         initial = [{'program': p} for p in course.programs.all()]
         prog_formset = CourseProgramFormSet(prefix='programs', initial=initial)
 
-    return render(request, 'courses/edit_general.html', {
+    return render(request, 'courses/general_edit.html', {
         'course': course,
         'form': form,
         'prog_formset': prog_formset,
@@ -190,7 +190,7 @@ def course_add(request):
         form = CourseForm(request.POST)
         if form.is_valid():
             course = form.save()
-            return redirect('courses:view', course_id=course.course_id)
+            return redirect('courses:general_view', course_id=course.course_id)
     else:
         form = CourseForm()
     return render(request, 'courses/add.html', {'form': form})
@@ -201,7 +201,7 @@ def course_delete(request, course_id):
     if request.method == 'POST':
         course.delete()
         return redirect('courses:search')
-    return redirect('courses:edit', course_id=course_id)
+    return redirect('courses:general_edit', course_id=course_id)
 
 
 class CoursesGroupedAutoResponseView(AutoResponseView):

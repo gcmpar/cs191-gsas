@@ -61,10 +61,10 @@
                 {% for course in courses_page %}
                   <tr>
                     <td>
-                      <a href="{% url 'courses:view' course.course_id %}">{{ course.course_code }}</a>
+                      <a href="{% url 'courses:general_view' course.course_id %}">{{ course.course_code }}</a>
                     </td>
                     <td>
-                      <a href="{% url 'courses:view' course.course_id %}">{{ course.course_name }}</a>
+                      <a href="{% url 'courses:general_view' course.course_id %}">{{ course.course_name }}</a>
                     </td>
                     <td>{{ course.units }}</td>
                   </tr>

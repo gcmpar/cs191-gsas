@@ -40,7 +40,7 @@
         <tr>
           <td>
             {% for c in mapping.equivalencemapcourses_set.all %}
-              <a href="{% url 'courses:view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %} + {% endif %}
+              <a href="{% url 'courses:general_view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %} + {% endif %}
             {% empty %}
               <span class="text-muted">None</span>
             {% endfor %}
@@ -69,12 +69,12 @@
         {% for entry in as_source %}
         <tr>
           <td>
-            <a href="{% url 'courses:view' entry.map.target_course.course_id %}"><strong>{{ entry.map.target_course.course_code }}</strong></a>
+            <a href="{% url 'courses:general_view' entry.map.target_course.course_id %}"><strong>{{ entry.map.target_course.course_code }}</strong></a>
           </td>
           <td>
             {% for c in entry.map.equivalencemapcourses_set.all %}
               {% if c.course.course_id != course.course_id %}
-                <a href="{% url 'courses:view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url 'courses:general_view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %}, {% endif %}
               {% endif %}
             {% endfor %}
           </td>

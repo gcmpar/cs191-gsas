@@ -59,7 +59,7 @@
         <tbody>
           {% for course in courses_page %}
             <tr style="cursor:pointer"
-                onclick="window.location='{% url 'courses:view' course.course_id %}'">
+                onclick="window.location='{% url 'courses:general_view' course.course_id %}'">
               <td>{{ course.course_id }}</td>
               <td>{{ course.course_code }}</td>
               <td>{{ course.course_name }}</td>
