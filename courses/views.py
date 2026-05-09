@@ -126,7 +126,7 @@ def course_equiv_view(request, course_id):
         course=course
     ).select_related('map__target_course').prefetch_related('map__equivalencemapcourses_set__course')
 
-    return render(request, 'courses/view_equiv.html', {
+    return render(request, 'courses/equiv_view.html', {
         'course': course,
         'as_target': as_target,
         'as_source': as_source,
@@ -180,7 +180,7 @@ def course_equiv_edit(request, course_id):
         ]
         new_map_formset = NewEquivMappingFormSet(prefix='new_map')
 
-    return render(request, 'courses/edit_equiv.html', {
+    return render(request, 'courses/equiv_edit.html', {
         'course': course,
         'map_formsets': map_formsets,
         'new_map_formset': new_map_formset,
