@@ -1,8 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.contrib import messages
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.utils.module_loading import import_string
 from django_select2.conf import settings
 from django_select2.views import AutoResponseView
@@ -12,11 +10,11 @@ from .forms import (
     CourseForm,
     CoursesQueryForm,
     ProgramRowForm,
-    EquivMapInlineFormSet,
-    NewEquivMappingFormSet,
+    EquivRowForm
 )
 
 PROGRAMS_PARAM_PREFIX = 'programs_'
+EQUIV_PARAM_PREFIX = 'equiv_'
 
 def programs_param_form_prefix(index):
     return f'{PROGRAMS_PARAM_PREFIX}{index}_'
@@ -47,6 +45,64 @@ def get_program_forms_from_course(course):
 
     return program_forms, next_index
 
+def equiv_param_form_prefix(map_id, index):
+    return f'{EQUIV_PARAM_PREFIX}{map_id}_{index}_'
+def equiv_param_id_index(param):
+    rest = param[len(EQUIV_PARAM_PREFIX):]
+    rest_split = rest.split('_')
+
+    map_id = int(rest_split[0])
+    index = int(rest_split[1])
+
+    return map_id, index
+def get_equiv_snapshot_from_request(request):
+    indices_map = {}
+    for param in request.POST.keys():
+        if param.startswith(EQUIV_PARAM_PREFIX):
+            map_id, index = equiv_param_id_index(param)
+            if map_id not in indices_map:
+                indices_map[map_id] = set()
+            indices_map[map_id].add(index)
+    
+    equiv_snapshot = {}
+    for map_id, indices in indices_map.items():
+        equiv_snapshot[map_id] = {
+            'equiv_forms': [
+                EquivRowForm(request.POST, prefix=equiv_param_form_prefix(map_id, i))
+                for i in indices
+            ],
+            'next_index': max(indices)+1 if indices else 0
+        }
+    return equiv_snapshot
+def get_equiv_snapshot_from_course(course):
+    existing_maps = EquivalenceMap.objects.filter(
+        target_course=course
+    ).prefetch_related(
+        'equivalencemapcourses_set__course'
+    ).order_by('map_id')
+
+    equiv_snapshot = {}
+
+    for equiv_map in existing_maps:
+        equiv_forms = []
+        for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
+            equiv_forms.append(
+                EquivRowForm(
+                    prefix=equiv_param_form_prefix(equiv_map.map_id, i),
+                    initial={
+                        'course': entry.course
+                    }
+                )
+            )
+
+        if len(equiv_forms) == 0:
+            equiv_forms.append(EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)))
+
+        equiv_snapshot[equiv_map.map_id] = {
+            'equiv_forms': equiv_forms,
+            'next_index': len(equiv_forms)
+        }
+    return equiv_snapshot
 
 
 
@@ -161,65 +217,95 @@ def course_equiv_view(request, course_id):
 
 def course_equiv_edit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    existing_maps = EquivalenceMap.objects.filter(
-        target_course=course
-    ).prefetch_related('equivalencemapcourses_set__course').order_by('map_id')
 
     if request.method == 'POST':
-        all_valid = True
-        bound_map_formsets = []
+        equiv_snapshot = get_equiv_snapshot_from_request(request)
 
-        for map_obj in existing_maps:
-            prefix = f'map_{map_obj.pk}'
-            fs = EquivMapInlineFormSet(request.POST, instance=map_obj, prefix=prefix)
-            bound_map_formsets.append((map_obj, fs))
-            if not fs.is_valid():
-                all_valid = False
+        if all(
+            form.is_valid()
+            for info in equiv_snapshot.values()
+            for form in info['equiv_forms']
+        ):
+            raw_snapshot = {
+                map_id: {
+                    form.cleaned_data['course'].course_id
+                    for form in info['equiv_forms']
+                    if form.cleaned_data.get('course')
+                } for map_id, info in equiv_snapshot.items()
+            }
 
-        new_fs = NewEquivMappingFormSet(request.POST, prefix='new_map')
-        if not new_fs.is_valid():
-            all_valid = False
+            for map_id, course_ids in raw_snapshot.items():
+                # Check validity first.
+                if EquivalenceMap.objects.filter(
+                    map_id=map_id,
+                    target_course=course,
+                ).first() is None:
+                    raise Http404()
 
-        if all_valid:
-            for map_obj, fs in bound_map_formsets:
-                fs.save()
+                equiv_map = get_object_or_404(
+                    EquivalenceMap,
+                    map_id=map_id,
+                    target_course=course,
+                )
 
-            new_courses = [
-                f.cleaned_data['course']
-                for f in new_fs
-                if f.cleaned_data.get('course') and not f.cleaned_data.get('DELETE')
-            ]
-            if new_courses:
-                new_map = EquivalenceMap.objects.create(target_course=course)
-                for c in new_courses:
-                    EquivalenceMapCourses.objects.create(map=new_map, course=c)
+                # Remove missing courses from equiv map
+                EquivalenceMapCourses.objects.filter(map=equiv_map).exclude(course_id__in=course_ids).delete()
+                
+                # Add new courses
+                existing_course_ids = set(EquivalenceMapCourses.objects.filter(map=equiv_map).values_list('course_id', flat=True))
+                EquivalenceMapCourses.objects.bulk_create([
+                    EquivalenceMapCourses(map=equiv_map, course_id=c_id)
+                    for c_id in course_ids
+                    if c_id not in existing_course_ids
+                ])
 
-            messages.success(request, 'Equivalence mappings saved.')
+            # Remove empty maps
+            EquivalenceMap.objects.filter(
+                target_course=course,
+                equivalencemapcourses__isnull=True
+            ).delete()
+
+            # Remove deleted maps
+            submitted_map_ids = set(raw_snapshot.keys())
+            EquivalenceMap.objects.filter(
+                target_course=course
+            ).exclude(
+                map_id__in=submitted_map_ids
+            ).delete()
+
             return redirect('courses:equiv_view', course_id=course_id)
-
-        map_formsets = bound_map_formsets
-        new_map_formset = new_fs
+                
     else:
-        map_formsets = [
-            (map_obj, EquivMapInlineFormSet(instance=map_obj, prefix=f'map_{map_obj.pk}'))
-            for map_obj in existing_maps
-        ]
-        new_map_formset = NewEquivMappingFormSet(prefix='new_map')
+        equiv_snapshot = get_equiv_snapshot_from_course(course)
 
     return render(request, 'courses/equiv_edit.html', {
         'course': course,
-        'map_formsets': map_formsets,
-        'new_map_formset': new_map_formset,
+        'equiv_snapshot': equiv_snapshot
     })
-
-
-@require_POST
-def course_equiv_delete(request, course_id, map_id):
+def course_equiv_map(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    mapping = get_object_or_404(EquivalenceMap, pk=map_id, target_course=course)
-    mapping.delete()
-    messages.success(request, 'Mapping deleted.')
-    return redirect('courses:equiv_edit', course_id=course_id)
+    equiv_map = EquivalenceMap.objects.create(target_course=course)
+
+    return render(
+        request,
+        'courses/partials/equiv_map.html',
+        {
+            'map_id': equiv_map.map_id,
+            'equiv_forms': []
+        }
+    )
+def course_equiv_form(request, map_id):
+    index = int(request.GET.get('index', 0))
+
+    equiv_map = get_object_or_404(EquivalenceMap, pk=map_id)
+    equiv_form = EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, index))
+    return render(
+        request,
+        'courses/partials/equiv_form.html',
+        {
+            'equiv_form': equiv_form,
+        }
+    )
 
 
 def course_add(request):

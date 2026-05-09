@@ -12,10 +12,11 @@ urlpatterns = [
     
     path('<int:course_id>/equiv/', views.course_equiv_view, name='equiv_view'),
     path('<int:course_id>/equiv/edit/', views.course_equiv_edit, name='equiv_edit'),
-    path('<int:course_id>/equiv/delete/<int:map_id>/', views.course_equiv_delete, name='equiv_delete'),
     
     path('<int:course_id>/delete/', views.course_delete, name='delete'),
 
     path('select2_courses_grouped/', views.CoursesGroupedAutoResponseView.as_view(), name='select2_courses_grouped'),
-    path('partials/general-program-form', views.course_general_program_form, name='partial_general_program_form')
+    path('partials/general-program-form', views.course_general_program_form, name='partial_general_program_form'),
+    path('partials/equiv_map/<int:course_id>', views.course_equiv_map, name='partial_equiv_map'),
+    path('partials/equiv_form/<int:map_id>', views.course_equiv_form, name='partial_equiv_form')
 ]

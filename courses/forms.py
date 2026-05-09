@@ -1,10 +1,9 @@
 from django.forms import (
     ModelForm, Form, CharField, ModelChoiceField,
-    formset_factory, inlineformset_factory
 )
 from django_select2.forms import ModelSelect2Widget
 from django.urls import reverse_lazy
-from .models import Course, EquivalenceMap, EquivalenceMapCourses
+from .models import Course
 from schools.models import School
 from schools.forms import SchoolsWidget
 from programs.models import Program
@@ -42,23 +41,6 @@ class CoursesQueryForm(Form):
         )
     )
 
-class ProgramRowForm(Form):
-    program = ModelChoiceField(
-        queryset=Program.objects.all(),
-        required=False,
-        widget=ProgramsWidget(
-            attrs={
-                'data-placeholder': 'Select associated Program',
-                'data-minimum-input-length': 0,
-                'name': 'programs[]'
-            }
-        ),
-    )
-
-# ---------------------------------------------------------------------------
-# Courses Select2 widget 
-# ---------------------------------------------------------------------------
-
 class CoursesWidget(ModelSelect2Widget):
     model = Course
     search_fields = [f'{field}__icontains' for field in COURSE_SEARCH_FIELDS]
@@ -70,38 +52,27 @@ class CoursesWidget(ModelSelect2Widget):
     def label_from_instance(self, course):
         return f"{course.course_code} - {course.course_name}"
 
-# ---------------------------------------------------------------------------
-# Equivalence Mapping formsets
-# ---------------------------------------------------------------------------
 
-class EquivalenceMapCoursesForm(ModelForm):
-    class Meta:
-        model = EquivalenceMapCourses
-        fields = ['course']
-        widgets = {
-            'course': CoursesWidget(attrs={
-                'data-placeholder': 'Source Course',
-                'data-minimum-input-length': 0,
-            }),
-        }
-
-# One inline formset per existing EquivalenceMap
-EquivMapInlineFormSet = inlineformset_factory(
-    EquivalenceMap,
-    EquivalenceMapCourses,
-    form=EquivalenceMapCoursesForm,
-    extra=1,
-    can_delete=True,
-)
-
-class NewEquivSourceRowForm(Form):
-    course = ModelChoiceField(
-        queryset=Course.objects.prefetch_related('programs__school').all(),
-        widget=CoursesWidget(attrs={
-            'data-placeholder': 'Source Course',
-            'data-minimum-input-length': 0,
-        }),
+class ProgramRowForm(Form):
+    program = ModelChoiceField(
+        queryset=Program.objects.all(),
         required=False,
+        widget=ProgramsWidget(
+            attrs={
+                'data-placeholder': 'Select associated Program',
+                'data-minimum-input-length': 0,
+            }
+        ),
     )
 
-NewEquivMappingFormSet = formset_factory(NewEquivSourceRowForm, extra=1, can_delete=True)
+class EquivRowForm(Form):
+    course = ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        widget=CoursesWidget(
+            attrs={
+                'data-placeholder': 'Select Course',
+                'data-minimum-input-length': 0,
+            }
+        ),
+    )
