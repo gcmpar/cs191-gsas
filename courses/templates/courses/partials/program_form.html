@@ -1,6 +1,8 @@
 {% load widget_tweaks %}
+{% load django_bootstrap5 %}
 
 <div class="program-form flex flex-row">
+    {% bootstrap_form_errors program_form %}
     {% render_field program_form.program class="w-25" %}
 
     <button
