@@ -1,4 +1,4 @@
-from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
+from django_select2.forms import ModelSelect2Widget
 from django.forms import ModelForm, Form, CharField, ModelChoiceField
 from django.urls import reverse_lazy
 from schools.models import School
