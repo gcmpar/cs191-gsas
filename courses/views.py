@@ -111,7 +111,7 @@ def course_general_edit(request, course_id):
             form.save()
 
             course.programs.set([
-                program_form.cleaned_data['program'].program_id
+                program_form.cleaned_data['program']
                 for program_form in program_forms
                 if program_form.cleaned_data.get('program')
             ])
