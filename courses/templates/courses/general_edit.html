@@ -37,7 +37,8 @@
       </div>
       <button
         type="button"
-        hx-get="{% url 'courses:partial_general_program_form' %}?index={{ next_index }}"
+        hx-get="{% url 'courses:partial_general_program_form' %}"
+        hx-vals="js:{index:getProgramsNextIndex()}"
         hx-target="#program-forms"
         hx-swap="beforeend"
       >Add Program</button>
@@ -69,6 +70,14 @@
               .djangoSelect2();
       }
   );
+
+  let programsNextIndex = {{ next_index }};
+
+  function getProgramsNextIndex() {
+      const current = programsNextIndex;
+      programsNextIndex += 1;
+      return current;
+  }
 </script>
 
 {% endblock extra_javascript %}
