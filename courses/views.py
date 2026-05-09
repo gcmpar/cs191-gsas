@@ -237,14 +237,14 @@ def course_equiv_edit(request, course_id):
             for map_id, course_ids in raw_snapshot.items():
                 # Check validity first.
                 if EquivalenceMap.objects.filter(
-                    map_id=map_id,
+                    pk=map_id,
                     target_course=course,
                 ).first() is None:
                     raise Http404()
 
                 equiv_map = get_object_or_404(
                     EquivalenceMap,
-                    map_id=map_id,
+                    pk=map_id,
                     target_course=course,
                 )
 
