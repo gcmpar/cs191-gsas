@@ -188,7 +188,7 @@ def course_equiv_edit(request, course_id):
 
 
 @require_POST
-def delete_equivalence_map(request, course_id, map_id):
+def course_equiv_delete(request, course_id, map_id):
     course = get_object_or_404(Course, pk=course_id)
     mapping = get_object_or_404(EquivalenceMap, pk=map_id, target_course=course)
     mapping.delete()

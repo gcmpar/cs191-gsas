@@ -107,7 +107,7 @@
 
 {# Hidden forms for entirely deleting a mapping #}
 {% for map_obj, _ in map_formsets %}
-<form id="delete-map-{{ map_obj.map_id }}" method="post" action="{% url 'courses:delete_equivalence' course.course_id map_obj.map_id %}" style="display:none;">
+<form id="delete-map-{{ map_obj.map_id }}" method="post" action="{% url 'courses:equiv_delete' course.course_id map_obj.map_id %}" style="display:none;">
     {% csrf_token %}
 </form>
 {% endfor %}
