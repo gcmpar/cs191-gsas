@@ -62,7 +62,7 @@
       <thead class="table-light">
         <tr>
           <th>Target Course</th>
-          <th>Other Source Courses in Mapping</th>
+          <th>Source Courses in Mapping</th>
         </tr>
       </thead>
       <tbody>
@@ -73,9 +73,7 @@
           </td>
           <td>
             {% for c in entry.map.equivalencemapcourses_set.all %}
-              {% if c.course.course_id != course.course_id %}
-                <a href="{% url 'courses:general_view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %}, {% endif %}
-              {% endif %}
+              <a href="{% url 'courses:general_view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </td>
         </tr>
