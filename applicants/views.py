@@ -3,36 +3,45 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Applicant
 from applications.models import Application, ApplicationTranscript
-from .forms import ApplicantForm
+from .forms import ApplicantForm, ApplicantsQueryForm
 
 
 SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'notes']
 
 def applicants_search(request):
-    query = request.GET.get('search')
-    filter_status = request.GET.getlist('status')
+    applicants = Applicant.objects.all()
 
-    applicants = Applicant.objects
+    query_form = ApplicantsQueryForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+        status = query_form.cleaned_data.get('status')
 
-    if query:
-        query_filter = Q()
-        for field in SEARCH_FIELDS:
-            query_filter |= Q(**{f'{field}__icontains': query})
-        applicants = applicants.filter(query_filter)
-    
-    if len(filter_status) > 0:
-        applicants = applicants.filter(applicant_status__in=filter_status)
+        if query:
+            query_filter = Q()
+            for field in SEARCH_FIELDS:
+                query_filter |= Q(**{f'{field}__icontains': query})
+            applicants = applicants.filter(query_filter)
+        
+        if status:
+            applicants = applicants.filter(applicant_status=status)
     
     applicants = applicants.order_by('applicant_id')
 
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
     paginator = Paginator(applicants, 15)
-    page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
     context = {
+        'page_param_name': page_param_name,
         'applicants_page': page,
         'search_query': query,
-        'filter_status': filter_status
+        'query_form': query_form,
+        'query_clear': query_clear
     }
     return render(request, 'applicants/search.html', context)
 

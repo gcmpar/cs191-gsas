@@ -1,40 +1,46 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-{% block title %}Edit Program #{{ program.program_id }}{% endblock title %}
+{% block title %}
+  Edit Program #{{ program.program_id }}
+{% endblock title %}
+
+{% block extra_head %}
+  {{ form.media.css }}
+{% endblock extra_head %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'programs:view' program.program_id %}" class="btn btn-secondary">← Cancel</a>
-  </div>
-  <form method="post" action="{% url 'programs:delete' program.program_id %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger"
-      onclick="return confirm('Delete this program? This cannot be undone.')">
-      Delete
-    </button>
-  </form>
-</div>
-
-<div class="card">
-  <div class="card-header"><h5 class="mb-0">Edit Program #{{ program.program_id }}</h5></div>
-  <div class="card-body">
-    <form method="post">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex gap-2">
+      <a href="{% url 'programs:view' program.program_id %}"
+         class="btn btn-secondary">← Cancel</a>
+    </div>
+    <form method="post" action="{% url 'programs:delete' program.program_id %}">
       {% csrf_token %}
-      {% for field in form %}
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger small">{{ field.errors }}</div>
-          {% endif %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="submit"
+              class="btn btn-danger"
+              onclick="return confirm('Delete this program? This cannot be undone.')">Delete</button>
     </form>
   </div>
-</div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Edit Program #{{ program.program_id }}</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
 
 {% endblock content %}
+
+{% block extra_javascript %}
+
+  {{ form.media.js }}
+
+{% endblock extra_javascript %}

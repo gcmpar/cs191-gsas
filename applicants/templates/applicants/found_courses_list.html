@@ -84,12 +84,12 @@
           {% for entry in course_list %}
           <tr>
             <td>
-              <a href="{% url 'courses:view' entry.course.course_id %}">
+              <a href="{% url 'courses:general_view' entry.course.course_id %}">
                 {{ entry.course.course_code }}
               </a>
             </td>
             <td>
-              <a href="{% url 'courses:view' entry.course.course_id %}">
+              <a href="{% url 'courses:general_view' entry.course.course_id %}">
                 {{ entry.course.course_name }}
               </a>
             </td>

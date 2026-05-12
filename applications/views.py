@@ -99,17 +99,15 @@ def applications_search(request):
     return render(request, 'applications/search.html', context)
 
 
-def application_view(request, application_id):
+def application_general_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
-    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
-
-    return render(request, 'applications/view.html', {
-        'applicant':            applicant,
-        'application':          application,
-        'transcript_entries':   {entry: get_equivalences(entry) for entry in entries},
-        'app_prereq_mappings':  _get_app_prereq_mappings(application),
+    return render(request, 'applications/view_general.html', {
+        'applicant':   applicant,
+        'application': application,
+        'active_tab':  'general',
+        'mode':        'view',
     })
 
 
@@ -126,21 +124,49 @@ def application_add(request):
     })
 
 
-def application_edit(request, application_id):
+def application_general_edit(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST, instance=application)
-        formset = ApplicationTranscriptFormSet(request.POST, instance=application)
-
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             application = form.save()
-            formset.instance = application
-            formset.save()
             return redirect('applications:view', application_id=application_id)
     else:
         form = ApplicationForm(instance=application)
+
+    return render(request, 'applications/edit_general.html', {
+        'applicant':   applicant,
+        'application': application,
+        'form':        form,
+        'active_tab':  'general',
+        'mode':        'edit',
+    })
+
+def application_transcripts_view(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+    applicant   = application.applicant
+    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
+
+    return render(request, 'applications/view_transcripts.html', {
+        'applicant':          applicant,
+        'application':        application,
+        'transcript_entries': {entry: get_equivalences(entry) for entry in entries},
+        'active_tab':         'transcripts',
+        'mode':               'view',
+    })
+
+def application_transcripts_edit(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+    applicant   = application.applicant
+
+    if request.method == 'POST':
+        formset = ApplicationTranscriptFormSet(request.POST, instance=application)
+        if formset.is_valid():
+            formset.save()
+            return redirect('applications:transcripts_view', application_id=application_id)
+    else:
         formset = ApplicationTranscriptFormSet(instance=application)
 
     for entry_form in formset:
@@ -149,23 +175,34 @@ def application_edit(request, application_id):
         else:
             entry_form.equivalences = []
 
-    # Courses already in this application's transcript (source selector).
-    transcript_courses = (
-        ApplicationTranscript.objects
-        .filter(application=application)
-        .select_related('course')
-        .order_by('course__course_code')
-    )
+    return render(request, 'applications/edit_transcripts.html', {
+        'applicant':   applicant,
+        'application': application,
+        'formset':     formset,
+        'active_tab':  'transcripts',
+        'mode':        'edit',
+    })
 
-    return render(request, 'applications/edit.html', {
-        'applicant':            applicant,
-        'application':          application,
-        'form':                 form,
-        'formset':              formset,
-        'transcript_courses':   transcript_courses,
-        'prereq_courses':       _get_prereq_courses(),
-        'app_prereq_mappings':  _get_app_prereq_mappings(application),
-        'all_prereq_mappings':  _get_all_prereq_mappings(),
+def application_prereq_view(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+    applicant   = application.applicant
+
+    return render(request, 'applications/view_prereq.html', {
+        'applicant':   applicant,
+        'application': application,
+        'active_tab':  'prereq',
+        'mode':        'view',
+    })
+
+def application_prereq_edit(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+    applicant   = application.applicant
+
+    return render(request, 'applications/edit_prereq.html', {
+        'applicant':   applicant,
+        'application': application,
+        'active_tab':  'prereq',
+        'mode':        'edit',
     })
 
 
@@ -280,16 +317,16 @@ def application_scan_tor(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
 
     if request.method != 'POST':
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     uploaded = request.FILES.get('tor_pdf')
     if not uploaded:
         messages.error(request, 'No PDF file was uploaded.')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     if not uploaded.name.lower().endswith('.pdf'):
         messages.error(request, 'Only PDF files are supported for TOR scanning.')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     # Write to a temporary file, run OCR, then immediately delete.
     try:
@@ -301,14 +338,14 @@ def application_scan_tor(request, application_id):
         courses = extract_courses_from_pdf(tmp_path)
     except Exception as exc:
         messages.error(request, f'OCR failed: {exc}')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
     if not courses:
         messages.warning(request, 'No courses could be extracted from the PDF. Please check the file and try again.')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     request.session[f'ocr_preview_{application_id}'] = courses
     return redirect('applications:ocr_preview', application_id=application_id)
@@ -323,7 +360,7 @@ def application_ocr_preview(request, application_id):
 
     if not scanned_courses:
         messages.error(request, 'No OCR data found. Please upload the TOR again.')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     all_courses = Course.objects.prefetch_related('programs__school').order_by('course_code')
 
@@ -378,7 +415,7 @@ def application_ocr_preview(request, application_id):
             messages.warning(request, err)
 
         messages.success(request, f'{saved} course(s) added to the transcript.')
-        return redirect('applications:edit', application_id=application_id)
+        return redirect('applications:transcripts_edit', application_id=application_id)
 
     # GET: build context — attempt auto-match on course_code for each scanned row.
     rows_context = []

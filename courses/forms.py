@@ -1,8 +1,13 @@
-from django.forms import ModelForm, widgets
+from django.forms import (
+    ModelForm, Form, CharField, ModelChoiceField,
+)
 from django_select2.forms import ModelSelect2Widget
 from django.urls import reverse_lazy
-from programs.models import Program
 from .models import Course
+from schools.models import School
+from schools.forms import SchoolsWidget
+from programs.models import Program
+from programs.forms import ProgramsWidget
 
 
 COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
@@ -10,19 +15,31 @@ COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
 class CourseForm(ModelForm):
     class Meta:
         model = Course
-        fields = ['programs', 'course_code', 'course_name', 'units', 'description']
-        widgets = {
-            'programs':    widgets.CheckboxSelectMultiple(),
-            'course_code': widgets.TextInput(attrs={'class': 'form-control'}),
-            'course_name': widgets.TextInput(attrs={'class': 'form-control'}),
-            'units':       widgets.NumberInput(attrs={'class': 'form-control'}),
-            'description': widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }
+        fields = ['course_code', 'course_name', 'units', 'description']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['programs'].queryset = Program.objects.select_related('school').all()
-        self.fields['programs'].label_from_instance = lambda obj: f"{obj.school.school_name} — {obj.program_name}"
+class CoursesQueryForm(Form):
+    search = CharField(required=False)
+    program = ModelChoiceField(
+        queryset=Program.objects.all(),
+        required=False,
+        widget=ProgramsWidget(
+            attrs={
+                'data-placeholder': 'Filter by Program',
+                'data-minimum-input-length': 0
+            },
+            dependent_fields={'school': 'school'}
+        )
+    )
+    school = ModelChoiceField(
+        queryset=School.objects.all(),
+        required=False,
+        widget=SchoolsWidget(
+            attrs={
+                'data-placeholder': 'Filter by School',
+                'data-minimum-input-length': 0
+            }
+        )
+    )
 
 class CoursesWidget(ModelSelect2Widget):
     model = Course
@@ -34,3 +51,28 @@ class CoursesWidget(ModelSelect2Widget):
 
     def label_from_instance(self, course):
         return f"{course.course_code} - {course.course_name}"
+
+
+class ProgramRowForm(Form):
+    program = ModelChoiceField(
+        queryset=Program.objects.all(),
+        required=False,
+        widget=ProgramsWidget(
+            attrs={
+                'data-placeholder': 'Select associated Program',
+                'data-minimum-input-length': 0,
+            }
+        ),
+    )
+
+class EquivRowForm(Form):
+    course = ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        widget=CoursesWidget(
+            attrs={
+                'data-placeholder': 'Select Course',
+                'data-minimum-input-length': 0,
+            }
+        ),
+    )

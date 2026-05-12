@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     'django_bootstrap5',
     'django_select2',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+BOOTSTRAP5 = {
+    "server_side_validation": False,
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Application #{{ application.application_id }} - Prerequisites{% endblock title %}
+
+{% block content %}
+
+{% include "applications/navigation_tabs.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+  </div>
+  <a href="{% url 'applications:prereq_edit' application.application_id %}" class="btn btn-primary">Edit Prerequisite Mapping</a>
+</div>
+
+{% include "applications/applicant_view.html" %}
+
+<div class="card mb-4" id="prereq-mappings-section">
+  <div class="card-header"><h5 class="mb-0">Prerequisite Mappings</h5></div>
+  <div class="card-body">
+    <p class="text-muted">Prerequisite mapping for applicants is reliant on a feature that will be implemented in the future. Please check back later.</p>
+  </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,15 @@
+<div class="card">
+    <div class="card-title">Map {{ map_id }}</div>
+    <div class="card-body" id="equiv-forms-{{ map_id }}">
+        {% for equiv_form in equiv_forms %}
+            {% include "courses/partials/equiv_form.html" %}
+        {% endfor %}
+    </div>
+    <button
+    type="button"
+    hx-get="{% url 'courses:partial_equiv_form' map_id %}"
+    hx-vals="js:{index:getEquivNextIndex({{ map_id }})}"
+    hx-target="#equiv-forms-{{ map_id }}"
+    hx-swap="beforeend"
+    >Add Course</button>
+</div>

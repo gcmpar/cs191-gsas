@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Edit Course #{{ course.course_id }} - Equivalence Mapping{% endblock title %}
+
+{% block extra_head %}
+
+{% for info in equiv_snapshot.values %}
+  {% for equiv_form in info.equiv_forms %}
+    {{ equiv_form.media.css }}
+  {% endfor %}
+{% endfor %}
+
+{% endblock extra_head %}
+
+{% block content %}
+
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% include "courses/navigation_tabs.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2">
+    <a href="{% url 'courses:equiv_view' course.course_id %}" class="btn btn-secondary">← Cancel</a>
+  </div>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+
+  <h4 class="mb-4">Edit Equivalence Mappings for {{ course.course_code }}</h4>
+
+  <div id="equiv-maps">
+  {% for map_id, info in equiv_snapshot.items %}
+    {% include "courses/partials/equiv_map.html" with equiv_forms=info.equiv_forms %}
+  {% endfor %}
+  </div>
+  <button
+    type="button"
+    hx-get="{% url 'courses:partial_equiv_map' course.course_id %}"
+    hx-target="#equiv-maps"
+    hx-swap="beforeend"
+    >Add Equivalence Map</button>
+  <button type="submit" class="btn btn-primary btn-lg w-100">Save All Changes</button>
+</form>
+
+{% endblock content %}
+
+{% block extra_javascript %}
+
+{% for info in equiv_snapshot.values %}
+  {% for equiv_form in info.equiv_forms %}
+    {{ equiv_form.media.js }}
+  {% endfor %}
+{% endfor %}
+
+<script>
+  document.body.addEventListener(
+      'htmx:afterSwap',
+      function(event) {
+          $(event.detail.target)
+          .find('.django-select2')
+          .not('.select2-hidden-accessible')
+          .djangoSelect2();
+      }
+  );
+
+  const equivNextIndices = {
+    {% for map_id, info in equiv_snapshot.items %}
+      {{ map_id }}: {{ info.next_index }},
+    {% endfor %}
+  }
+
+  function getEquivNextIndex(mapId) {
+      const current = equivNextIndices[mapId] ?? 0;
+      equivNextIndices[mapId] = current + 1;
+      return current;
+  }
+</script>
+
+{% endblock extra_javascript %}

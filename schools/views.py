@@ -2,15 +2,37 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import School
-from .forms import SchoolForm
+from .forms import SchoolForm, SchoolsQueryForm, RelatedProgramsQueryForm, RelatedAppsQueryForm
 from programs.models import Program
 from applications.models import Application
 
 
 def schools_search(request):
     schools = School.objects.all()
+
+    query_form = SchoolsQueryForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+
+        if query:
+            schools = schools.filter(Q(school_name__icontains=query))
+
+    schools = schools.order_by('school_id')
+
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
+    paginator = Paginator(schools, 15)
+    page = paginator.get_page(page_number)
+
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
     return render(request, 'schools/search.html', {
-        'schools': schools,
+        'page_param_name': page_param_name,
+        'schools_page': page,
+        'query_form': query_form,
+        'query_clear': query_clear
     })
 
 
@@ -18,34 +40,58 @@ def school_view(request, school_id):
     school = get_object_or_404(School, pk=school_id)
     
     programs = Program.objects.filter(school=school)
-    program_search = request.GET.get('program_search', '')
-    if program_search:
-        programs = programs.filter(
-            Q(program_name__icontains=program_search) | 
-            Q(description__icontains=program_search)
-        )
+    programs_query_form = RelatedProgramsQueryForm(request.GET, prefix='programs')
+    if programs_query_form.is_valid():
+        programs_query = programs_query_form.cleaned_data.get('search')
+        
+        if programs_query:
+            programs = programs.filter(
+                Q(program_name__icontains=programs_query) | 
+                Q(description__icontains=programs_query)
+            )
+    programs_page_param_name = 'programs_page'
+    program_page_number = request.GET.get(programs_page_param_name)
     program_paginator = Paginator(programs, 10)
-    program_page_number = request.GET.get('program_page')
     programs_page = program_paginator.get_page(program_page_number)
+    programs_query_clear = {
+        field.html_name: None for field in programs_query_form
+    }
+    programs_query_clear[programs_page_param_name] = None
     
     applications = Application.objects.filter(applicationtranscript__course__programs__school=school).select_related('applicant').distinct()
-    applicant_search = request.GET.get('applicant_search', '')
-    if applicant_search:
-        applications = applications.filter(
-            Q(applicant__first_name__icontains=applicant_search) |
-            Q(applicant__last_name__icontains=applicant_search) |
-            Q(application_number__icontains=applicant_search)
+    apps_query_form = RelatedAppsQueryForm(request.GET, prefix='apps')
+    if apps_query_form.is_valid():
+        apps_query = apps_query_form.cleaned_data.get('search')
+        
+        if apps_query:
+            applications = applications.filter(
+                Q(applicant__first_name__icontains=apps_query) |
+                Q(applicant__last_name__icontains=apps_query) |
+                Q(application_number__icontains=apps_query) |
+                Q(program__icontains=apps_query)
         )
-    applicant_paginator = Paginator(applications, 10)
-    applicant_page_number = request.GET.get('applicant_page')
-    applicants_page = applicant_paginator.get_page(applicant_page_number)
+    apps_page_param_name = 'apps_page'
+    apps_page_number = request.GET.get(apps_page_param_name)
+    apps_paginator = Paginator(applications, 10)
+    apps_page = apps_paginator.get_page(apps_page_number)
+    apps_query_clear = {
+        field.html_name: None for field in apps_query_form
+    }
+    apps_query_clear[apps_page_param_name] = None
 
     return render(request, 'schools/view.html', {
         'school': school,
+
+        'programs_page_param_name': programs_page_param_name,
         'programs_page': programs_page,
-        'program_search': program_search,
-        'applicants_page': applicants_page,
-        'applicant_search': applicant_search,
+        'programs_query_form': programs_query_form,
+
+        'apps_page_param_name': apps_page_param_name,
+        'apps_page': apps_page,
+        'apps_query_form': apps_query_form,
+        
+        'programs_query_clear': programs_query_clear,
+        'apps_query_clear': apps_query_clear
     })
 
 
