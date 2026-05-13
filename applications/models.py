@@ -106,61 +106,22 @@ class ApplicationTranscript(models.Model):
         ]
 
 
-class PrereqMapping(models.Model):
-    """
-    A reusable saved mapping template: a group of source courses maps to one
-    target prerequisite course. Example: [ICT18, ICT22] → CS135.
-    Shared across applications — saving the same logical mapping twice is blocked.
-    """
-    target_course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE,
-        related_name='prereq_mapping_targets',
-    )
+class PrerequisiteMap(models.Model):
+    map_id = models.AutoField('Prerequisite Map Id', primary_key=True)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    target_course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        db_table = 'prereq_mapping'
-
-    def source_course_ids_sorted(self):
-        """Return a frozenset of source course PKs — used for duplicate detection."""
-        return frozenset(self.source_courses.values_list('course_id', flat=True))
-
-    def __str__(self):
-        codes = ', '.join(
-            self.source_courses.select_related('course')
-                               .values_list('course__course_code', flat=True)
-                               .order_by('course__course_code')
-        )
-        return f'[{codes}] → {self.target_course.course_code}'
+        db_table = 'prerequisite_map'
 
 
-class PrereqMappingCourse(models.Model):
-    """Source courses belonging to a PrereqMapping."""
-    mapping = models.ForeignKey(PrereqMapping, on_delete=models.CASCADE,
-                                related_name='source_courses')
-    course  = models.ForeignKey(Course, on_delete=models.CASCADE)
+class PrerequisiteMapCourses(models.Model):
+    map_entry_id = models.AutoField('Prerequisite Map Courses Id', primary_key=True)
+    map = models.ForeignKey(PrerequisiteMap, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'prereq_mapping_course'
+        db_table = 'prerequisite_map_courses'
         constraints = [
-            models.UniqueConstraint(fields=['mapping', 'course'],
-                                    name='CPK_prereq_mapping_course')
-        ]
-
-
-class ApplicationPrereqMapping(models.Model):
-    """
-    Links a reusable PrereqMapping to a specific Application.
-    Removing this row only removes the link — the reusable template is preserved.
-    """
-    application = models.ForeignKey(Application, on_delete=models.CASCADE,
-                                    related_name='prereq_mappings')
-    mapping     = models.ForeignKey(PrereqMapping, on_delete=models.CASCADE,
-                                    related_name='application_usages')
-
-    class Meta:
-        db_table = 'application_prereq_mapping'
-        constraints = [
-            models.UniqueConstraint(fields=['application', 'mapping'],
-                                    name='CPK_application_prereq_mapping')
+            models.UniqueConstraint(fields=['map', 'course'], name='CPK_prerequisite_map_courses')
         ]

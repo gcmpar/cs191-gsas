@@ -1,0 +1,16 @@
+{% load widget_tweaks %}
+{% load django_bootstrap5 %}
+
+<div class="prereq-form d-flex align-items-center gap-2 mb-2">
+    {% bootstrap_form_errors course_form %}
+    <div class="flex-grow-1">
+        {% render_field course_form.course class="w-100" %}
+    </div>
+    <button
+        type="button"
+        class="btn btn-outline-danger"
+        onclick="this.closest('.prereq-form').remove()"
+    >
+        Remove
+    </button>
+</div>

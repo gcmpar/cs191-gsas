@@ -22,10 +22,9 @@ urlpatterns = [
     path('<int:application_id>/transcripts/scan-tor/', views.application_scan_tor, name='scan_tor'),
     path('<int:application_id>/transcripts/ocr-preview/', views.application_ocr_preview, name='ocr_preview'),
     
-    # Prerequisite AJAX endpoints (kept for future feature)
-    path('<int:application_id>/save-mapping/', views.application_save_mapping, name='save_mapping'),
-    path('<int:application_id>/load-mapping/', views.application_load_mapping, name='load_mapping'),
-    path('<int:application_id>/remove-mapping/', views.application_remove_mapping, name='remove_mapping'),
+    # Prerequisite HTMX endpoints
+    path('partials/prereq_map/<int:application_id>/', views.application_prereq_map, name='partial_prereq_map'),
+    path('partials/prereq_form/<int:map_id>/', views.application_prereq_form, name='partial_prereq_form'),
     
     # Batch actions
     path('batch-imports/', views.batch_import_history, name='batch_import_history'),

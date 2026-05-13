@@ -7,42 +7,92 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from .models import (
     Application, ApplicationTranscript,
-    PrereqMapping, PrereqMappingCourse, ApplicationPrereqMapping,
+    PrerequisiteMap, PrerequisiteMapCourses,
 )
 from applicants.models import Applicant
-from .forms import ApplicationForm, ApplicationTranscriptFormSet
+from .forms import (
+    ApplicationForm, ApplicationTranscriptFormSet,
+    PrereqMapForm, PrereqCourseForm,
+)
 from courses.models import Course, EquivalenceMapCourses, Prerequisite
 from common.ocr import extract_courses_from_pdf
 
 
-def _get_app_prereq_mappings(application):
-    """Return ApplicationPrereqMapping queryset for an application, fully prefetched."""
-    return (
-        ApplicationPrereqMapping.objects
-        .filter(application=application)
-        .select_related('mapping__target_course')
-        .prefetch_related('mapping__source_courses__course')
-    )
+PREREQ_MAP_PREFIX = 'prereq_map_'
+PREREQ_COURSE_PREFIX = 'prereq_course_'
 
+def prereq_map_form_prefix(map_id):
+    return f'{PREREQ_MAP_PREFIX}{map_id}_'
 
-def _get_all_prereq_mappings():
-    """All saved PrereqMapping templates, prefetched."""
-    return (
-        PrereqMapping.objects
-        .select_related('target_course')
-        .prefetch_related('source_courses__course')
-        .order_by('target_course__course_code')
-    )
+def prereq_course_form_prefix(map_id, index):
+    return f'{PREREQ_COURSE_PREFIX}{map_id}_{index}_'
 
+def get_prereq_snapshot_from_request(request):
+    map_ids = set()
+    for param in request.POST.keys():
+        if param.startswith(PREREQ_MAP_PREFIX):
+            map_id = param[len(PREREQ_MAP_PREFIX):].split('_')[0]
+            map_ids.add(int(map_id))
+            
+    indices_map = {map_id: set() for map_id in map_ids}
+    for param in request.POST.keys():
+        if param.startswith(PREREQ_COURSE_PREFIX):
+            rest = param[len(PREREQ_COURSE_PREFIX):].split('_')
+            map_id = int(rest[0])
+            index = int(rest[1])
+            if map_id in indices_map:
+                indices_map[map_id].add(index)
+            
+    snapshot = {}
+    for map_id in map_ids:
+        indices = indices_map[map_id]
+        snapshot[map_id] = {
+            'map_form': PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id)),
+            'course_forms': [
+                PrereqCourseForm(request.POST, prefix=prereq_course_form_prefix(map_id, i))
+                for i in indices
+            ],
+            'next_index': max(indices)+1 if indices else 0
+        }
+    return snapshot
 
-def _get_prereq_courses():
-    """Courses that appear as prerequisites (Prerequisite.prereq), deduplicated."""
-    prereq_ids = Prerequisite.objects.values_list('prereq_id', flat=True).distinct()
-    return Course.objects.filter(pk__in=prereq_ids).order_by('course_code')
+def get_prereq_snapshot_from_application(application):
+    existing_maps = PrerequisiteMap.objects.filter(
+        application=application
+    ).prefetch_related(
+        'prerequisitemapcourses_set__course'
+    ).order_by('map_id')
+
+    snapshot = {}
+    for prereq_map in existing_maps:
+        map_form = PrereqMapForm(
+            prefix=prereq_map_form_prefix(prereq_map.map_id),
+            initial={'target_course': prereq_map.target_course}
+        )
+        
+        course_forms = []
+        for i, entry in enumerate(prereq_map.prerequisitemapcourses_set.all()):
+            course_forms.append(
+                PrereqCourseForm(
+                    prefix=prereq_course_form_prefix(prereq_map.map_id, i),
+                    initial={'course': entry.course}
+                )
+            )
+            
+        if len(course_forms) == 0:
+            course_forms.append(PrereqCourseForm(prefix=prereq_course_form_prefix(prereq_map.map_id, 0)))
+            
+        snapshot[prereq_map.map_id] = {
+            'map_form': map_form,
+            'course_forms': course_forms,
+            'next_index': len(course_forms)
+        }
+    return snapshot
+
 
 
 SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
@@ -187,9 +237,14 @@ def application_prereq_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
+    prereq_maps = PrerequisiteMap.objects.filter(
+        application=application
+    ).prefetch_related('prerequisitemapcourses_set__course').order_by('map_id')
+
     return render(request, 'applications/view_prereq.html', {
         'applicant':   applicant,
         'application': application,
+        'prereq_maps': prereq_maps,
         'active_tab':  'prereq',
         'mode':        'view',
     })
@@ -198,12 +253,116 @@ def application_prereq_edit(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
+    if request.method == 'POST':
+        prereq_snapshot = get_prereq_snapshot_from_request(request)
+
+        # Validate all forms
+        all_valid = True
+        for info in prereq_snapshot.values():
+            if not info['map_form'].is_valid():
+                all_valid = False
+            for form in info['course_forms']:
+                if not form.is_valid():
+                    all_valid = False
+
+        if all_valid:
+            raw_snapshot = {}
+            for map_id, info in prereq_snapshot.items():
+                target_course = info['map_form'].cleaned_data.get('target_course')
+                if not target_course:
+                    continue # Skip maps without target course
+                
+                course_ids = {
+                    form.cleaned_data['course'].course_id
+                    for form in info['course_forms']
+                    if form.cleaned_data.get('course')
+                }
+                raw_snapshot[map_id] = {
+                    'target_course': target_course,
+                    'course_ids': course_ids
+                }
+
+            for map_id, data in raw_snapshot.items():
+                target_course = data['target_course']
+                course_ids = data['course_ids']
+
+                # Check if map exists for this application
+                if PrerequisiteMap.objects.filter(pk=map_id, application=application).first() is None:
+                    raise Http404()
+
+                prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id, application=application)
+                prereq_map.target_course = target_course
+                prereq_map.save()
+
+                # Remove missing courses from map
+                PrerequisiteMapCourses.objects.filter(map=prereq_map).exclude(course_id__in=course_ids).delete()
+                
+                # Add new courses
+                existing_course_ids = set(PrerequisiteMapCourses.objects.filter(map=prereq_map).values_list('course_id', flat=True))
+                PrerequisiteMapCourses.objects.bulk_create([
+                    PrerequisiteMapCourses(map=prereq_map, course_id=c_id)
+                    for c_id in course_ids
+                    if c_id not in existing_course_ids
+                ])
+
+            # Remove maps with empty target courses or empty source courses
+            PrerequisiteMap.objects.filter(
+                application=application,
+                prerequisitemapcourses__isnull=True
+            ).delete()
+
+            PrerequisiteMap.objects.filter(
+                application=application,
+                target_course__isnull=True
+            ).delete()
+
+            # Remove deleted maps entirely
+            submitted_map_ids = set(raw_snapshot.keys())
+            PrerequisiteMap.objects.filter(
+                application=application
+            ).exclude(
+                map_id__in=submitted_map_ids
+            ).delete()
+
+            return redirect('applications:prereq_view', application_id=application_id)
+                
+    else:
+        prereq_snapshot = get_prereq_snapshot_from_application(application)
+
     return render(request, 'applications/edit_prereq.html', {
         'applicant':   applicant,
         'application': application,
+        'prereq_snapshot': prereq_snapshot,
         'active_tab':  'prereq',
         'mode':        'edit',
     })
+
+def application_prereq_map(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+    prereq_map = PrerequisiteMap.objects.create(application=application)
+
+    return render(
+        request,
+        'applications/partials/prereq_map.html',
+        {
+            'map_id': prereq_map.map_id,
+            'map_form': PrereqMapForm(prefix=prereq_map_form_prefix(prereq_map.map_id)),
+            'course_forms': []
+        }
+    )
+
+def application_prereq_form(request, map_id):
+    index = int(request.GET.get('index', 0))
+
+    prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
+    course_form = PrereqCourseForm(prefix=prereq_course_form_prefix(prereq_map.map_id, index))
+    return render(
+        request,
+        'applications/partials/prereq_form.html',
+        {
+            'course_form': course_form,
+        }
+    )
 
 
 def application_delete(request, application_id):
@@ -214,102 +373,7 @@ def application_delete(request, application_id):
     return redirect('applications:edit', application_id=application_id)
 
 
-@require_POST
-def application_save_mapping(request, application_id):
-    """
-    AJAX endpoint. Creates a new PrereqMapping (if it doesn't already exist)
-    and links it to this application.
-    Returns JSON: {"status": "saved" | "exists" | "error", "message": "..."}
-    """
-    application = get_object_or_404(Application, pk=application_id)
 
-    source_ids = request.POST.getlist('source_course_ids[]')
-    target_id  = request.POST.get('target_course_id')
-
-    if not source_ids or not target_id:
-        return JsonResponse({'status': 'error', 'message': 'Source courses and target course are required.'})
-
-    try:
-        target_course = Course.objects.get(pk=target_id)
-        source_courses = Course.objects.filter(pk__in=source_ids)
-        if source_courses.count() != len(source_ids):
-            raise Course.DoesNotExist
-    except Course.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'One or more courses not found.'})
-
-    source_id_set = frozenset(int(i) for i in source_ids)
-
-    # Check for an identical existing mapping (same source set + same target).
-    existing = None
-    for pm in PrereqMapping.objects.filter(target_course=target_course).prefetch_related('source_courses'):
-        if pm.source_course_ids_sorted() == source_id_set:
-            existing = pm
-            break
-
-    if existing:
-        # Link to this application if not already linked.
-        _, created = ApplicationPrereqMapping.objects.get_or_create(
-            application=application,
-            mapping=existing,
-        )
-        if created:
-            return JsonResponse({
-                'status': 'exists',
-                'message': f'Mapping [{existing}] already exists and has been added to this application.',
-                'mapping_id': existing.pk,
-                'label': str(existing),
-            })
-        return JsonResponse({
-            'status': 'exists',
-            'message': f'Mapping [{existing}] already exists and is already on this application.',
-            'mapping_id': existing.pk,
-            'label': str(existing),
-        })
-
-    # Create new reusable mapping.
-    new_mapping = PrereqMapping.objects.create(target_course=target_course)
-    for course in source_courses:
-        PrereqMappingCourse.objects.create(mapping=new_mapping, course=course)
-
-    ApplicationPrereqMapping.objects.create(application=application, mapping=new_mapping)
-
-    return JsonResponse({
-        'status': 'saved',
-        'message': f'Mapping [{new_mapping}] saved and added to this application.',
-        'mapping_id': new_mapping.pk,
-        'label': str(new_mapping),
-    })
-
-
-@require_POST
-def application_load_mapping(request, application_id):
-    """Load an existing PrereqMapping onto this application."""
-    application = get_object_or_404(Application, pk=application_id)
-    mapping_id  = request.POST.get('mapping_id')
-    mapping     = get_object_or_404(PrereqMapping, pk=mapping_id)
-
-    _, created = ApplicationPrereqMapping.objects.get_or_create(
-        application=application,
-        mapping=mapping,
-    )
-    if created:
-        messages.success(request, f'Mapping [{mapping}] loaded onto this application.')
-    else:
-        messages.info(request, f'Mapping [{mapping}] is already applied to this application.')
-
-    return redirect('applications:edit', application_id=application_id)
-
-
-@require_POST
-def application_remove_mapping(request, application_id):
-    """Remove an ApplicationPrereqMapping link (does not delete the reusable template)."""
-    get_object_or_404(Application, pk=application_id)  # existence check
-    app_mapping_id = request.POST.get('app_mapping_id')
-    app_mapping    = get_object_or_404(ApplicationPrereqMapping, pk=app_mapping_id,
-                                       application_id=application_id)
-    app_mapping.delete()
-    messages.success(request, 'Mapping removed from this application.')
-    return redirect('applications:edit', application_id=application_id)
 
 
 def application_scan_tor(request, application_id):

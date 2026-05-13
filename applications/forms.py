@@ -1,8 +1,9 @@
-from django.forms import ModelForm, DateInput, inlineformset_factory
+from django.forms import ModelForm, Form, ModelChoiceField, DateInput, inlineformset_factory
 from django_select2.forms import Select2Widget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
 from courses.forms import CoursesWidget
+from courses.models import Course
 
 
 class ApplicationForm(ModelForm):
@@ -75,3 +76,27 @@ ApplicationTranscriptFormSet = inlineformset_factory(
     extra=1,
     can_delete=True
 )
+
+class PrereqMapForm(Form):
+    target_course = ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=True,
+        widget=CoursesWidget(
+            attrs={
+                'data-placeholder': 'Select Target Course',
+                'data-minimum-input-length': 0,
+            }
+        ),
+    )
+
+class PrereqCourseForm(Form):
+    course = ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        widget=CoursesWidget(
+            attrs={
+                'data-placeholder': 'Select Prerequisite Course',
+                'data-minimum-input-length': 0,
+            }
+        ),
+    )
