@@ -154,8 +154,6 @@ def application_general_view(request, application_id):
     return render(request, 'applications/general_view.html', {
         'applicant':   applicant,
         'application': application,
-        'active_tab':  'general',
-        'mode':        'view',
     })
 
 
@@ -188,8 +186,6 @@ def application_general_edit(request, application_id):
         'applicant':   applicant,
         'application': application,
         'form':        form,
-        'active_tab':  'general',
-        'mode':        'edit',
     })
 
 def application_transcripts_view(request, application_id):
@@ -201,8 +197,6 @@ def application_transcripts_view(request, application_id):
         'applicant':          applicant,
         'application':        application,
         'transcript_entries': {entry: get_equivalences(entry) for entry in entries},
-        'active_tab':         'transcripts',
-        'mode':               'view',
     })
 
 def application_transcripts_edit(request, application_id):
@@ -227,8 +221,6 @@ def application_transcripts_edit(request, application_id):
         'applicant':   applicant,
         'application': application,
         'formset':     formset,
-        'active_tab':  'transcripts',
-        'mode':        'edit',
     })
 
 def application_prereq_view(request, application_id):
@@ -243,8 +235,6 @@ def application_prereq_view(request, application_id):
         'applicant':   applicant,
         'application': application,
         'prereq_maps': prereq_maps,
-        'active_tab':  'prereq',
-        'mode':        'view',
     })
 
 def application_prereq_edit(request, application_id):
@@ -331,8 +321,6 @@ def application_prereq_edit(request, application_id):
         'applicant':   applicant,
         'application': application,
         'prereq_snapshot': prereq_snapshot,
-        'active_tab':  'prereq',
-        'mode':        'edit',
     })
 
 def application_prereq_map(request, application_id):

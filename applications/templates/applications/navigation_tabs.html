@@ -1,20 +1,22 @@
-<ul class="nav nav-tabs mb-4">
-  <li class="nav-item">
-    <a class="nav-link {% if active_tab == 'general' %}active{% endif %}" 
-       href="{% if mode == 'edit' %}{% url 'applications:edit' application.application_id %}{% else %}{% url 'applications:view' application.application_id %}{% endif %}">
-       General
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link {% if active_tab == 'transcripts' %}active{% endif %}" 
-       href="{% if mode == 'edit' %}{% url 'applications:transcripts_edit' application.application_id %}{% else %}{% url 'applications:transcripts_view' application.application_id %}{% endif %}">
-       Past Course Transcripts
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link {% if active_tab == 'prereq' %}active{% endif %}" 
-       href="{% if mode == 'edit' %}{% url 'applications:prereq_edit' application.application_id %}{% else %}{% url 'applications:prereq_view' application.application_id %}{% endif %}">
-       Prerequisite Mapping
-    </a>
-  </li>
-</ul>
+{% with request.resolver_match.view_name as view_name %}
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link {% if view_name == 'applications:general_view' or view_name == 'applications:general_edit' %}active{% endif %}" 
+        href="{% url 'applications:view' application.application_id %}">
+        General
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if view_name == 'applications:transcripts_view' or view_name == 'applications:transcripts_edit' %}active{% endif %}" 
+        href="{% url 'applications:transcripts_view' application.application_id %}">
+        Past Course Transcripts
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if view_name == 'applications:prereq_view' or view_name == 'applications:prereq_edit' %}active{% endif %}" 
+        href="{% url 'applications:prereq_view' application.application_id %}">
+        Prerequisite Mapping
+      </a>
+    </li>
+  </ul>
+{% endwith %}
