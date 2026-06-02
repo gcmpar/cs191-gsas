@@ -30,10 +30,9 @@
         <form method="get">
 
           {% bootstrap_field query_form.search show_label=False %}
-          <button type="submit" class="btn btn-light">Search</button>
 
           {% bootstrap_field query_form.status show_label=False %}
-          <button type="submit" class="btn btn-light">Apply</button>
+          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
 
           {% if query_form.search.value or query_form.status.value %}
             <a href="{% querystring query_clear %}" class="btn btn-sm btn-secondary">Clear</a>
