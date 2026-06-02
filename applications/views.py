@@ -151,7 +151,7 @@ def application_general_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
 
-    return render(request, 'applications/view_general.html', {
+    return render(request, 'applications/general_view.html', {
         'applicant':   applicant,
         'application': application,
         'active_tab':  'general',
