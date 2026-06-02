@@ -1,5 +1,6 @@
 from gsas.admin import admin_site
 from django.urls import path, include
+from django.shortcuts import redirect
 
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('courses/', include('courses.urls')),
 
     path("select2/", include("django_select2.urls")),
+    path('', lambda request: redirect('home:home', permanent=False))
 ]
