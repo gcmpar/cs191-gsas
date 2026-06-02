@@ -197,7 +197,7 @@ def application_transcripts_view(request, application_id):
     applicant   = application.applicant
     entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
 
-    return render(request, 'applications/view_transcripts.html', {
+    return render(request, 'applications/transcripts_view.html', {
         'applicant':          applicant,
         'application':        application,
         'transcript_entries': {entry: get_equivalences(entry) for entry in entries},
