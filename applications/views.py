@@ -11,7 +11,7 @@ from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from .models import (
     Application, ApplicationTranscript,
-    PrerequisiteMap, PrerequisiteMapCourses,
+    PrerequisiteMap, PrerequisiteMapCourses, BatchImport
 )
 from applicants.models import Applicant
 from .forms import (
@@ -570,7 +570,6 @@ def batch_import_confirm(request):
         application_statuses = request.POST.getlist('application_status[]')
         notes_list = request.POST.getlist('notes[]')
         
-        from .models import BatchImport
         batch_import = BatchImport.objects.create()
         
         for i in range(len(app_nos)):
@@ -602,7 +601,6 @@ def batch_import_confirm(request):
     })
 
 def batch_import_history(request):
-    from .models import BatchImport
     imports = BatchImport.objects.all().order_by('-date_imported')
     paginator = Paginator(imports, 15)
     page_number = request.GET.get('page')
@@ -613,7 +611,6 @@ def batch_import_history(request):
     })
 
 def batch_import_detail(request, import_id):
-    from .models import BatchImport
     batch = get_object_or_404(BatchImport, pk=import_id)
     applications = Application.objects.filter(batch_import=batch).select_related('applicant')
     
