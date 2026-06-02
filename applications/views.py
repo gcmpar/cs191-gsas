@@ -239,7 +239,7 @@ def application_prereq_view(request, application_id):
         application=application
     ).prefetch_related('prerequisitemapcourses_set__course').order_by('map_id')
 
-    return render(request, 'applications/view_prereq.html', {
+    return render(request, 'applications/prereq_view.html', {
         'applicant':   applicant,
         'application': application,
         'prereq_maps': prereq_maps,
