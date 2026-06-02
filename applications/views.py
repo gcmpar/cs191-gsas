@@ -1,6 +1,7 @@
 import json
 import tempfile
 import os
+import difflib
 import openpyxl
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
@@ -16,7 +17,7 @@ from .models import (
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptFormSet,
-    PrereqMapForm, PrereqCourseForm,
+    PrereqMapForm, PrereqCourseForm, BatchImportFormSet,
 )
 from courses.models import Course, EquivalenceMapCourses
 from common.ocr import extract_courses_from_pdf
@@ -563,41 +564,66 @@ def batch_import_confirm(request):
         return redirect('applications:batch_import_upload')
 
     if request.method == 'POST':
-        app_nos = request.POST.getlist('application_number[]')
-        applicant_ids = request.POST.getlist('applicant_id[]')
-        programs = request.POST.getlist('program[]')
-        study_loads = request.POST.getlist('study_load[]')
-        application_statuses = request.POST.getlist('application_status[]')
-        notes_list = request.POST.getlist('notes[]')
-        
-        batch_import = BatchImport.objects.create()
-        
-        for i in range(len(app_nos)):
-            app_id = applicant_ids[i]
-            if not app_id:
-                continue
+        formset = BatchImportFormSet(request.POST)
+        if formset.is_valid():
+            batch_import = BatchImport.objects.create()
+            
+            for form in formset:
+                application = form.save(commit=False)
+                application.date_applied = date.today()
+                application.batch_import = batch_import
+                application.save()
                 
-            applicant = get_object_or_404(Applicant, pk=app_id)
-            Application.objects.create(
-                applicant=applicant,
-                application_number=app_nos[i],
-                application_status=application_statuses[i],
-                date_applied=date.today(),
-                program=programs[i],
-                study_load=study_loads[i],
-                notes=notes_list[i],
-                batch_import=batch_import
-            )
-            
-        if 'batch_import_data' in request.session:
-            del request.session['batch_import_data']
-            
-        return redirect('applications:batch_import_history')
+            if 'batch_import_data' in request.session:
+                del request.session['batch_import_data']
+                
+            return redirect('applications:batch_import_history')
         
-    applicants = Applicant.objects.all().order_by('last_name', 'first_name')
+    else:
+        initial_data = []
+        applicants = list(Applicant.objects.all())
+        for row in data:
+            matching_applicant = None
+            row_email = (row.get('email') or '').strip().lower()
+            
+            if row_email:
+                for app in applicants:
+                    if (app.email or '').strip().lower() == row_email:
+                        matching_applicant = app
+                        break
+            
+            if not matching_applicant:
+                target_name = f"{row.get('first_name', '')} {row.get('last_name', '')}".strip().lower()
+                if target_name:
+                    best_match = None
+                    best_ratio = 0.0
+                    for app in applicants:
+                        app_name = f"{app.first_name} {app.last_name}".strip().lower()
+                        ratio = difflib.SequenceMatcher(None, target_name, app_name).ratio()
+                        if ratio > best_ratio:
+                            best_ratio = ratio
+                            best_match = app
+                    
+                    if best_ratio > 0.8:
+                        matching_applicant = best_match
+
+            applicant_id = matching_applicant.pk if matching_applicant else None
+            
+            initial_data.append({
+                'application_number': row.get('application_number'),
+                'scanned_name': f"{row.get('last_name')}, {row.get('first_name')} {row.get('middle_name')}".strip(),
+                'scanned_email': row.get('email'),
+                'scanned_contact_number': row.get('contact_number'),
+                'applicant': applicant_id,
+                'program': row.get('program'),
+                'study_load': row.get('study_load'),
+                'application_status': row.get('application_status'),
+                'notes': row.get('notes'),
+            })
+        formset = BatchImportFormSet(initial=initial_data)
+        
     return render(request, 'applications/batch_import_confirm.html', {
-        'data': data,
-        'applicants': applicants
+        'formset': formset,
     })
 
 def batch_import_history(request):

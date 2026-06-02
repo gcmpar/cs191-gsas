@@ -4,6 +4,7 @@ from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
 from courses.forms import CoursesWidget
 from courses.models import Course
+from django.forms import formset_factory
 
 
 class ApplicationForm(ModelForm):
@@ -113,3 +114,38 @@ class PrereqCourseForm(Form):
             }
         ),
     )
+
+class BatchImportRowForm(ModelForm):
+    scanned_name = CharField(disabled=True, required=False)
+    scanned_email = CharField(disabled=True, required=False)
+    scanned_contact_number = CharField(disabled=True, required=False)
+
+    class Meta:
+        model = Application
+        fields = ['application_number', 'applicant', 'program', 'study_load', 'application_status', 'notes']
+        widgets = {
+            'applicant': ApplicantsWidget(
+                attrs={
+                    'data-placeholder': 'Select Applicant...',
+                    'data-minimum-input-length': 0,
+                },
+                select2_options={'width': '100%'},
+            ),
+            'program': Select2Widget(
+                attrs={
+                    'data-placeholder': 'Program',
+                }
+            ),
+            'study_load': Select2Widget(
+                attrs={
+                    'data-placeholder': 'Study Load',
+                }
+            ),
+            'application_status': Select2Widget(
+                attrs={
+                    'data-placeholder': 'Status',
+                }
+            ),
+        }
+
+BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
