@@ -136,26 +136,4 @@
 
 {{ formset.media.js }}
 
-<script>
-  let isSubmitting = false;
-
-  document.getElementById('mainEditForm').addEventListener('submit', function () {
-    isSubmitting = true;
-  });
-
-  document.getElementById('scanTorForm').addEventListener('submit', function () {
-    isSubmitting = true;
-    var btn = document.getElementById('scanTorBtn');
-    btn.disabled = true;
-    btn.textContent = 'Scanning...';
-  });
-
-  window.addEventListener('beforeunload', function (e) {
-    if (!isSubmitting) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
-  });
-</script>
-
 {% endblock extra_javascript %}
