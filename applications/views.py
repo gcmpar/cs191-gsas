@@ -327,7 +327,7 @@ def application_prereq_edit(request, application_id):
     else:
         prereq_snapshot = get_prereq_snapshot_from_application(application)
 
-    return render(request, 'applications/edit_prereq.html', {
+    return render(request, 'applications/prereq_edit.html', {
         'applicant':   applicant,
         'application': application,
         'prereq_snapshot': prereq_snapshot,
