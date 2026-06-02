@@ -223,7 +223,7 @@ def application_transcripts_edit(request, application_id):
         else:
             entry_form.equivalences = []
 
-    return render(request, 'applications/edit_transcripts.html', {
+    return render(request, 'applications/transcripts_edit.html', {
         'applicant':   applicant,
         'application': application,
         'formset':     formset,
