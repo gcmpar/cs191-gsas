@@ -184,7 +184,7 @@ def application_general_edit(request, application_id):
     else:
         form = ApplicationForm(instance=application)
 
-    return render(request, 'applications/edit_general.html', {
+    return render(request, 'applications/general_edit.html', {
         'applicant':   applicant,
         'application': application,
         'form':        form,
