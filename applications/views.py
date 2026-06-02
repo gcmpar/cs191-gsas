@@ -25,6 +25,8 @@ from common.ocr import extract_courses_from_pdf
 PREREQ_MAP_PREFIX = 'prereq_map_'
 PREREQ_COURSE_PREFIX = 'prereq_course_'
 
+SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
+
 def prereq_map_form_prefix(map_id):
     return f'{PREREQ_MAP_PREFIX}{map_id}_'
 
@@ -92,11 +94,6 @@ def get_prereq_snapshot_from_application(application):
             'next_index': len(course_forms)
         }
     return snapshot
-
-
-
-SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
-
 
 def get_equivalences(entry):
     
