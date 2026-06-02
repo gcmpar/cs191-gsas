@@ -25,6 +25,7 @@
                     <th>Program</th>
                     <th>Status</th>
                     <th>Actions</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +37,19 @@
                     <td>{{ app.application_status }}</td>
                     <td>
                         <a href="{% url 'applications:general_view' app.application_id %}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                    <td>
+                        <form method="post"
+                                action="{% url 'applications:scan_tor' app.application_id %}"
+                                enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <input type="file" name="tor_pdf" accept=".pdf" class="form-control" style="max-width: 380px;" required>
+                            <button type="submit" class="btn btn-primary" id="scanTorBtn">
+                                Scan TOR
+                            </button>
+                            </div>
+                        </form>
                     </td>
                 </tr>
                 {% empty %}
