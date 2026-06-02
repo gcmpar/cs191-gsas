@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         {% for app in applications %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'applications:view' app.application_id %}'">
+        <tr style="cursor:pointer" onclick="window.location='{% url 'applications:general_view' app.application_id %}'">
           <td>{{ app.application_id }}</td>
           <td>{{ app.application_number }}</td>
           <td>{{ app.program }}</td>

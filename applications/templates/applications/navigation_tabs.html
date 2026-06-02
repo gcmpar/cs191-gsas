@@ -2,7 +2,7 @@
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
       <a class="nav-link {% if view_name == 'applications:general_view' or view_name == 'applications:general_edit' %}active{% endif %}" 
-        href="{% url 'applications:view' application.application_id %}">
+        href="{% url 'applications:general_view' application.application_id %}">
         General
       </a>
     </li>

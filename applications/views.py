@@ -162,7 +162,7 @@ def application_add(request):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save()
-            return redirect('applications:view', application_id=application.application_id)
+            return redirect('applications:general_view', application_id=application.application_id)
     else:
         form = ApplicationForm()
     return render(request, 'applications/add.html', {
@@ -178,7 +178,7 @@ def application_general_edit(request, application_id):
         form = ApplicationForm(request.POST, instance=application)
         if form.is_valid():
             application = form.save()
-            return redirect('applications:view', application_id=application_id)
+            return redirect('applications:general_view', application_id=application_id)
     else:
         form = ApplicationForm(instance=application)
 
@@ -356,7 +356,7 @@ def application_delete(request, application_id):
     if request.method == 'POST':
         application.delete()
         return redirect('applications:search')
-    return redirect('applications:edit', application_id=application_id)
+    return redirect('applications:general_edit', application_id=application_id)
 
 
 

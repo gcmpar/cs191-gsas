@@ -55,7 +55,7 @@
       </thead>
       <tbody>
         {% for application in applications_page %}
-        <tr style="cursor:pointer" onclick="window.location='{% url 'applications:view' application.application_id %}'">
+        <tr style="cursor:pointer" onclick="window.location='{% url 'applications:general_view' application.application_id %}'">
           <td>{{ application.application_id }}</td>
           <td>{{ application.application_number }}</td>
           <td>

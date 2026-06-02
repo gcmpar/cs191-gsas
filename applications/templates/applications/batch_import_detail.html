@@ -33,7 +33,7 @@
                     <td>{{ app.program }}</td>
                     <td>{{ app.application_status }}</td>
                     <td>
-                        <a href="{% url 'applications:view' app.application_id %}" class="btn btn-sm btn-primary">View</a>
+                        <a href="{% url 'applications:general_view' app.application_id %}" class="btn btn-sm btn-primary">View</a>
                     </td>
                 </tr>
                 {% empty %}

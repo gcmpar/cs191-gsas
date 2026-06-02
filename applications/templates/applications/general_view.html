@@ -9,7 +9,7 @@
   <div class="d-flex gap-2">
     <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
   </div>
-  <a href="{% url 'applications:edit' application.application_id %}" class="btn btn-primary">Edit General Info</a>
+  <a href="{% url 'applications:general_edit' application.application_id %}" class="btn btn-primary">Edit General Info</a>
 </div>
 
 {% include "applications/applicant_view.html" %}

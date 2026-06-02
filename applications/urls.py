@@ -7,8 +7,8 @@ urlpatterns = [
     path('add/', views.application_add, name='add'),
     
     # Restructured application pages
-    path('<int:application_id>/', views.application_general_view, name='view'),
-    path('<int:application_id>/edit/', views.application_general_edit, name='edit'),
+    path('<int:application_id>/', views.application_general_view, name='general_view'),
+    path('<int:application_id>/edit/', views.application_general_edit, name='general_edit'),
     
     path('<int:application_id>/transcripts/', views.application_transcripts_view, name='transcripts_view'),
     path('<int:application_id>/transcripts/edit/', views.application_transcripts_edit, name='transcripts_edit'),
