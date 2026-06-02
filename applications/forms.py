@@ -1,5 +1,5 @@
-from django.forms import ModelForm, Form, ModelChoiceField, DateInput, inlineformset_factory
-from django_select2.forms import Select2Widget
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
 from courses.forms import CoursesWidget
@@ -35,6 +35,19 @@ class ApplicationForm(ModelForm):
                 }
             ),
         }
+
+class ApplicationsQueryForm(Form):
+    search = CharField(required=False)
+    status = MultipleChoiceField(
+        choices=Application.Status.choices,
+        required=False,
+        widget=Select2MultipleWidget(
+            attrs={
+                'data-placeholder': 'Status',
+                'data-minimum-input-length': 0,
+            },
+        )
+    )
 
 
 class ApplicationTranscriptForm(ModelForm):

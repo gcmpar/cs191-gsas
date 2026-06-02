@@ -15,10 +15,10 @@ from .models import (
 )
 from applicants.models import Applicant
 from .forms import (
-    ApplicationForm, ApplicationTranscriptFormSet,
+    ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptFormSet,
     PrereqMapForm, PrereqCourseForm,
 )
-from courses.models import Course, EquivalenceMapCourses, Prerequisite
+from courses.models import Course, EquivalenceMapCourses
 from common.ocr import extract_courses_from_pdf
 
 
@@ -121,19 +121,21 @@ def get_equivalences(entry):
 
 
 def applications_search(request):
-    query = request.GET.get('search')
-    filter_status = request.GET.getlist('status')
-
     applications = Application.objects.select_related('applicant')
 
-    if query:
-        query_filter = Q()
-        for field in SEARCH_FIELDS:
-            query_filter |= Q(**{f'{field}__icontains': query})
-        applications = applications.filter(query_filter)
-    
-    if len(filter_status) > 0:
-        applications = applications.filter(application_status__in=filter_status)
+    query_form = ApplicationsQueryForm(request.GET)
+    if query_form.is_valid():
+        query = query_form.cleaned_data.get('search')
+        status = query_form.cleaned_data.get('status')
+
+        if query:
+            query_filter = Q()
+            for field in SEARCH_FIELDS:
+                query_filter |= Q(**{f'{field}__icontains': query})
+            applications = applications.filter(query_filter)
+        
+        if status:
+            applications = applications.filter(application_status__in=status)
     
     applications = applications.order_by('-date_applied')
 
@@ -143,8 +145,7 @@ def applications_search(request):
 
     context = {
         'applications_page': page,
-        'search_query': query,
-        'filter_status': filter_status
+        'query_form': query_form,
     }
     return render(request, 'applications/search.html', context)
 
