@@ -139,7 +139,6 @@ def courses_search(request):
     return render(request, 'courses/search.html', {
         'page_param_name': page_param_name,
         'courses_page': page,
-        'search_query': query,
         'query_form': query_form,
         'query_clear': query_clear
     })

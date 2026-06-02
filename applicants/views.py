@@ -39,7 +39,6 @@ def applicants_search(request):
     context = {
         'page_param_name': page_param_name,
         'applicants_page': page,
-        'search_query': query,
         'query_form': query_form,
         'query_clear': query_clear
     }

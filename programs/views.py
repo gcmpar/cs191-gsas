@@ -41,7 +41,6 @@ def programs_search(request):
     return render(request, 'programs/search.html', {
         'page_param_name': page_param_name,
         'programs_page': page,
-        'search_query': query,
         'query_form': query_form,
         'query_clear': query_clear
     })
