@@ -636,21 +636,48 @@ def application_ocr_preview(request, application_id):
 
 
     else:
-        # GET: build context — attempt auto-match on course_code for each scanned row.
+        # GET: build context — attempt auto-match on course_code and description for each scanned row.
         initial_data = []
+        all_courses_list = list(all_courses)
         for idx, row in enumerate(scanned_courses):
-            # Try exact match first, then case-insensitive prefix.
-            matched_course = (
-                Course.objects.filter(course_code__iexact=row['course_code']).first()
-                or Course.objects.filter(course_code__istartswith=row['course_code'].split()[0]).first()
-            )
+            matched_course = None
+            scanned_code = (row.get('course_code') or '').strip().lower()
+            scanned_desc = (row.get('description') or '').strip().lower()
+            
+            if scanned_code:
+                # Exact match on course code first
+                for course in all_courses_list:
+                    if course.course_code.strip().lower() == scanned_code:
+                        matched_course = course
+                        break
+                        
+            if not matched_course:
+                best_match = None
+                best_ratio = 0.0
+                
+                for course in all_courses_list:
+                    c_code = (course.course_code or '').strip().lower()
+                    c_name = (course.course_name or '').strip().lower()
+                    
+                    code_ratio = difflib.SequenceMatcher(None, scanned_code, c_code).ratio() if scanned_code and c_code else 0.0
+                    name_ratio = difflib.SequenceMatcher(None, scanned_desc, c_name).ratio() if scanned_desc and c_name else 0.0
+                    
+                    ratio = max(code_ratio, name_ratio)
+                    
+                    if ratio > best_ratio:
+                        best_ratio = ratio
+                        best_match = course
+                        
+                if best_ratio > 0.8:
+                    matched_course = best_match
+
             initial_data.append({
                 'include': True,
-                'scanned_code': row['course_code'],
-                'scanned_description': row['description'],
-                'scanned_units': row['units'],
+                'scanned_code': row.get('course_code'),
+                'scanned_description': row.get('description'),
+                'scanned_units': row.get('units'),
                 'course': matched_course.pk if matched_course else None,
-                'grade': row['grade']
+                'grade': row.get('grade')
             })
             
         formset = OCRFormSet(initial=initial_data)
