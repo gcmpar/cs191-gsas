@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
+{% load widget_tweaks %}
 
 {% block title %}OCR Preview — Application #{{ application.application_id }}{% endblock title %}
 
@@ -48,49 +49,44 @@
           </tr>
         </thead>
         <tbody>
-          {% for row in rows %}
+          {{ formset.management_form }}
+          {% for form in formset %}
           <tr>
-            {# Include checkbox — value is the row index used in POST processing #}
+            {# Include checkbox #}
             <td class="text-center">
-              <input type="checkbox"
-                     name="include[]"
-                     value="{{ row.index }}"
-                     class="form-check-input"
-                     checked>
+              {% render_field form.include class="form-check-input" %}
             </td>
 
-            {# Verbatim OCR output — read-only #}
+            {# Verbatim OCR output — read-only (using hidden fields for form data) #}
             <td>
-              <span class="font-monospace small">{{ row.course_code }}</span>
+              <span class="font-monospace small">{{ form.scanned_code.value|default_if_none:'' }}</span>
+              {{ form.scanned_code }}
             </td>
             <td>
-              <span class="small text-muted">{{ row.description }}</span>
+              <span class="small text-muted">{{ form.scanned_description.value|default_if_none:'' }}</span>
+              {{ form.scanned_description }}
             </td>
 
-            {# Scanned Units — display only, now next to course name #}
-            <td class="text-center text-muted small">{{ row.units }}</td>
+            {# Scanned Units #}
+            <td class="text-center text-muted small">
+              {{ form.scanned_units.value|default_if_none:'' }}
+              {{ form.scanned_units }}
+            </td>
 
-            {# Course dropdown — auto-selects if a match was found #}
+            {# Course dropdown #}
             <td>
-              <select name="course_id_{{ row.index }}" class="form-select form-select-sm">
-                <option value="" {% if not row.matched_course %}selected{% endif %}>— Select course —</option>
-                {% for course in all_courses %}
-                  <option value="{{ course.course_id }}"
-                    {% if row.matched_course and row.matched_course.course_id == course.course_id %}selected{% endif %}>
-                    {{ course.course_code }} — {{ course.course_name }}
-                    (
-                    {% for program in course.programs.all %}
-                      {{ program.school.school_name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                    )
-                  </option>
-                {% endfor %}
-              </select>
+              {{ form.course }}
+              {% if form.course.errors %}
+                <div class="text-danger small mt-1">{{ form.course.errors }}</div>
+              {% endif %}
             </td>
 
             {# Grade — free text input #}
             <td>
-              <input type="text" name="grade_{{ row.index }}" class="form-control form-control-sm" value="{{ row.grade }}" placeholder="Grade">
+              {% render_field form.grade class="form-control form-control-sm" %}
+              {% if form.grade.errors %}
+                <div class="text-danger small mt-1">{{ form.grade.errors }}</div>
+              {% endif %}
             </td>
           </tr>
           {% empty %}

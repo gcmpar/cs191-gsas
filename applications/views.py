@@ -17,7 +17,7 @@ from .models import (
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptFormSet,
-    PrereqMapForm, PrereqCourseForm, BatchImportFormSet,
+    PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet
 )
 from courses.models import Course, EquivalenceMapCourses
 from common.ocr import extract_courses_from_pdf
@@ -416,76 +416,67 @@ def application_ocr_preview(request, application_id):
     all_courses = Course.objects.prefetch_related('programs__school').order_by('course_code')
 
     if request.method == 'POST':
-        # Collect checked-row indices from the POST data.
-        included_indices = set(request.POST.getlist('include[]'))
+        formset = OCRFormSet(request.POST)
+        if formset.is_valid():
+            saved = 0
+            errors = []
+            
+            for i, form in enumerate(formset):
+                if form.cleaned_data.get('include'):
+                    course = form.cleaned_data.get('course')
+                    grade = form.cleaned_data.get('grade') or 'unknown'
+                    
+                    if not course:
+                        errors.append(f"Row {i + 1}: no course selected, skipped.")
+                        continue
+                        
+                    ApplicationTranscript.objects.get_or_create(
+                        application=application,
+                        course=course,
+                        defaults={
+                            'academic_year': date.today().year,
+                            'semester':      ApplicationTranscript.Semester.Sem_1,
+                            'grade':         grade,
+                        },
+                    )
+                    saved += 1
+            
+            # Clear session data after saving.
+            if session_key in request.session:
+                del request.session[session_key]
 
-        saved = 0
-        errors = []
-        for idx_str in included_indices:
-            try:
-                idx = int(idx_str)
-                row = scanned_courses[idx]
-            except (ValueError, IndexError):
-                continue
+            for err in errors:
+                messages.warning(request, err)
 
-            course_id = request.POST.get(f'course_id_{idx}')
-            grade     = request.POST.get(f'grade_{idx}', '').strip()
+            messages.success(request, f'{saved} course(s) added to the transcript.')
+            return redirect('applications:transcripts_edit', application_id=application_id)
+        else:
+            messages.error(request, 'Please correct the errors below.')
 
-            if not course_id:
-                errors.append(f"Row {idx + 1}: no course selected, skipped.")
-                continue
 
-            try:
-                course = Course.objects.get(pk=course_id)
-            except Course.DoesNotExist:
-                errors.append(f"Row {idx + 1}: course not found, skipped.")
-                continue
-
-            if not grade:
-                grade = 'unknown'  # fallback for empty grades
-
-            # Avoid duplicate transcript entries for the same application+course.
-            ApplicationTranscript.objects.get_or_create(
-                application=application,
-                course=course,
-                defaults={
-                    'academic_year': date.today().year,
-                    'semester':      ApplicationTranscript.Semester.Sem_1,
-                    'grade':         grade,
-                },
+    else:
+        # GET: build context — attempt auto-match on course_code for each scanned row.
+        initial_data = []
+        for idx, row in enumerate(scanned_courses):
+            # Try exact match first, then case-insensitive prefix.
+            matched_course = (
+                Course.objects.filter(course_code__iexact=row['course_code']).first()
+                or Course.objects.filter(course_code__istartswith=row['course_code'].split()[0]).first()
             )
-            saved += 1
-
-        # Clear session data after saving.
-        if session_key in request.session:
-            del request.session[session_key]
-
-        for err in errors:
-            messages.warning(request, err)
-
-        messages.success(request, f'{saved} course(s) added to the transcript.')
-        return redirect('applications:transcripts_edit', application_id=application_id)
-
-    # GET: build context — attempt auto-match on course_code for each scanned row.
-    rows_context = []
-    for idx, row in enumerate(scanned_courses):
-        # Try exact match first, then case-insensitive prefix.
-        matched_course = (
-            Course.objects.filter(course_code__iexact=row['course_code']).first()
-            or Course.objects.filter(course_code__istartswith=row['course_code'].split()[0]).first()
-        )
-        rows_context.append({
-            'index':           idx,
-            'course_code':     row['course_code'],
-            'description':     row['description'],
-            'grade':           row['grade'],
-            'units':           row['units'],
-            'matched_course':  matched_course,
-        })
+            initial_data.append({
+                'include': True,
+                'scanned_code': row['course_code'],
+                'scanned_description': row['description'],
+                'scanned_units': row['units'],
+                'course': matched_course.pk if matched_course else None,
+                'grade': row['grade']
+            })
+            
+        formset = OCRFormSet(initial=initial_data)
 
     return render(request, 'applications/ocr_preview.html', {
         'application':   application,
-        'rows':          rows_context,
+        'formset':       formset,
         'all_courses':   all_courses,
     })
 

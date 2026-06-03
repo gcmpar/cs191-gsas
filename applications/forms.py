@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput, BooleanField, HiddenInput, CheckboxInput
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
@@ -149,3 +149,27 @@ class BatchImportRowForm(ModelForm):
         }
 
 BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
+
+class OCRRowForm(Form):
+    include = BooleanField(required=False, initial=True)
+    scanned_code = CharField(required=False, widget=HiddenInput())
+    scanned_description = CharField(required=False, widget=HiddenInput())
+    scanned_units = CharField(required=False, widget=HiddenInput())
+    
+    course = ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        widget=CoursesWidget(
+            attrs={
+                'data-placeholder': 'Select course...',
+                'data-minimum-input-length': 0,
+            },
+            select2_options={'width': '100%'}
+        )
+    )
+    grade = CharField(
+        required=False,
+        widget=TextInput(attrs={'placeholder': 'Grade'})
+    )
+
+OCRFormSet = formset_factory(OCRRowForm, extra=0)
