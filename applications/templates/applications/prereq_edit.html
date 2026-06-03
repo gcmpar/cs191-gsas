@@ -7,8 +7,8 @@
 
 {% for info in prereq_snapshot.values %}
   {{ info.map_form.media.css }}
-  {% for course_form in info.course_forms %}
-    {{ course_form.media.css }}
+  {% for data in info.course_data %}
+    {{ data.form.media.css }}
   {% endfor %}
 {% endfor %}
 
@@ -33,7 +33,7 @@
 
   <div id="prereq-maps">
   {% for map_id, info in prereq_snapshot.items %}
-    {% include "applications/partials/prereq_map.html" with map_form=info.map_form course_forms=info.course_forms %}
+    {% include "applications/partials/prereq_map.html" with map_form=info.map_form course_data=info.course_data %}
   {% endfor %}
   </div>
   <button
@@ -52,8 +52,8 @@
 
 {% for info in prereq_snapshot.values %}
   {{ info.map_form.media.js }}
-  {% for course_form in info.course_forms %}
-    {{ course_form.media.js }}
+  {% for data in info.course_data %}
+    {{ data.form.media.js }}
   {% endfor %}
 {% endfor %}
 

@@ -15,8 +15,8 @@
         
         <h6>Prerequisite Courses (Must be taken before target course)</h6>
         <div class="mb-3" id="prereq-forms-{{ map_id }}">
-            {% for course_form in course_forms %}
-                {% include "applications/partials/prereq_form.html" with index=forloop.counter0 %}
+            {% for data in course_data %}
+                {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=forloop.counter0 %}
             {% endfor %}
         </div>
         <div class="d-flex gap-2">
