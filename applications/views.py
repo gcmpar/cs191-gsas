@@ -442,7 +442,7 @@ def application_ocr_preview(request, application_id):
                 continue
 
             if not grade:
-                grade = 'INC'  # fallback for empty grades
+                grade = 'unknown'  # fallback for empty grades
 
             # Avoid duplicate transcript entries for the same application+course.
             ApplicationTranscript.objects.get_or_create(
