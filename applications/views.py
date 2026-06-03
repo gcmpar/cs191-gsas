@@ -21,6 +21,7 @@ from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
     PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet
 )
+from courses.models import Course
 from common.ocr import extract_courses_from_pdf
 from .nlp import compute_similarity, compute_similarity_batch
 
