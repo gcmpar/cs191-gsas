@@ -103,11 +103,15 @@ class PrereqMapForm(Form):
         ),
     )
 
+class CourseLabelChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.course_code} - {obj.course_name}"
+
 class PrereqCourseForm(Form):
-    course = ModelChoiceField(
+    course = CourseLabelChoiceField(
         queryset=Course.objects.all(),
         required=False,
-        widget=CoursesWidget(
+        widget=Select2Widget(
             attrs={
                 'data-placeholder': 'Select Prerequisite Course',
                 'data-minimum-input-length': 0,

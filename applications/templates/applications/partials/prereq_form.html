@@ -1,16 +1,38 @@
 {% load widget_tweaks %}
 {% load django_bootstrap5 %}
 
-<div class="prereq-form d-flex align-items-center gap-2 mb-2">
+<div class="prereq-form border rounded p-3 mb-2 position-relative bg-light">
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="this.closest('.prereq-form').remove()" aria-label="Close"></button>
     {% bootstrap_form_errors course_form %}
-    <div class="flex-grow-1">
-        {% render_field course_form.course class="w-100" %}
+    <div class="row g-2 align-items-center">
+        <div class="col-md-5" hx-get="{% url 'applications:partial_prereq_form' map_id %}?index={{ index }}" hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML">
+            <label class="form-label small text-muted mb-0">Course</label>
+            {% render_field course_form.course class="w-100" %}
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted mb-0">Similarity</label>
+            <div class="form-control-plaintext form-control-sm fw-bold">
+                {% if similarity != None %}
+                    {{ similarity }}%
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small text-muted mb-0">Grade</label>
+            <div class="form-control-plaintext form-control-sm">
+                {% if grade %}
+                    {{ grade }}
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+        </div>
     </div>
-    <button
-        type="button"
-        class="btn btn-outline-danger"
-        onclick="this.closest('.prereq-form').remove()"
-    >
-        Remove
-    </button>
+    {% if description %}
+    <div class="mt-2 text-muted small bg-white border p-2 rounded">
+        <strong>Description:</strong> {{ description }}
+    </div>
+    {% endif %}
 </div>
