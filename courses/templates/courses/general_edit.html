@@ -62,9 +62,9 @@
 
 <script>
   document.body.addEventListener(
-      'htmx:afterSwap',
+      'htmx:afterSettle',
       function(event) {
-          $(event.detail.target)
+          $(event.detail.elt)
             .find('.django-select2')
             .not('.select2-hidden-accessible')
             .djangoSelect2();

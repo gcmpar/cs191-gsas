@@ -5,9 +5,14 @@
     <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="this.closest('.prereq-form').remove()" aria-label="Close"></button>
     {% bootstrap_form_errors course_form %}
     <div class="row g-2 align-items-center">
-        <div class="col-md-5" hx-get="{% url 'applications:partial_prereq_form' map_id %}?index={{ index }}" hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML">
+        <div class="col-md-5">
             <label class="form-label small text-muted mb-0">Course</label>
-            {% render_field course_form.course class="w-100" %}
+            {% url 'applications:partial_prereq_form' map_id as prereq_form_url %}
+            {% with index_str=index|stringformat:"s" %}
+                {% with prereq_form_url|add:"?index="|add:index_str as prereq_form_full_url %}
+                    {% render_field course_form.course class="w-100" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML" %}
+                {% endwith %}
+            {% endwith %}
         </div>
         <div class="col-md-3">
             <label class="form-label small text-muted mb-0">Similarity</label>

@@ -51,6 +51,20 @@ class CoursesWidget(ModelSelect2Widget):
 
     def label_from_instance(self, course):
         return f"{course.course_code} - {course.course_name}"
+    
+# No option groups version, allows for queryset modification
+class FlatCoursesWidget(ModelSelect2Widget):
+    model = Course
+    search_fields = [f'{field}__icontains' for field in COURSE_SEARCH_FIELDS]
+
+    def label_from_instance(self, course):
+        school_name = 'unknown school'
+        # Try search for school name once
+        # Works since we assume all its programs are under one school.
+        for program in course.programs.all():
+            program.school.school_name = school_name
+            break
+        return f"{course.course_code} - {course.course_name} ({school_name})"
 
 
 class ProgramRowForm(Form):

@@ -37,7 +37,7 @@ def prereq_map_form_prefix(map_id):
 def prereq_course_form_prefix(map_id, index):
     return f'{PREREQ_COURSE_PREFIX}{map_id}_{index}_'
 
-def get_prereq_snapshot_from_request(request):
+def get_prereq_snapshot_from_request(request, application):
     map_ids = set()
     for param in request.POST.keys():
         if param.startswith(PREREQ_MAP_PREFIX):
@@ -59,7 +59,7 @@ def get_prereq_snapshot_from_request(request):
         snapshot[map_id] = {
             'map_form': PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id)),
             'course_forms': [
-                PrereqCourseForm(request.POST, prefix=prereq_course_form_prefix(map_id, i))
+                PrereqCourseForm(request.POST, application=application, prefix=prereq_course_form_prefix(map_id, i))
                 for i in indices
             ],
             'next_index': max(indices)+1 if indices else 0
@@ -85,12 +85,13 @@ def get_prereq_snapshot_from_application(application):
             course_forms.append(
                 PrereqCourseForm(
                     prefix=prereq_course_form_prefix(prereq_map.map_id, i),
+                    application=application,
                     initial={'course': entry.course}
                 )
             )
             
         if len(course_forms) == 0:
-            course_forms.append(PrereqCourseForm(prefix=prereq_course_form_prefix(prereq_map.map_id, 0)))
+            course_forms.append(PrereqCourseForm(prefix=prereq_course_form_prefix(prereq_map.map_id, 0), application=application))
             
         snapshot[prereq_map.map_id] = {
             'map_form': map_form,
@@ -246,7 +247,7 @@ def application_prereq_edit(request, application_id):
     applicant   = application.applicant
 
     if request.method == 'POST':
-        prereq_snapshot = get_prereq_snapshot_from_request(request)
+        prereq_snapshot = get_prereq_snapshot_from_request(request, application)
 
         # Validate all forms
         all_valid = True
@@ -321,11 +322,6 @@ def application_prereq_edit(request, application_id):
     else:
         prereq_snapshot = get_prereq_snapshot_from_application(application)
 
-    transcript_course_ids = ApplicationTranscript.objects.filter(application=application).values_list('course_id', flat=True)
-    for info in prereq_snapshot.values():
-        for form in info['course_forms']:
-            form.fields['course'].queryset = Course.objects.filter(pk__in=transcript_course_ids)
-
     return render(request, 'applications/prereq_edit.html', {
         'applicant':   applicant,
         'application': application,
@@ -347,41 +343,34 @@ def application_prereq_map(request, application_id):
     )
 
 def application_prereq_form(request, map_id):
-    index = int(request.GET.get('index', 0))
     prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
     application = prereq_map.application
-    
+
+    index = int(request.GET.get('index', 0))
     prefix = prereq_course_form_prefix(prereq_map.map_id, index)
-    
-    if f'{prefix}course' in request.GET:
-        course_form = PrereqCourseForm(request.GET, prefix=prefix)
-    else:
-        course_form = PrereqCourseForm(prefix=prefix)
-        
-    transcript_course_ids = ApplicationTranscript.objects.filter(application=application).values_list('course_id', flat=True)
-    course_form.fields['course'].queryset = Course.objects.filter(pk__in=transcript_course_ids)
-    
+
+    course_form = PrereqCourseForm(request.GET, prefix=prefix, application=application)
     similarity = None
     grade = None
     description = None
-    
-    course_id = request.GET.get(f'{prefix}course')
-    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + 'target_course') or (prereq_map.target_course_id if prereq_map.target_course else None)
-    
-    if course_id and str(course_id).isdigit():
-        course = Course.objects.filter(pk=course_id).first()
-        target_course = Course.objects.filter(pk=target_course_id).first()
+
+    if course_form['course'].html_name in request.GET:
+        course_id = request.GET.get(course_form['course'].html_name)
+        target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
         
-        if course:
-            description = course.description
-            transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
-            if transcript_entry:
-                grade = transcript_entry.grade
-                
-            if target_course:
-                all_transcripts = ApplicationTranscript.objects.filter(application=application).select_related('course')
-                all_taken_descs = [t.course.description for t in all_transcripts if t.course.description]
-                similarity = compute_similarity(course.description, target_course.description, all_taken_descs)
+        if course_id and str(course_id).isdigit():
+            course = Course.objects.filter(pk=course_id).first()
+            target_course = Course.objects.filter(pk=target_course_id).first()
+            
+            if course:
+                description = course.description
+                transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
+                if transcript_entry:
+                    grade = transcript_entry.grade
+                    
+                if target_course:
+                    all_descs = [c.description for c in Course.objects.all()]
+                    similarity = compute_similarity(course.description, target_course.description, all_descs)
 
     return render(
         request,
@@ -410,7 +399,6 @@ def application_prereq_detect_similar(request, map_id):
         return HttpResponse("")
         
     transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
-    transcript_course_ids = [t.course_id for t in transcripts]
     
     taken_courses = [t.course for t in transcripts]
     similarities = compute_similarity_batch(taken_courses, target_course)
@@ -422,8 +410,7 @@ def application_prereq_detect_similar(request, map_id):
         sim = similarities[i]
         if sim > 30.0:
             prefix = prereq_course_form_prefix(map_id, index)
-            form = PrereqCourseForm(prefix=prefix, initial={'course': course.pk})
-            form.fields['course'].queryset = Course.objects.filter(pk__in=transcript_course_ids)
+            form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
             matched_forms_data.append({
                 'course_form': form,
                 'similarity': sim,
@@ -436,8 +423,7 @@ def application_prereq_detect_similar(request, map_id):
             
     if not matched_forms_data:
         prefix = prereq_course_form_prefix(map_id, 0)
-        form = PrereqCourseForm(prefix=prefix)
-        form.fields['course'].queryset = Course.objects.filter(pk__in=transcript_course_ids)
+        form = PrereqCourseForm(prefix=prefix, application=application)
         matched_forms_data.append({
             'course_form': form,
             'map_id': map_id,

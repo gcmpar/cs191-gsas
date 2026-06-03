@@ -58,15 +58,23 @@
 {% endfor %}
 
 <script>
-  document.body.addEventListener(
-      'htmx:afterSwap',
-      function(event) {
-          $(event.detail.target)
-          .find('.django-select2')
-          .not('.select2-hidden-accessible')
-          .djangoSelect2();
-      }
-  );
+  function bindSelect2HTMX() {
+    $("select")
+        .off("select2:select select2:unselect")
+        .on("select2:select select2:unselect", function (e) {
+            e.currentTarget.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+
+    $(".django-select2")
+        .not(".select2-hidden-accessible")
+        .djangoSelect2();
+  }
+
+  $(document).ready(bindSelect2HTMX);
+
+  document.body.addEventListener("htmx:afterSettle", function (e) {
+      bindSelect2HTMX();
+  });
 
   const prereqNextIndices = {
     {% for map_id, info in prereq_snapshot.items %}

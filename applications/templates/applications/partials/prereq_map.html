@@ -39,12 +39,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Ensure select2 selections trigger native change events for HTMX
-    if (typeof jQuery !== 'undefined') {
-        $(document).on('select2:select select2:clear', function(e) {
-            e.target.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-    }
-</script>
