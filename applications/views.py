@@ -18,18 +18,51 @@ from .models import (
 )
 from applicants.models import Applicant
 from .forms import (
-    ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptFormSet,
+    ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
     PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet
 )
-from courses.models import Course, EquivalenceMapCourses
 from common.ocr import extract_courses_from_pdf
 from .nlp import compute_similarity, compute_similarity_batch
 
 
+TRANSCRIPT_FORM_PREFIX = 'transcript_'
 PREREQ_MAP_PREFIX = 'prereq_map_'
 PREREQ_COURSE_PREFIX = 'prereq_course_'
 
 SEARCH_FIELDS = ['application_number', 'program', 'study_load', 'notes']
+
+def transcript_form_prefix(index):
+    return f'{TRANSCRIPT_FORM_PREFIX}{index}_'
+
+def transcript_param_index(param):
+    rest = param[len(TRANSCRIPT_FORM_PREFIX):]
+    return int(rest.split('_')[0])
+
+def get_transcript_forms_from_request(request):
+    indices = set()
+    for param in request.POST.keys():
+        if param.startswith(TRANSCRIPT_FORM_PREFIX):
+            indices.add(transcript_param_index(param))
+            
+    transcript_forms = [
+        ApplicationTranscriptForm(request.POST, prefix=transcript_form_prefix(i))
+        for i in indices
+    ]
+    return transcript_forms, max(indices) + 1 if indices else 0
+
+def get_transcript_forms_from_application(application):
+    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
+    transcript_forms = []
+    
+    for i, entry in enumerate(entries):
+        transcript_forms.append(
+            ApplicationTranscriptForm(prefix=transcript_form_prefix(i), instance=entry)
+        )
+        
+    if not transcript_forms:
+        transcript_forms.append(ApplicationTranscriptForm(prefix=transcript_form_prefix(0)))
+        
+    return transcript_forms, len(transcript_forms)
 
 def prereq_map_form_prefix(map_id):
     return f'{PREREQ_MAP_PREFIX}{map_id}_'
@@ -99,28 +132,6 @@ def get_prereq_snapshot_from_application(application):
             'next_index': len(course_forms)
         }
     return snapshot
-
-def get_equivalences(entry):
-    
-    equivalences = []
-
-    # Probe which equivalence maps this course is part of.
-    associated_entries = EquivalenceMapCourses.objects.filter(course=entry.course).select_related('map')
-    for a_entry in associated_entries:
-        
-        map = a_entry.map
-
-        # Get the courses of this particular map.
-        map_entries = EquivalenceMapCourses.objects.filter(map=map).select_related('course')
-
-        equivalences.append({
-            'group': [m_entry.course for m_entry in map_entries],
-            'target_course': map.target_course,
-            'map': map,
-        })
-
-    return equivalences
-
 
 def applications_search(request):
     applications = Application.objects.select_related('applicant')
@@ -201,7 +212,7 @@ def application_transcripts_view(request, application_id):
     return render(request, 'applications/transcripts_view.html', {
         'applicant':          applicant,
         'application':        application,
-        'transcript_entries': {entry: get_equivalences(entry) for entry in entries},
+        'transcript_entries': entries,
     })
 
 def application_transcripts_edit(request, application_id):
@@ -209,24 +220,52 @@ def application_transcripts_edit(request, application_id):
     applicant   = application.applicant
 
     if request.method == 'POST':
-        formset = ApplicationTranscriptFormSet(request.POST, instance=application)
-        if formset.is_valid():
-            formset.save()
+        transcript_forms, _ = get_transcript_forms_from_request(request)
+        if all(form.is_valid() for form in transcript_forms):
+            # Save logic
+            saved_course_ids = set()
+            for form in transcript_forms:
+                if not form.cleaned_data.get('course'):
+                    continue
+                    
+                course = form.cleaned_data['course']
+                saved_course_ids.add(course.pk)
+                
+                # Update or create transcript entry
+                ApplicationTranscript.objects.update_or_create(
+                    application=application,
+                    course=course,
+                    defaults={
+                        'academic_year': form.cleaned_data['academic_year'],
+                        'semester': form.cleaned_data['semester'],
+                        'grade': form.cleaned_data['grade'],
+                    }
+                )
+                
+            # Delete transcripts that were removed
+            ApplicationTranscript.objects.filter(application=application).exclude(course_id__in=saved_course_ids).delete()
+            
             return redirect('applications:transcripts_view', application_id=application_id)
     else:
-        formset = ApplicationTranscriptFormSet(instance=application)
-
-    for entry_form in formset:
-        if entry_form.instance.pk:
-            entry_form.equivalences = get_equivalences(entry_form.instance)
-        else:
-            entry_form.equivalences = []
+        transcript_forms, next_index = get_transcript_forms_from_application(application)
 
     return render(request, 'applications/transcripts_edit.html', {
         'applicant':   applicant,
         'application': application,
-        'formset':     formset,
+        'transcript_forms': transcript_forms,
+        'next_index': next_index,
     })
+
+def application_transcript_form(request, application_id):
+    index = int(request.GET.get('index', 0))
+    transcript_form = ApplicationTranscriptForm(prefix=transcript_form_prefix(index))
+    return render(
+        request,
+        'applications/partials/transcript_form.html',
+        {
+            'transcript_form': transcript_form,
+        }
+    )
 
 def application_prereq_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)

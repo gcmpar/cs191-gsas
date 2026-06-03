@@ -83,14 +83,6 @@ class ApplicationTranscriptForm(ModelForm):
             ),
         }
 
-ApplicationTranscriptFormSet = inlineformset_factory(
-    Application,
-    ApplicationTranscript,
-    form=ApplicationTranscriptForm,
-    extra=1,
-    can_delete=True
-)
-
 class PrereqMapForm(Form):
     target_course = ModelChoiceField(
         queryset=Course.objects.all(),

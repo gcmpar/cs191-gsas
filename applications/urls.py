@@ -22,7 +22,8 @@ urlpatterns = [
     path('<int:application_id>/transcripts/scan-tor/', views.application_scan_tor, name='scan_tor'),
     path('<int:application_id>/transcripts/ocr-preview/', views.application_ocr_preview, name='ocr_preview'),
     
-    # Prerequisite HTMX endpoints
+    # Partial HTMX endpoints
+    path('partials/transcript_form/<int:application_id>/', views.application_transcript_form, name='partial_transcript_form'),
     path('partials/prereq_map/<int:application_id>/', views.application_prereq_map, name='partial_prereq_map'),
     path('partials/prereq_form/<int:map_id>/', views.application_prereq_form, name='partial_prereq_form'),
     path('partials/prereq_detect_similar/<int:map_id>/', views.application_prereq_detect_similar, name='partial_prereq_detect_similar'),
