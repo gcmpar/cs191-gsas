@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
@@ -75,10 +75,10 @@ class ApplicationTranscriptForm(ModelForm):
                     'data-width': '10em',
                 }
             ),
-            'grade': Select2Widget(
+            'grade': TextInput(
                 attrs={
-                    'data-placeholder': 'Grade',
-                    'data-width': '10em',
+                    'placeholder': 'Grade',
+                    'style': 'width: 10em;',
                 }
             ),
         }

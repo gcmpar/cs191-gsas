@@ -441,10 +441,8 @@ def application_ocr_preview(request, application_id):
                 errors.append(f"Row {idx + 1}: course not found, skipped.")
                 continue
 
-            # Map free-text grade to a valid choice; fall back to closest or skip.
-            valid_grades = [g[0] for g in ApplicationTranscript.Grade.choices]
-            if grade not in valid_grades:
-                grade = 'INC'  # fallback for unrecognisable grades
+            if not grade:
+                grade = 'INC'  # fallback for empty grades
 
             # Avoid duplicate transcript entries for the same application+course.
             ApplicationTranscript.objects.get_or_create(
@@ -489,7 +487,6 @@ def application_ocr_preview(request, application_id):
         'application':   application,
         'rows':          rows_context,
         'all_courses':   all_courses,
-        'grade_choices': ApplicationTranscript.Grade.choices,
     })
 
 

@@ -18,19 +18,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def _fix_grade(grade: str) -> str:
-    """Fix grades that were extracted incorrectly by OCR."""
-    grade = grade.replace(",", ".")  # Convert comma to dot for decimal consistency
-    if re.fullmatch(r"\d{3}", grade):   # e.g. "175" → "1.75"
-        return f"{grade[0]}.{grade[1:]}"
-    elif re.fullmatch(r"\d{2}", grade): # e.g. "15" → "1.5"
-        return f"{grade[0]}.{grade[1]}"
-    return grade
+    """Clean up extracted grade string."""
+    # We no longer assume X.XX format, so we don't automatically insert decimals.
+    # Just basic cleanup if needed, or return as is.
+    return grade.strip()
 
 
 _COURSE_PATTERN = re.compile(
     r"([A-Za-z]+(?:\s[A-Za-z]+)?\s*\d+(?:\.\d+)?)\s+"          # Course Code (e.g. "Eng 10", "Fil 40")
     r"((?:\b(?:[A-Za-z&\-,]{2,}|\b[A-Za-z]\b)\s*)+?)\s+"       # Description (multiple words)
-    r"(\d+(?:[.,]\d{1,2})?|Inc|[A-F][+-]?)?\s*[|]?\s*"         # Grade (numerical first, e.g. "2.25", "A")
+    r"(\d+(?:[.,]\d{1,2})?|[A-Za-z]+[+-]?)?\s*[|]?\s*"         # Grade (numerical or alphabetic, e.g. "2.25", "A+", "Pass")
     r"(\d+|\(\d+\))?"                                            # Units (whole number or in parens)
 )
 

@@ -88,17 +88,9 @@
               </select>
             </td>
 
-            {# Grade — dropdown using ApplicationTranscript.Grade choices #}
+            {# Grade — free text input #}
             <td>
-              <select name="grade_{{ row.index }}" class="form-select form-select-sm">
-                <option value="" disabled>— Grade —</option>
-                {% for value, label in grade_choices %}
-                  <option value="{{ value }}"
-                    {% if row.grade == value %}selected{% endif %}>
-                    {{ label }}
-                  </option>
-                {% endfor %}
-              </select>
+              <input type="text" name="grade_{{ row.index }}" class="form-control form-control-sm" value="{{ row.grade }}" placeholder="Grade">
             </td>
           </tr>
           {% empty %}
