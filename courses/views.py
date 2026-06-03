@@ -74,6 +74,7 @@ def get_equiv_snapshot_from_request(request):
             'next_index': max(indices)+1 if indices else 0
         }
     return equiv_snapshot
+def get_equiv_snapshot_from_course(course):
     existing_maps = list(EquivalenceMap.objects.filter(
         target_course=course
     ).prefetch_related(
@@ -88,16 +89,15 @@ def get_equiv_snapshot_from_request(request):
 
     for equiv_map in existing_maps:
         equiv_forms = []
-        if equiv_map.pk:
-            for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
-                equiv_forms.append(
-                    EquivRowForm(
-                        prefix=equiv_param_form_prefix(equiv_map.map_id, i),
-                        initial={
-                            'course': entry.course
-                        }
-                    )
+        for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
+            equiv_forms.append(
+                EquivRowForm(
+                    prefix=equiv_param_form_prefix(equiv_map.map_id, i),
+                    initial={
+                        'course': entry.course
+                    }
                 )
+            )
 
         if len(equiv_forms) == 0:
             equiv_forms.append(EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)))

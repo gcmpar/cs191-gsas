@@ -150,31 +150,30 @@ def get_prereq_snapshot_from_application(application):
         )
         
         course_data = []
-        if prereq_map.pk:
-            for i, entry in enumerate(prereq_map.prerequisitemapcourses_set.all()):
-                course = entry.course
-                description = course.description
-                grade = None
-                transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
-                if transcript_entry:
-                    grade = transcript_entry.grade
-                    
-                similarity = None
-                if prereq_map.target_course:
-                    if all_descs is None:
-                        all_descs = [c.description for c in Course.objects.all()]
-                    similarity = compute_similarity(course.description, prereq_map.target_course.description, all_descs)
-                    
-                course_data.append({
-                    'form': PrereqCourseForm(
-                        prefix=prereq_course_form_prefix(prereq_map.map_id, i),
-                        application=application,
-                        initial={'course': course.pk}
-                    ),
-                    'similarity': similarity,
-                    'grade': grade,
-                    'description': description
-                })
+        for i, entry in enumerate(prereq_map.prerequisitemapcourses_set.all()):
+            course = entry.course
+            description = course.description
+            grade = None
+            transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
+            if transcript_entry:
+                grade = transcript_entry.grade
+                
+            similarity = None
+            if prereq_map.target_course:
+                if all_descs is None:
+                    all_descs = [c.description for c in Course.objects.all()]
+                similarity = compute_similarity(course.description, prereq_map.target_course.description, all_descs)
+                
+            course_data.append({
+                'form': PrereqCourseForm(
+                    prefix=prereq_course_form_prefix(prereq_map.map_id, i),
+                    application=application,
+                    initial={'course': course.pk}
+                ),
+                'similarity': similarity,
+                'grade': grade,
+                'description': description
+            })
             
         if len(course_data) == 0:
             course_data.append({
