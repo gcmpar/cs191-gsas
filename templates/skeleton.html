@@ -14,6 +14,8 @@
     <!-- Title -->
     <title>{% block title %}{% endblock title %} | Graduate Students Admission System</title>
 
+    {{ select2_media.css }}
+
     <!-- extra head -->
     {% block extra_head %}{% endblock extra_head %}
   </head>
@@ -46,6 +48,8 @@
 
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    {{ select2_media.js }}
 
     <!-- extra JS -->
     {% block extra_javascript %}{% endblock extra_javascript %}

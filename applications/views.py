@@ -130,15 +130,19 @@ def get_prereq_snapshot_from_request(request, application):
     return snapshot
 
 def get_prereq_snapshot_from_application(application):
-    existing_maps = PrerequisiteMap.objects.filter(
+    existing_maps = list(PrerequisiteMap.objects.filter(
         application=application
     ).prefetch_related(
         'prerequisitemapcourses_set__course'
-    ).order_by('map_id')
+    ).order_by('map_id'))
 
     snapshot = {}
     all_descs = None
     
+    if not existing_maps:
+        dummy_map = PrerequisiteMap(application=application, map_id=0)
+        existing_maps.append(dummy_map)
+
     for prereq_map in existing_maps:
         map_form = PrereqMapForm(
             prefix=prereq_map_form_prefix(prereq_map.map_id),
@@ -146,30 +150,31 @@ def get_prereq_snapshot_from_application(application):
         )
         
         course_data = []
-        for i, entry in enumerate(prereq_map.prerequisitemapcourses_set.all()):
-            course = entry.course
-            description = course.description
-            grade = None
-            transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
-            if transcript_entry:
-                grade = transcript_entry.grade
-                
-            similarity = None
-            if prereq_map.target_course:
-                if all_descs is None:
-                    all_descs = [c.description for c in Course.objects.all()]
-                similarity = compute_similarity(course.description, prereq_map.target_course.description, all_descs)
-                
-            course_data.append({
-                'form': PrereqCourseForm(
-                    prefix=prereq_course_form_prefix(prereq_map.map_id, i),
-                    application=application,
-                    initial={'course': course.pk}
-                ),
-                'similarity': similarity,
-                'grade': grade,
-                'description': description
-            })
+        if prereq_map.pk:
+            for i, entry in enumerate(prereq_map.prerequisitemapcourses_set.all()):
+                course = entry.course
+                description = course.description
+                grade = None
+                transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
+                if transcript_entry:
+                    grade = transcript_entry.grade
+                    
+                similarity = None
+                if prereq_map.target_course:
+                    if all_descs is None:
+                        all_descs = [c.description for c in Course.objects.all()]
+                    similarity = compute_similarity(course.description, prereq_map.target_course.description, all_descs)
+                    
+                course_data.append({
+                    'form': PrereqCourseForm(
+                        prefix=prereq_course_form_prefix(prereq_map.map_id, i),
+                        application=application,
+                        initial={'course': course.pk}
+                    ),
+                    'similarity': similarity,
+                    'grade': grade,
+                    'description': description
+                })
             
         if len(course_data) == 0:
             course_data.append({

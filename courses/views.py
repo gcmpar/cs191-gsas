@@ -74,26 +74,30 @@ def get_equiv_snapshot_from_request(request):
             'next_index': max(indices)+1 if indices else 0
         }
     return equiv_snapshot
-def get_equiv_snapshot_from_course(course):
-    existing_maps = EquivalenceMap.objects.filter(
+    existing_maps = list(EquivalenceMap.objects.filter(
         target_course=course
     ).prefetch_related(
         'equivalencemapcourses_set__course'
-    ).order_by('map_id')
+    ).order_by('map_id'))
 
     equiv_snapshot = {}
 
+    if not existing_maps:
+        dummy_map = EquivalenceMap(target_course=course, map_id=0)
+        existing_maps.append(dummy_map)
+
     for equiv_map in existing_maps:
         equiv_forms = []
-        for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
-            equiv_forms.append(
-                EquivRowForm(
-                    prefix=equiv_param_form_prefix(equiv_map.map_id, i),
-                    initial={
-                        'course': entry.course
-                    }
+        if equiv_map.pk:
+            for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
+                equiv_forms.append(
+                    EquivRowForm(
+                        prefix=equiv_param_form_prefix(equiv_map.map_id, i),
+                        initial={
+                            'course': entry.course
+                        }
+                    )
                 )
-            )
 
         if len(equiv_forms) == 0:
             equiv_forms.append(EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)))
@@ -290,7 +294,7 @@ def course_equiv_map(request, course_id):
         'courses/partials/equiv_map.html',
         {
             'map_id': equiv_map.map_id,
-            'equiv_forms': []
+            'equiv_forms': [EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0))]
         }
     )
 def course_equiv_form(request, map_id):
