@@ -4,7 +4,8 @@
   "description": "**By Group WIP** - Jerwyn Angchua - Lara Carrillo - Glenn Paragas",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css:watch": "npx tailwindcss -i static/common/globals.css -o static/common/globals_output.css --watch"
   },
   "repository": {
     "type": "git",

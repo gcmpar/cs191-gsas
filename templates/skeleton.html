@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 
 <html lang="en-US">
   <head>
@@ -7,13 +8,14 @@
     <!-- Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-    <!-- Bootstrap CSS -->
-    {% bootstrap_css %}
 
     <!-- Title -->
     <title>{% block title %}{% endblock title %} | Graduate Students Admission System</title>
 
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'common/css/globals_output.css' %}">
+
+    <!-- Force Select2 load -->
     {{ select2_media.css }}
 
     <!-- extra head -->
@@ -32,10 +34,6 @@
       {% block main %}{% endblock main %}
     </main>
 
-
-    <!-- Bootstrap JS -->
-    {% bootstrap_javascript %}
-
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.5.0"
         integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
@@ -49,6 +47,7 @@
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+    <!-- Force Select2 load -->
     {{ select2_media.js }}
 
     <!-- extra JS -->
