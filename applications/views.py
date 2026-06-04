@@ -236,13 +236,19 @@ def applications_search(request):
     
     applications = applications.order_by('-date_applied')
 
+    page_param_name = 'page'
+    page_number = request.GET.get(page_param_name)
     paginator = Paginator(applications, 15)
-    page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
+    query_clear = {
+        field.html_name: None for field in query_form
+    }
+    query_clear[page_param_name] = None
     context = {
         'applications_page': page,
         'query_form': query_form,
+        'query_clear': query_clear
     }
     return render(request, 'applications/search.html', context)
 

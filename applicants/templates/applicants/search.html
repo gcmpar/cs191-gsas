@@ -22,7 +22,7 @@ Applicants
   <div class="p-4 border-b border-base-200 flex flex-wrap justify-between items-center gap-4">
     <div class="flex items-center gap-4 flex-wrap">
       <h5 class="font-semibold text-lg mb-0">All Applicants</h5>
-      <form method="get" class="flex gap-2 items-center flex-wrap">
+      <form method="get" class="flex flex-row gap-2 items-center flex-wrap md:w-full">
         {% render_field query_form.search class="input input-sm input-bordered" placeholder="Search..." %}
         {% render_field query_form.status class="select select-sm select-bordered" %}
         <button type="submit" class="btn btn-sm btn-primary">Apply</button>
