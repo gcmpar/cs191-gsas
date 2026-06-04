@@ -10,7 +10,7 @@
         
         <div class="form-control mb-6">
             <label class="label">
-                <span class="label-text font-semibold">Target Course (Requires these prerequisites)</span>
+                <span class="label-text font-semibold">Target Prerequisite Course</span>
             </label>
             {% if map_form.target_course.errors %}
                 <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
@@ -18,7 +18,7 @@
             {% render_field map_form.target_course class="w-full" %}
         </div>
         
-        <h6 class="font-semibold mb-3">Prerequisite Courses (Must be taken before target course)</h6>
+        <h6 class="font-semibold mb-3">Potentially Equivalent Prerequisite Courses</h6>
         <div class="space-y-4 mb-4" id="prereq-forms-{{ map_id }}">
             {% for data in course_data %}
                 {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=forloop.counter0 %}
