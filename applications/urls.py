@@ -26,6 +26,7 @@ urlpatterns = [
     path('partials/transcript_form/<int:application_id>/', views.application_transcript_form, name='partial_transcript_form'),
     path('partials/prereq_map/<int:application_id>/', views.application_prereq_map, name='partial_prereq_map'),
     path('partials/prereq_form/<int:map_id>/', views.application_prereq_form, name='partial_prereq_form'),
+    path('partials/prereq_detect_equiv/<int:map_id>/', views.application_prereq_detect_equiv, name='partial_prereq_detect_equiv'),
     path('partials/prereq_detect_similar/<int:map_id>/', views.application_prereq_detect_similar, name='partial_prereq_detect_similar'),
     
     # Batch actions

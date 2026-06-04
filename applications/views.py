@@ -16,6 +16,7 @@ from .models import (
     Application, ApplicationTranscript,
     PrerequisiteMap, PrerequisiteMapCourses, BatchImport
 )
+from courses.models import EquivalenceMap
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
@@ -189,6 +190,29 @@ def get_prereq_snapshot_from_application(application):
             'next_index': len(course_data)
         }
     return snapshot
+
+def get_equiv_transcripts(transcripts, target_course):
+    maps = EquivalenceMap.objects.filter(
+        target_course=target_course
+    ).prefetch_related('equivalencemapcourses_set__course')
+    course_groups = [
+        [entry.course for entry in m.equivalencemapcourses_set.all()]
+        for m in maps
+    ]
+    transcripts_map = {
+        t.course.course_id: t
+        for t in transcripts
+    }
+
+    # Get the first group in which ALL courses were taken by applicant (has transcript).
+    # Return its corresponding transcripts.
+    for group in course_groups:
+        if all(c.course_id in transcripts_map for c in group):
+            return [
+                transcripts_map[c.course_id] for c in group
+            ]
+    return None
+            
 
 def applications_search(request):
     applications = Application.objects.select_related('applicant')
@@ -453,10 +477,13 @@ def application_prereq_form(request, map_id):
     if course_form['course'].html_name in request.GET:
         course_id = request.GET.get(course_form['course'].html_name)
         target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+        if target_course_id and str(target_course_id).isdigit():
+            target_course = Course.objects.filter(pk=target_course_id).first()
+        else:
+            target_course = prereq_map.target_course
         
         if course_id and str(course_id).isdigit():
             course = Course.objects.filter(pk=course_id).first()
-            target_course = Course.objects.filter(pk=target_course_id).first()
             
             if course:
                 description = course.description
@@ -481,11 +508,63 @@ def application_prereq_form(request, map_id):
         }
     )
 
+def application_prereq_detect_equiv(request, map_id):
+    prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
+    application = prereq_map.application
+    
+    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+    if target_course_id and str(target_course_id).isdigit():
+        target_course = Course.objects.filter(pk=target_course_id).first()
+    else:
+        target_course = prereq_map.target_course
+        
+    if not target_course:
+        return HttpResponse("")
+        
+    transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+    valid_transcripts = get_equiv_transcripts(transcripts, target_course)
+
+    matched_forms_data = []
+    if valid_transcripts:
+        valid_taken_courses = [t.course for t in valid_transcripts]
+        similarities = compute_similarity_batch(valid_taken_courses, target_course)
+
+        index = 0
+        for i, transcript in enumerate(valid_transcripts):
+            course = transcript.course
+            sim = similarities[i]
+            prefix = prereq_course_form_prefix(map_id, index)
+            form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
+            matched_forms_data.append({
+                'course_form': form,
+                'similarity': sim,
+                'grade': transcript.grade,
+                'description': course.description,
+                'map_id': map_id,
+                'index': index
+            })
+            index += 1
+            
+    else:
+        prefix = prereq_course_form_prefix(map_id, 0)
+        form = PrereqCourseForm(prefix=prefix, application=application)
+        matched_forms_data.append({
+            'course_form': form,
+            'map_id': map_id,
+            'index': 0
+        })
+    
+    html = ""
+    for data in matched_forms_data:
+        html += render_to_string('applications/partials/prereq_form.html', data, request=request)
+        
+    return HttpResponse(html)
+
 def application_prereq_detect_similar(request, map_id):
     prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
     application = prereq_map.application
     
-    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + 'target_course')
+    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
     else:

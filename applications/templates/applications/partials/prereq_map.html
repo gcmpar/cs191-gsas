@@ -36,6 +36,14 @@
             <button
                 class="btn btn-sm btn-info"
                 type="button"
+                hx-get="{% url 'applications:partial_prereq_detect_equiv' map_id %}"
+                hx-include="closest .prereq-map"
+                hx-target="#prereq-forms-{{ map_id }}"
+                hx-swap="innerHTML"
+            >Detect equivalences</button>
+            <button
+                class="btn btn-sm btn-info"
+                type="button"
                 hx-get="{% url 'applications:partial_prereq_detect_similar' map_id %}"
                 hx-include="closest .prereq-map"
                 hx-target="#prereq-forms-{{ map_id }}"
