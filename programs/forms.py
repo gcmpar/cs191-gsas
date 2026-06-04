@@ -42,8 +42,5 @@ class ProgramsWidget(ModelSelect2Widget):
     search_fields = ['program_name__icontains', 'school__school_name__icontains']
     data_url = reverse_lazy('programs:select2_programs_grouped')
 
-    def get_queryset(self):
-        return Program.objects.select_related('school').all()
-
     def label_from_instance(self, program):
         return f"{program.program_name}"

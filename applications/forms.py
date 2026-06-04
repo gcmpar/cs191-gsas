@@ -2,7 +2,7 @@ from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField,
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
-from courses.forms import CoursesWidget, FlatCoursesWidget
+from courses.forms import CoursesWidget, ApplicantCoursesWidget
 from courses.models import Course
 from django.forms import formset_factory
 
@@ -99,21 +99,23 @@ class PrereqCourseForm(Form):
     course = ModelChoiceField(
         queryset=Course.objects.none(),
         required=False,
-        widget=FlatCoursesWidget(
+    )
+    def __init__(self, *args, application, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        applicant = application.applicant
+
+        self.fields['course'].widget = ApplicantCoursesWidget(
+            applicant=applicant,
             attrs={
                 'data-placeholder': 'Select Prerequisite Course',
                 'data-minimum-input-length': 0,
-            }
-        ),
-    )
-    def __init__(self, *args, application=None, **kwargs):
-        super().__init__(*args, **kwargs)
+            },
+        )
 
-        if application:
-            applicant = application.applicant
-            self.fields['course'].queryset = Course.objects.filter(
-                applicationtranscript__application__applicant=applicant
-            ).prefetch_related('programs__school').distinct()
+        self.fields['course'].queryset = Course.objects.filter(
+            applicationtranscript__application__applicant=applicant
+        ).prefetch_related('programs__school').distinct()
 
 class BatchImportRowForm(ModelForm):
     scanned_name = CharField(disabled=True, required=False)

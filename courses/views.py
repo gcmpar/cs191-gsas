@@ -339,11 +339,20 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
 
         grouped = {}
         for course in context['object_list']:
-            for program in course.programs.all():
-                group_name = f'{program.school.school_name} - {program.program_name}'
+            programs = course.programs.all()
+            
+            if not programs:
+                group_name = 'unknown'
                 if group_name not in grouped:
                     grouped[group_name] = []
                 grouped[group_name].append(self.widget.result_from_instance(course, request))
+
+            else:
+                for program in programs:
+                    group_name = f'{program.school.school_name} - {program.program_name}'
+                    if group_name not in grouped:
+                        grouped[group_name] = []
+                    grouped[group_name].append(self.widget.result_from_instance(course, request))
 
         return JsonResponse(
             {
@@ -356,4 +365,10 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
             encoder=import_string(settings.SELECT2_JSON_ENCODER),
         )
     def get_queryset(self):
-        return Course.objects.prefetch_related('programs__school')
+        queryset = Course.objects.prefetch_related('programs__school')
+        applicant_id = self.request.GET.get('applicant_id')
+        if applicant_id:
+            queryset = queryset.filter(
+                applicationtranscript__application__applicant_id=applicant_id
+            )
+        return queryset

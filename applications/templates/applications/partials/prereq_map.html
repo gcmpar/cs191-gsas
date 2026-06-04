@@ -18,7 +18,10 @@
             {% render_field map_form.target_course class="w-full" %}
         </div>
         
-        <h6 class="font-semibold mb-3">Potentially Equivalent Prerequisite Courses</h6>
+        <label class="label">
+            <div class="label-text font-semibold">Potentially Equivalent Prerequisite Courses</div>
+        </label>
+        <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
         <div class="space-y-4 mb-4" id="prereq-forms-{{ map_id }}">
             {% for data in course_data %}
                 {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=forloop.counter0 %}

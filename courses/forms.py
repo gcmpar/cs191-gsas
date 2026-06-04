@@ -2,7 +2,7 @@ from django.forms import (
     ModelForm, Form, CharField, ModelChoiceField,
 )
 from django_select2.forms import ModelSelect2Widget
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .models import Course
 from schools.models import School
 from schools.forms import SchoolsWidget
@@ -46,25 +46,29 @@ class CoursesWidget(ModelSelect2Widget):
     search_fields = [f'{field}__icontains' for field in COURSE_SEARCH_FIELDS]
     data_url = reverse_lazy('courses:select2_courses_grouped')
 
-    def get_queryset(self):
-        return Course.objects.prefetch_related('programs__school').all()
-
     def label_from_instance(self, course):
         return f"{course.course_code} - {course.course_name}"
     
-# No option groups version, allows for queryset modification
-class FlatCoursesWidget(ModelSelect2Widget):
+class ApplicantCoursesWidget(ModelSelect2Widget):
     model = Course
     search_fields = [f'{field}__icontains' for field in COURSE_SEARCH_FIELDS]
+    data_url = reverse_lazy('courses:select2_courses_grouped')
+
+    def __init__(self, *args, applicant=None, **kwargs):
+        self.applicant = applicant
+        super().__init__(*args, **kwargs)
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super().build_attrs(base_attrs, extra_attrs)
+                                    
+        base_url = reverse('courses:select2_courses_grouped')
+        
+        attrs['data-ajax--url'] = f"{base_url}?applicant_id={self.applicant.applicant_id}"
+        
+        return attrs
 
     def label_from_instance(self, course):
-        school_name = 'unknown school'
-        # Try search for school name once
-        # Works since we assume all its programs are under one school.
-        for program in course.programs.all():
-            program.school.school_name = school_name
-            break
-        return f"{course.course_code} - {course.course_name} ({school_name})"
+        return f"{course.course_code} - {course.course_name}"
 
 
 class ProgramRowForm(Form):
