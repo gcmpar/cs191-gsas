@@ -4,6 +4,7 @@ from . import views
 app_name = 'applications'
 urlpatterns = [
     path('', views.applications_search, name='search'),
+    path('export/', views.applications_export, name='export'),
     path('add/', views.application_add, name='add'),
     
     # Restructured application pages

@@ -3,6 +3,8 @@ import tempfile
 import os
 import difflib
 import openpyxl
+import zipfile
+import io
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -24,6 +26,7 @@ from .forms import (
 from courses.models import Course
 from common.ocr import extract_courses_from_pdf
 from .nlp import compute_similarity, compute_similarity_batch
+from .export import generate_csv_for_application, generate_xlsx_for_application
 
 
 TRANSCRIPT_FORM_PREFIX = 'transcript_'
@@ -218,6 +221,47 @@ def applications_search(request):
         'query_form': query_form,
     }
     return render(request, 'applications/search.html', context)
+
+def applications_export(request):
+    if request.method == 'POST':
+        application_ids = request.POST.getlist('application_ids')
+        export_format = request.POST.get('export_format')
+
+        if not application_ids:
+            messages.warning(request, "Please select at least one application to export.")
+            return redirect('applications:search')
+
+        if export_format not in ['csv', 'xlsx']:
+            messages.error(request, "Please select a valid export format.")
+            return redirect('applications:search')
+
+        applications = Application.objects.filter(pk__in=application_ids)
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, 'w') as zipf:
+            for application in applications:
+                filename = f'application_{application.application_number}_export.{export_format}'
+
+                if export_format == 'csv':
+                    csv_file = generate_csv_for_application(application)
+                    zipf.writestr(filename, csv_file.read())
+
+                elif export_format == 'xlsx':
+                    output = io.BytesIO()
+                    wb = generate_xlsx_for_application(application)
+                    wb.save(output)
+                    output.seek(0)
+                    zipf.writestr(filename, output.read())
+
+        zip_buffer.seek(0)
+        from django.http import FileResponse
+        return FileResponse(
+            zip_buffer,
+            as_attachment=True,
+            filename=f'applications_export_{export_format}.zip',
+            content_type='application/zip'
+        )
+    return redirect('applications:search')
 
 
 def application_general_view(request, application_id):
