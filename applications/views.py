@@ -571,7 +571,8 @@ def application_prereq_detect_equiv(request, map_id):
     matched_forms_data = []
     if valid_transcripts:
         valid_taken_courses = [t.course for t in valid_transcripts]
-        similarities = compute_similarity_batch(valid_taken_courses, target_course)
+        all_descs = [c.description for c in Course.objects.all()]
+        similarities = compute_similarity_batch(valid_taken_courses, target_course, all_descs)
 
         index = 0
         for i, transcript in enumerate(valid_transcripts):
@@ -620,7 +621,8 @@ def application_prereq_detect_similar(request, map_id):
     transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
     
     taken_courses = [t.course for t in transcripts]
-    similarities = compute_similarity_batch(taken_courses, target_course)
+    all_descs = [c.description for c in Course.objects.all()]
+    similarities = compute_similarity_batch(taken_courses, target_course, all_descs)
     
     matched_forms_data = []
     index = 0

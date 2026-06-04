@@ -1,7 +1,8 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from courses.models import Course
 
-def compute_similarity(course_desc, target_desc, all_taken_descs):
+def compute_similarity(course_desc, target_desc, all_descs):
     """
     Computes the cosine similarity percentage between a taken course's description
     and a prerequisite target course's description, fitted on the corpus of all taken descriptions.
@@ -9,7 +10,7 @@ def compute_similarity(course_desc, target_desc, all_taken_descs):
     if not course_desc or not target_desc:
         return 0.0
 
-    corpus = [desc for desc in all_taken_descs if desc] + [target_desc]
+    corpus = all_descs
     if not corpus:
         return 0.0
 
@@ -22,16 +23,15 @@ def compute_similarity(course_desc, target_desc, all_taken_descs):
     except ValueError:
         return 0.0
 
-def compute_similarity_batch(taken_courses, target_course):
+def compute_similarity_batch(taken_courses, target_course, all_descs):
     """
     Computes similarity for a list of taken courses against a target course.
     Returns a list of similarity percentages in the same order.
     """
     if not target_course or not target_course.description:
         return [0.0] * len(taken_courses)
-        
-    taken_descriptions = [c.description for c in taken_courses if c.description]
-    corpus = taken_descriptions + [target_course.description]
+    
+    corpus = all_descs
     
     if not corpus:
         return [0.0] * len(taken_courses)
