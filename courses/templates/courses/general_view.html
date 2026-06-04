@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+
 
 {% block title %}Course #{{ course.course_id }} - General{% endblock title %}
 
@@ -7,41 +7,45 @@
 
 {% include "courses/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'courses:search' %}" class="btn btn-secondary">← Courses</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'courses:search' %}" class="btn btn-ghost btn-sm">← Courses</a>
   </div>
-  <a href="{% url 'courses:general_edit' course.course_id %}" class="btn btn-primary">Edit General Info</a>
+  <a href="{% url 'courses:general_edit' course.course_id %}" class="btn btn-primary btn-sm">Edit General Info</a>
 </div>
 
-<div class="card">
-  <div class="card-header">
-    <h5 class="mb-0">Course #{{ course.course_id }}</h5>
-  </div>
+<div class="card bg-base-100 border border-base-300 shadow-sm max-w-4xl">
   <div class="card-body">
-    <p><strong>Course Code:</strong> {{ course.course_code }}</p>
-    <p><strong>Course Name:</strong> {{ course.course_name }}</p>
-    <p><strong>Units:</strong> {{ course.units }}</p>
-    <p><strong>Description:</strong> {{ course.description }}</p>
-    <hr>
-    <p><strong>Schools:</strong>
-      {% for school in course.unique_schools %}
-      <a href="{% url 'schools:view' school.school_id %}">
-        {{ school.school_name }}
-      </a>{% if not forloop.last %}, {% endif %}
-      {% empty %}
-      &mdash;
-      {% endfor %}
-    </p>
-    <p><strong>Programs:</strong>
-      {% for program in course.programs.all %}
-      <a href="{% url 'programs:view' program.program_id %}">
-        {{ program.program_name }}
-      </a>{% if not forloop.last %}, {% endif %}
-      {% empty %}
-      &mdash;
-      {% endfor %}
-    </p>
+    <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Course #{{ course.course_id }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p><strong class="font-semibold text-base-content/70">Course Code:</strong><br/>{{ course.course_code }}</p>
+      <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/>{{ course.course_name }}</p>
+      <p><strong class="font-semibold text-base-content/70">Units:</strong><br/>{{ course.units }}</p>
+      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Description:</strong><br/>{{ course.description }}</p>
+    </div>
+    
+    <div class="divider my-2"></div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p><strong class="font-semibold text-base-content/70">Schools:</strong><br/>
+        {% for school in course.unique_schools %}
+        <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary">
+          {{ school.school_name }}
+        </a>{% if not forloop.last %}, {% endif %}
+        {% empty %}
+        <span class="text-base-content/50">&mdash;</span>
+        {% endfor %}
+      </p>
+      <p><strong class="font-semibold text-base-content/70">Programs:</strong><br/>
+        {% for program in course.programs.all %}
+        <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">
+          {{ program.program_name }}
+        </a>{% if not forloop.last %}, {% endif %}
+        {% empty %}
+        <span class="text-base-content/50">&mdash;</span>
+        {% endfor %}
+      </p>
+    </div>
   </div>
 </div>
 

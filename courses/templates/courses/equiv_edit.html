@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+
 
 {% block title %}Edit Course #{{ course.course_id }} - Equivalence Mapping{% endblock title %}
 
@@ -28,29 +28,30 @@
 
 {% include "courses/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'courses:equiv_view' course.course_id %}" class="btn btn-secondary">← Cancel</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'courses:equiv_view' course.course_id %}" class="btn btn-ghost btn-sm">← Cancel</a>
   </div>
 </div>
 
 <form method="post">
   {% csrf_token %}
 
-  <h4 class="mb-4">Edit Equivalence Mappings for {{ course.course_code }}</h4>
+  <h4 class="text-xl font-bold mb-6">Edit Equivalence Mappings for {{ course.course_code }}</h4>
 
-  <div id="equiv-maps">
+  <div id="equiv-maps" class="space-y-4">
   {% for map_id, info in equiv_snapshot.items %}
     {% include "courses/partials/equiv_map.html" with equiv_forms=info.equiv_forms %}
   {% endfor %}
   </div>
   <button
+    class="btn btn-outline btn-primary mt-4 mb-6"
     type="button"
     hx-get="{% url 'courses:partial_equiv_map' course.course_id %}"
     hx-target="#equiv-maps"
     hx-swap="beforeend"
     >Add Equivalence Map</button>
-  <button type="submit" class="btn btn-primary btn-lg w-100">Save All Changes</button>
+  <button type="submit" class="btn btn-primary btn-lg w-full">Save All Changes</button>
 </form>
 
 {% endblock content %}

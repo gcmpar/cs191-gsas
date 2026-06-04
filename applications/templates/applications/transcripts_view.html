@@ -6,42 +6,44 @@
 
 {% include "applications/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'applications:search' %}" class="btn btn-ghost btn-sm">← Applications</a>
   </div>
-  <a href="{% url 'applications:transcripts_edit' application.application_id %}" class="btn btn-primary">Edit Transcripts</a>
+  <a href="{% url 'applications:transcripts_edit' application.application_id %}" class="btn btn-primary btn-sm">Edit Transcripts</a>
 </div>
 
 {% include "applications/applicant_view.html" %}
 
-<div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Past Course Transcripts</h5></div>
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body p-0">
-    <table class="table mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Course Code</th>
-          <th>Course Name</th>
-          <th>AY</th>
-          <th>Semester</th>
-          <th>Grade</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for entry in transcript_entries %}
-        <tr>
-          <td><a href="{% url 'courses:general_view' entry.course.course_id %}">{{ entry.course.course_code }}</a></td>
-          <td><a href="{% url 'courses:general_view' entry.course.course_id %}">{{ entry.course.course_name }}</a></td>
-          <td>{{ entry.academic_year }}</td>
-          <td>{{ entry.semester }}</td>
-          <td>{{ entry.grade }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-muted">No transcript entries.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <h2 class="card-title text-xl p-4 border-b border-base-200 m-0">Past Course Transcripts</h2>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full mb-0">
+        <thead class="bg-base-200">
+          <tr>
+            <th>Course Code</th>
+            <th>Course Name</th>
+            <th>AY</th>
+            <th>Semester</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in transcript_entries %}
+          <tr>
+            <td><a href="{% url 'courses:general_view' entry.course.course_id %}" class="link link-hover link-primary">{{ entry.course.course_code }}</a></td>
+            <td><a href="{% url 'courses:general_view' entry.course.course_id %}" class="link link-hover link-primary">{{ entry.course.course_name }}</a></td>
+            <td>{{ entry.academic_year }}</td>
+            <td>{{ entry.semester }}</td>
+            <td>{{ entry.grade }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-base-content/50 py-4">No transcript entries.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_bootstrap5',
+
     'crispy_forms',
     'crispy_tailwind',
     'django_select2',
@@ -149,8 +149,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-BOOTSTRAP5 = {
-    "server_side_validation": False,
-}
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
 CRISPY_TEMPLATE_PACK = 'tailwind'

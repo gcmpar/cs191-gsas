@@ -1,9 +1,9 @@
-<div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Applicant</h5></div>
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body">
-    <a href="{% url 'applicants:view' applicant.applicant_id %}" class="fw-semibold">
+    <h3 class="text-sm font-bold text-base-content/50 uppercase tracking-wider mb-2">Applicant</h3>
+    <a href="{% url 'applicants:view' applicant.applicant_id %}" class="text-lg font-semibold link link-hover link-primary">
       {{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}
     </a>
-    <p class="mb-0 text-muted">{{ applicant.email }} · {{ applicant.contact_number }}</p>
+    <p class="mb-0 text-base-content/70 text-sm mt-1">{{ applicant.email }} · {{ applicant.contact_number }}</p>
   </div>
 </div>

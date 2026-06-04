@@ -1,45 +1,47 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+
+{% load widget_tweaks %}
+
 {% block title %}
   School #{{ school.school_id }}
 {% endblock title %}
+
 {% block content %}
   {% querystring as query_params %}
-  <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="d-flex gap-2">
-        <a href="{% url 'schools:search' %}" class="btn btn-secondary">← Schools</a>
+  <div class="container mx-auto">
+    <div class="flex justify-between items-center mb-6 mt-4">
+      <div class="flex gap-2">
+        <a href="{% url 'schools:search' %}" class="btn btn-ghost btn-sm">← Schools</a>
       </div>
-      <a href="{% url 'schools:edit' school.school_id %}"
-         class="btn btn-primary">Edit</a>
+      <a href="{% url 'schools:edit' school.school_id %}" class="btn btn-primary btn-sm">Edit</a>
     </div>
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header bg-white">
-        <h5 class="mb-0">School #{{ school.school_id }}</h5>
-      </div>
+
+    <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
       <div class="card-body">
+        <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">School #{{ school.school_id }}</h2>
         <p class="mb-0">
-          <strong>School Name:</strong> {{ school.school_name }}
+          <strong class="font-semibold text-base-content/70">School Name:</strong><br/>
+          {{ school.school_name }}
         </p>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Programs</h5>
-            <form method="get" class="d-flex gap-2">
-              {% bootstrap_field programs_query_form.search show_label=False %}
-              <button type="submit" class="btn btn-sm btn-light border">Search</button>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl">
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-0">
+          <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
+            <h3 class="card-title text-lg m-0">Programs</h3>
+            <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {% render_field programs_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
+              <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if programs_query_form.search.value %}
-                <a href="{% querystring programs_query_clear %}"
-                   class="btn btn-sm btn-secondary">Clear</a>
+                <a href="{% querystring programs_query_clear %}" class="btn btn-sm btn-ghost">Clear</a>
               {% endif %}
             </form>
           </div>
-          <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-              <thead class="table-light">
+          <div class="overflow-x-auto">
+            <table class="table table-zebra w-full mb-0">
+              <thead class="bg-base-200">
                 <tr>
                   <th>Program Name</th>
                   <th>Description</th>
@@ -49,39 +51,39 @@
                 {% for program in programs_page %}
                   <tr>
                     <td>
-                      <a href="{% url 'programs:view' program.program_id %}">{{ program.program_name }}</a>
+                      <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">{{ program.program_name }}</a>
                     </td>
                     <td>{{ program.description|default:"—" }}</td>
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="2" class="text-muted">No programs found.</td>
+                    <td colspan="2" class="text-center text-base-content/50 py-4">No programs found.</td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          <div class="card-footer bg-white text-end">
-            {% bootstrap_pagination programs_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name=programs_page_param_name %}
+          <div class="p-4 border-t border-base-200 flex justify-end">
+            {% include "pagination.html" with page_obj=programs_page param_name=programs_page_param_name %}
           </div>
         </div>
       </div>
-      <div class="col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Applicants</h5>
-            <form method="get" class="d-flex gap-2">
-              {% bootstrap_field apps_query_form.search show_label=False %}
-              <button type="submit" class="btn btn-sm btn-light border">Search</button>
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-0">
+          <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
+            <h3 class="card-title text-lg m-0">Applicants</h3>
+            <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {% render_field apps_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
+              <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if apps_query_form.search.value %}
-                <a href="{% querystring apps_query_clear %}"
-                   class="btn btn-sm btn-secondary">Clear</a>
+                <a href="{% querystring apps_query_clear %}" class="btn btn-sm btn-ghost">Clear</a>
               {% endif %}
             </form>
           </div>
-          <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-              <thead class="table-light">
+          <div class="overflow-x-auto">
+            <table class="table table-zebra w-full mb-0">
+              <thead class="bg-base-200">
                 <tr>
                   <th>App No.</th>
                   <th>Name</th>
@@ -93,7 +95,7 @@
                   <tr>
                     <td>{{ application.application_number }}</td>
                     <td>
-                      <a href="{% url 'applicants:view' application.applicant.applicant_id %}">
+                      <a href="{% url 'applicants:view' application.applicant.applicant_id %}" class="link link-hover link-primary">
                         {{ application.applicant.first_name }} {{ application.applicant.last_name }}
                       </a>
                     </td>
@@ -101,14 +103,14 @@
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="3" class="text-muted">No applicants found.</td>
+                    <td colspan="3" class="text-center text-base-content/50 py-4">No applicants found.</td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          <div class="card-footer bg-white text-end">
-            {% bootstrap_pagination apps_page pages_to_show=5 size="sm" extra=query_params|cut:"?" parameter_name=apps_page_param_name %}
+          <div class="p-4 border-t border-base-200 flex justify-end">
+            {% include "pagination.html" with page_obj=apps_page param_name=apps_page_param_name %}
           </div>
         </div>
       </div>

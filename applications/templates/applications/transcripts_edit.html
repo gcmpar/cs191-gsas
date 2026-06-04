@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+
 {% load static %}
 
 {% block title %}Edit Application #{{ application.application_id }} - Transcripts{% endblock title %}
@@ -25,81 +25,77 @@
 
 {% include "applications/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'applications:transcripts_view' application.application_id %}" class="btn btn-secondary">← Cancel</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'applications:transcripts_view' application.application_id %}" class="btn btn-ghost btn-sm">← Cancel</a>
   </div>
 </div>
 
 {% include "applications/applicant_view.html" %}
 
 {# ── Scan TOR card ── #}
-<div class="card mb-4">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Scan TOR (PDF)</h5>
-    <button class="btn btn-sm btn-outline-secondary" type="button"
-            data-bs-toggle="collapse" data-bs-target="#scanTorCard">
-      Toggle
-    </button>
+<details class="collapse collapse-arrow bg-base-100 border border-base-300 shadow-sm mb-6" open>
+  <summary class="collapse-title text-lg font-medium">
+    Scan TOR (PDF)
+  </summary>
+  <div class="collapse-content">
+    <p class="text-base-content/70 text-sm mb-4">
+      Upload a Transcript of Records PDF to automatically extract courses.
+      You will be able to review, edit, and confirm the results before they are saved.
+    </p>
+    <form method="post"
+          action="{% url 'applications:scan_tor' application.application_id %}"
+          enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="flex items-center gap-4 flex-wrap">
+        <input type="file" name="tor_pdf" accept=".pdf" class="file-input file-input-bordered w-full max-w-xs" required>
+        <button type="submit" class="btn btn-primary" id="scanTorBtn">
+          Scan TOR
+        </button>
+      </div>
+    </form>
   </div>
-  <div class="collapse show" id="scanTorCard">
-    <div class="card-body">
-      <p class="text-muted small mb-3">
-        Upload a Transcript of Records PDF to automatically extract courses.
-        You will be able to review, edit, and confirm the results before they are saved.
-      </p>
-      <form method="post"
-            action="{% url 'applications:scan_tor' application.application_id %}"
-            enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <input type="file" name="tor_pdf" accept=".pdf" class="form-control" style="max-width: 380px;" required>
-          <button type="submit" class="btn btn-primary" id="scanTorBtn">
-            Scan TOR
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+</details>
 
 {# ── Main edit form ── #}
 <form method="post">
   {% csrf_token %}
 
-  <div class="card mb-4">
-    <div class="card-header"><h5 class="mb-0">Past Course Transcripts</h5></div>
+  <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
     <div class="card-body p-0">
-      <table class="table mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>Course</th>
-            <th>AY</th>
-            <th>Semester</th>
-            <th>Grade</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="transcript-forms">
-          {% for transcript_form in transcript_forms %}
-            {% include "applications/partials/transcript_form.html" %}
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="card-footer bg-white border-top-0 pt-0 pb-3">
-      <button
-        class="btn btn-sm btn-secondary"
-        type="button"
-        hx-get="{% url 'applications:partial_transcript_form' application.application_id %}"
-        hx-vals="js:{index:getTranscriptNextIndex()}"
-        hx-target="#transcript-forms"
-        hx-swap="beforeend"
-      >+ Add Course</button>
+      <h2 class="card-title text-xl p-4 border-b border-base-200">Past Course Transcripts</h2>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full mb-0">
+          <thead class="bg-base-200">
+            <tr>
+              <th>Course</th>
+              <th>AY</th>
+              <th>Semester</th>
+              <th>Grade</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="transcript-forms">
+            {% for transcript_form in transcript_forms %}
+              {% include "applications/partials/transcript_form.html" %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="p-4 border-t border-base-200">
+        <button
+          class="btn btn-sm btn-neutral"
+          type="button"
+          hx-get="{% url 'applications:partial_transcript_form' application.application_id %}"
+          hx-vals="js:{index:getTranscriptNextIndex()}"
+          hx-target="#transcript-forms"
+          hx-swap="beforeend"
+        >+ Add Course</button>
+      </div>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary">Save Transcripts</button>
+  <button type="submit" class="btn btn-primary btn-lg w-full">Save Transcripts</button>
 </form>
 
 {% endblock content %}

@@ -1,34 +1,43 @@
 {% extends "skeleton.html" %}
-{% load django_bootstrap5 %}
+{% load crispy_forms_tags %}
 
 
 {% block main %}
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
+  <div class="card w-full max-w-md shadow-2xl bg-base-100 border border-base-300">
+    <div class="card-body">
+      
+      <!-- Cases -->
+      {% if form.errors %}
+      <div class="alert alert-error mb-4">
+        <span>Your username and password didn't match. Please try again.</span>
+      </div>
+      {% endif %}
 
-<!-- Cases -->
+      {% if next %}
+      <div class="alert alert-warning mb-4">
+        {% if user.is_authenticated %}
+        <span>Your account doesn't have access to this page. To proceed, please login with an account that has access.</span>
+        {% else %}
+        <span>Please login to see this page.</span>
+        {% endif %}
+      </div>
+      {% endif %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
-    {% endif %}
-{% endif %}
-
-
-<!-- Login Form -->
-<form action="" method=POST>
-    {% csrf_token %}
-
-    <h2 class="mb-3">Login</h2>
-
-    {% bootstrap_form form %}
-
-    {% bootstrap_button "Submit" button_type="submit" %}
-</form>
-
+      <!-- Login Form -->
+      <form action="" method="POST">
+        {% csrf_token %}
+        <div class="text-center mb-6">
+          <h2 class="text-3xl font-bold">Welcome Back</h2>
+          <p class="text-base-content/70 mt-2">Login to your GSAS account</p>
+        </div>
+        
+        {{ form|crispy }}
+        
+        <button type="submit" class="btn btn-primary mt-6 w-full">Sign In</button>
+      </form>
+      
+    </div>
+  </div>
+</div>
 {% endblock main %}

@@ -1,16 +1,18 @@
 {% load widget_tweaks %}
-{% load django_bootstrap5 %}
 
-<div class="program-form flex flex-row">
-    {% bootstrap_form_errors program_form %}
-    {% render_field program_form.program class="w-25" %}
+<div class="program-form flex items-center gap-2">
+    {% if program_form.errors %}
+        <div class="text-error text-sm">{{ program_form.errors }}</div>
+    {% endif %}
+    <div class="flex-grow max-w-md">
+        {% render_field program_form.program class="select select-bordered select-sm w-full" %}
+    </div>
 
     <button
         type="button"
-        class="btn"
+        class="btn btn-sm btn-ghost text-error"
         onclick="this.closest('.program-form').remove()"
     >
-        Remove
+        ✕
     </button>
-
 </div>

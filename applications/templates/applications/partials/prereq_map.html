@@ -1,27 +1,32 @@
 {% load widget_tweaks %}
-{% load django_bootstrap5 %}
 
-<div class="card mb-3 prereq-map">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Prerequisite Map</h5>
-        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.prereq-map').remove()">Remove Map</button>
-    </div>
+
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 prereq-map">
     <div class="card-body">
-        <div class="mb-3">
-            <label class="form-label">Target Course (Requires these prerequisites)</label>
-            {% bootstrap_form_errors map_form %}
-            {% render_field map_form.target_course class="w-100" %}
+        <div class="flex justify-between items-center mb-4">
+            <h5 class="card-title text-lg m-0">Prerequisite Map</h5>
+            <button type="button" class="btn btn-sm btn-error" onclick="this.closest('.prereq-map').remove()">Remove Map</button>
         </div>
         
-        <h6>Prerequisite Courses (Must be taken before target course)</h6>
-        <div class="mb-3" id="prereq-forms-{{ map_id }}">
+        <div class="form-control mb-6">
+            <label class="label">
+                <span class="label-text font-semibold">Target Course (Requires these prerequisites)</span>
+            </label>
+            {% if map_form.target_course.errors %}
+                <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
+            {% endif %}
+            {% render_field map_form.target_course class="w-full" %}
+        </div>
+        
+        <h6 class="font-semibold mb-3">Prerequisite Courses (Must be taken before target course)</h6>
+        <div class="space-y-4 mb-4" id="prereq-forms-{{ map_id }}">
             {% for data in course_data %}
                 {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=forloop.counter0 %}
             {% endfor %}
         </div>
-        <div class="d-flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <button
-                class="btn btn-sm btn-secondary"
+                class="btn btn-sm btn-neutral"
                 type="button"
                 hx-get="{% url 'applications:partial_prereq_form' map_id %}"
                 hx-vals="js:{index:getPrereqNextIndex({{ map_id }})}"

@@ -1,22 +1,29 @@
 {% load widget_tweaks %}
-{% load django_bootstrap5 %}
 
-<div class="prereq-form border rounded p-3 mb-2 position-relative bg-light">
-    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="this.closest('.prereq-form').remove()" aria-label="Close"></button>
-    {% bootstrap_form_errors course_form %}
-    <div class="row g-2 align-items-center">
-        <div class="col-md-5">
-            <label class="form-label small text-muted mb-0">Course</label>
+
+<div class="prereq-form border border-base-300 rounded p-4 mb-3 relative bg-base-100 shadow-sm">
+    <button type="button" class="btn btn-circle btn-ghost btn-xs absolute top-2 right-2" onclick="this.closest('.prereq-form').remove()" aria-label="Close">
+        ✕
+    </button>
+    
+    {% if course_form.errors %}
+        <div class="text-error text-sm mb-2">{{ course_form.errors }}</div>
+    {% endif %}
+    
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        <div class="md:col-span-5">
+            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course</span></label>
             {% url 'applications:partial_prereq_form' map_id as prereq_form_url %}
             {% with index_str=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_str as prereq_form_full_url %}
-                    {% render_field course_form.course class="w-100" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML" %}
+                    {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML" %}
                 {% endwith %}
             {% endwith %}
         </div>
-        <div class="col-md-3">
-            <label class="form-label small text-muted mb-0">Similarity</label>
-            <div class="form-control-plaintext form-control-sm fw-bold">
+        
+        <div class="md:col-span-3">
+            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Similarity</span></label>
+            <div class="font-bold">
                 {% if similarity != None %}
                     {{ similarity }}%
                 {% else %}
@@ -24,9 +31,10 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-4">
-            <label class="form-label small text-muted mb-0">Grade</label>
-            <div class="form-control-plaintext form-control-sm">
+        
+        <div class="md:col-span-4">
+            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Grade</span></label>
+            <div>
                 {% if grade %}
                     {{ grade }}
                 {% else %}
@@ -35,8 +43,9 @@
             </div>
         </div>
     </div>
+    
     {% if description %}
-    <div class="mt-2 text-muted small bg-white border p-2 rounded">
+    <div class="mt-4 text-sm bg-base-200 p-3 rounded text-base-content/80">
         <strong>Description:</strong> {{ description }}
     </div>
     {% endif %}

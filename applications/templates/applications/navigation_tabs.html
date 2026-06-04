@@ -1,22 +1,16 @@
 {% with request.resolver_match.view_name as view_name %}
-  <ul class="nav nav-tabs mb-4">
-    <li class="nav-item">
-      <a class="nav-link {% if view_name == 'applications:general_view' or view_name == 'applications:general_edit' %}active{% endif %}" 
-        href="{% url 'applications:general_view' application.application_id %}">
-        General
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link {% if view_name == 'applications:transcripts_view' or view_name == 'applications:transcripts_edit' %}active{% endif %}" 
-        href="{% url 'applications:transcripts_view' application.application_id %}">
-        Past Course Transcripts
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link {% if view_name == 'applications:prereq_view' or view_name == 'applications:prereq_edit' %}active{% endif %}" 
-        href="{% url 'applications:prereq_view' application.application_id %}">
-        Prerequisite Mapping
-      </a>
-    </li>
-  </ul>
+  <div role="tablist" class="tabs tabs-bordered mb-8">
+    <a role="tab" class="tab {% if view_name == 'applications:general_view' or view_name == 'applications:general_edit' %}tab-active font-semibold{% endif %}" 
+      href="{% url 'applications:general_view' application.application_id %}">
+      General
+    </a>
+    <a role="tab" class="tab {% if view_name == 'applications:transcripts_view' or view_name == 'applications:transcripts_edit' %}tab-active font-semibold{% endif %}" 
+      href="{% url 'applications:transcripts_view' application.application_id %}">
+      Past Course Transcripts
+    </a>
+    <a role="tab" class="tab {% if view_name == 'applications:prereq_view' or view_name == 'applications:prereq_edit' %}tab-active font-semibold{% endif %}" 
+      href="{% url 'applications:prereq_view' application.application_id %}">
+      Prerequisite Mapping
+    </a>
+  </div>
 {% endwith %}

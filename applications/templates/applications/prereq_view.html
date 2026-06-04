@@ -6,48 +6,50 @@
 
 {% include "applications/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'applications:search' %}" class="btn btn-secondary">← Applications</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'applications:search' %}" class="btn btn-ghost btn-sm">← Applications</a>
   </div>
-  <a href="{% url 'applications:prereq_edit' application.application_id %}" class="btn btn-primary">Edit Prerequisite Mapping</a>
+  <a href="{% url 'applications:prereq_edit' application.application_id %}" class="btn btn-primary btn-sm">Edit Prerequisite Mapping</a>
 </div>
 
 {% include "applications/applicant_view.html" %}
 
-<div class="card mb-4" id="prereq-mappings-section">
-  <div class="card-header"><h5 class="mb-0">Prerequisite Mappings</h5></div>
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl" id="prereq-mappings-section">
   <div class="card-body p-0">
-    <table class="table mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>Target Course</th>
-          <th>Prerequisite Courses</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for mapping in prereq_maps %}
-        <tr>
-          <td>
-            {% if mapping.target_course %}
-              <a href="{% url 'courses:general_view' mapping.target_course.course_id %}"><strong>{{ mapping.target_course.course_code }}</strong></a>
-            {% else %}
-              <span class="text-muted">None</span>
-            {% endif %}
-          </td>
-          <td>
-            {% for c in mapping.prerequisitemapcourses_set.all %}
-              <a href="{% url 'courses:general_view' c.course.course_id %}">{{ c.course.course_code }}</a>{% if not forloop.last %} + {% endif %}
-            {% empty %}
-              <span class="text-muted">None</span>
-            {% endfor %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="2" class="text-muted">No prerequisite mappings exist for this application.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <h2 class="card-title text-xl p-4 border-b border-base-200 m-0">Prerequisite Mappings</h2>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full mb-0">
+        <thead class="bg-base-200">
+          <tr>
+            <th>Target Course</th>
+            <th>Prerequisite Courses</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mapping in prereq_maps %}
+          <tr>
+            <td>
+              {% if mapping.target_course %}
+                <a href="{% url 'courses:general_view' mapping.target_course.course_id %}" class="link link-hover link-primary font-bold">{{ mapping.target_course.course_code }}</a>
+              {% else %}
+                <span class="text-base-content/50">None</span>
+              {% endif %}
+            </td>
+            <td>
+              {% for c in mapping.prerequisitemapcourses_set.all %}
+                <a href="{% url 'courses:general_view' c.course.course_id %}" class="link link-hover link-primary">{{ c.course.course_code }}</a>{% if not forloop.last %} <span class="text-base-content/50">+</span> {% endif %}
+              {% empty %}
+                <span class="text-base-content/50">None</span>
+              {% endfor %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" class="text-center text-base-content/50 py-4">No prerequisite mappings exist for this application.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

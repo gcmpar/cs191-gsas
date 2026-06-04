@@ -1,57 +1,60 @@
 <!DOCTYPE html>
 {% load static %}
 
-<html lang="en-US">
-  <head>
-    {% load django_bootstrap5 %}
+<html lang="en-US" data-theme="corporate">
 
-    <!-- Meta -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
 
-    <!-- Title -->
-    <title>{% block title %}{% endblock title %} | Graduate Students Admission System</title>
 
-    <!-- Tailwind CSS -->
-    <link rel="stylesheet" href="{% static 'common/css/globals_output.css' %}">
+  <!-- Meta -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Force Select2 load -->
-    {{ select2_media.css }}
+  <!-- Title -->
+  <title>{% block title %}{% endblock title %} | Graduate Students Admission System</title>
 
-    <!-- extra head -->
-    {% block extra_head %}{% endblock extra_head %}
-  </head>
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="{% static 'common/css/globals_output.css' %}">
 
-  <body>
+  <!-- Force Select2 load -->
+  {{ select2_media.css }}
 
-    <header>
-      <!-- header -->
-      {% block header %}{% endblock header %}
-    </header>
-      
-    <main>
-      <!-- main -->
-      {% block main %}{% endblock main %}
-    </main>
+  <!-- extra head -->
+  {% block extra_head %}{% endblock extra_head %}
+</head>
 
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.5.0"
-        integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
-        crossorigin="anonymous"></script>
-    <script>
-        document.body.addEventListener('htmx:configRequest', (event) => {
-        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-        })
-    </script>
+<body>
 
-    <!-- JQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <header>
+    <!-- header -->
+    {% block header %}{% endblock header %}
+  </header>
 
-    <!-- Force Select2 load -->
-    {{ select2_media.js }}
+  <main>
+    <!-- main -->
+    {% block main %}{% endblock main %}
+  </main>
 
-    <!-- extra JS -->
-    {% block extra_javascript %}{% endblock extra_javascript %}
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.5.0"
+    integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
+    crossorigin="anonymous"></script>
+  <script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+  </script>
 
-  </body>
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <!-- Force Select2 load -->
+  {{ select2_media.js }}
+
+  <!-- extra JS -->
+  {% block extra_javascript %}{% endblock extra_javascript %}
+
+</body>
+
 </html>

@@ -51,3 +51,18 @@ def render_navbar(context):
 
         'navbar_buttons': buttons,
     }
+
+
+@register.simple_tag(takes_context=True)
+def param_replace(context, param_name, value):
+    """
+    Returns a URL-encoded querystring for the current page,
+    updating the specified parameter with the given value.
+    """
+    request = context.get('request')
+    if not request:
+        return f"?{param_name}={value}"
+    
+    dict_ = request.GET.copy()
+    dict_[param_name] = value
+    return f"?{dict_.urlencode()}"

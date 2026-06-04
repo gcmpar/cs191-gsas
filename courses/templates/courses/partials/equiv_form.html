@@ -1,16 +1,18 @@
 {% load widget_tweaks %}
-{% load django_bootstrap5 %}
 
-<div class="equiv-form flex flex-row">
-    {% bootstrap_form_errors equiv_form %}
-    {% render_field equiv_form.course class="w-25" %}
+<div class="equiv-form flex items-center gap-2">
+    {% if equiv_form.errors %}
+        <div class="text-error text-sm">{{ equiv_form.errors }}</div>
+    {% endif %}
+    <div class="flex-grow max-w-md">
+        {% render_field equiv_form.course class="select select-bordered select-sm w-full" %}
+    </div>
 
     <button
         type="button"
-        class="btn"
+        class="btn btn-sm btn-ghost text-error"
         onclick="this.closest('.equiv-form').remove()"
     >
-        Remove
+        ✕
     </button>
-
 </div>

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
 {% load widget_tweaks %}
 
 {% block title %}Confirm Batch Import{% endblock title %}
@@ -9,25 +8,23 @@
 {% endblock extra_head %}
 
 {% block content %}
-<div class="row pt-4 mb-4">
-    <div class="col-8">
-        <h2>Confirm Batch Import</h2>
-        <p class="text-muted">Please review the entries to be created below. Click 'Save to Database' if correct.</p>
-    </div>
+<div class="mb-6 mt-4">
+    <h2 class="text-2xl font-bold mb-2">Confirm Batch Import</h2>
+    <p class="text-base-content/70">Please review the entries to be created below. Click 'Save to Database' if correct.</p>
 </div>
 
 <div>
-    <div class="mb-3">
-        <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline-primary me-2">Create New Applicant</a>
-        <a href="{% url 'applications:batch_import_confirm' %}" class="btn btn-sm btn-outline-secondary">Refresh and Auto-Detect Applicants</a>
+    <div class="mb-6 flex gap-2 flex-wrap">
+        <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-primary">Create New Applicant</a>
+        <a href="{% url 'applications:batch_import_confirm' %}" class="btn btn-sm btn-outline btn-secondary">Refresh and Auto-Detect Applicants</a>
     </div>
     <form method="post">
         {% csrf_token %}
         {{ formset.management_form }}
-        <div class="card p-3 mb-4">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead>
+        <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full mb-0 min-w-[1200px]">
+                    <thead class="bg-base-200">
                         <tr>
                             <th>Application No.</th>
                             <th>Scanned Name</th>
@@ -42,26 +39,30 @@
                     <tbody>
                         {% for form in formset %}
                         <tr>
-                            <td>{% bootstrap_field form.application_number show_label=False %}</td>
-                            <td>{% bootstrap_field form.scanned_name show_label=False %}</td>
+                            <td>{% render_field form.application_number class="input input-sm input-bordered w-full" %}</td>
+                            <td>{% render_field form.scanned_name class="input input-sm input-bordered w-full" %}</td>
                             <td>
-                                {% bootstrap_field form.scanned_email show_label=False wrapper_class="mb-1" %}
-                                {% bootstrap_field form.scanned_contact_number show_label=False wrapper_class="mb-0" %}
+                                {% render_field form.scanned_email class="input input-sm input-bordered w-full mb-1" placeholder="Email" %}
+                                {% render_field form.scanned_contact_number class="input input-sm input-bordered w-full" placeholder="Contact #" %}
                             </td>
-                            <td>{% bootstrap_field form.applicant show_label=False %}</td>
-                            <td>{% bootstrap_field form.program show_label=False %}</td>
-                            <td>{% bootstrap_field form.study_load show_label=False %}</td>
-                            <td>{% bootstrap_field form.application_status show_label=False %}</td>
-                            <td>{% render_field form.notes show_label=False rows="2" class+="form-control-sm m-0" %}</td>
+                            <td>{% render_field form.applicant class="select select-sm select-bordered w-full min-w-[150px]" %}</td>
+                            <td>{% render_field form.program class="select select-sm select-bordered w-full" %}</td>
+                            <td>{% render_field form.study_load class="select select-sm select-bordered w-full" %}</td>
+                            <td>{% render_field form.application_status class="select select-sm select-bordered w-full" %}</td>
+                            <td>{% render_field form.notes rows="2" class="textarea textarea-bordered textarea-sm w-full" %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% bootstrap_formset_errors formset %}
+            {% if formset.non_form_errors %}
+                <div class="p-4 bg-error/10 text-error">{{ formset.non_form_errors }}</div>
+            {% endif %}
         </div>
-        <button type="submit" name="confirm" class="btn btn-success">Save to Database</button>
-        <a href="{% url 'applications:batch_import_upload' %}" class="btn btn-secondary">Cancel / Re-upload</a>
+        <div class="flex gap-2">
+            <button type="submit" name="confirm" class="btn btn-success">Save to Database</button>
+            <a href="{% url 'applications:batch_import_upload' %}" class="btn btn-ghost">Cancel / Re-upload</a>
+        </div>
     </form>
 </div>
 {% endblock content %}

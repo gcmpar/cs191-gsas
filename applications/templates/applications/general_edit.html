@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+{% load crispy_forms_tags %}
 
 {% block title %}Edit Application #{{ application.application_id }} - General{% endblock title %}
 
@@ -10,11 +10,10 @@
 {% block content %}
 
 {% if messages %}
-<div class="mb-3">
+<div class="mb-4 space-y-2">
   {% for message in messages %}
-    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %} shadow-sm">
+      <span>{{ message }}</span>
     </div>
   {% endfor %}
 </div>
@@ -22,13 +21,13 @@
 
 {% include "applications/navigation_tabs.html" %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'applications:general_view' application.application_id %}" class="btn btn-secondary">← Cancel</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'applications:general_view' application.application_id %}" class="btn btn-ghost btn-sm">← Cancel</a>
   </div>
-  <form method="post" action="{% url 'applications:delete' application.application_id %}">
+  <form method="post" action="{% url 'applications:delete' application.application_id %}" class="m-0">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger"
+    <button type="submit" class="btn btn-error btn-sm"
       onclick="return confirm('Delete this application? This cannot be undone.')">
       Delete
     </button>
@@ -40,14 +39,16 @@
 <form method="post" id="mainEditForm">
   {% csrf_token %}
 
-  <div class="card mb-4">
-    <div class="card-header"><h5 class="mb-0">Edit General Info</h5></div>
+  <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
     <div class="card-body">
-        {% bootstrap_form form %}
+      <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Edit General Info</h2>
+      {{ form|crispy }}
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary">Save General Info</button>
+  <div class="flex justify-end">
+    <button type="submit" class="btn btn-primary">Save General Info</button>
+  </div>
 </form>
 
 {% endblock content %}

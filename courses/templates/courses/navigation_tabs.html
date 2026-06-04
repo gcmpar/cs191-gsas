@@ -1,16 +1,12 @@
 {% with request.resolver_match.view_name as view_name %}
-<ul class="nav nav-tabs mb-4">
-  <li class="nav-item">
-    <a class="nav-link {% if view_name == 'courses:general_view' or view_name == 'courses:general_edit' %}active{% endif %}" 
-       href="{% url 'courses:general_view' course.course_id %}">
-       General Info
+  <div role="tablist" class="tabs tabs-bordered mb-8">
+    <a role="tab" class="tab {% if view_name == 'courses:general_view' or view_name == 'courses:general_edit' %}tab-active font-semibold{% endif %}" 
+      href="{% url 'courses:general_view' course.course_id %}">
+      General Info
     </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link {% if view_name == 'courses:equiv_view' or view_name == 'courses:equiv_edit' %}active{% endif %}" 
-       href="{% url 'courses:equiv_view' course.course_id %}">
-       Equivalence Mapping
+    <a role="tab" class="tab {% if view_name == 'courses:equiv_view' or view_name == 'courses:equiv_edit' %}tab-active font-semibold{% endif %}" 
+      href="{% url 'courses:equiv_view' course.course_id %}">
+      Equivalence Mapping
     </a>
-  </li>
-</ul>
+  </div>
 {% endwith %}

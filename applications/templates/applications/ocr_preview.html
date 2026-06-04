@@ -1,33 +1,30 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
+
 {% load widget_tweaks %}
 
 {% block title %}OCR Preview — Application #{{ application.application_id }}{% endblock title %}
 
 {% block content %}
 
-<div class="row pt-4 mb-3">
-  <div class="col">
-    <h2>Review Scanned Courses</h2>
-    <p class="text-muted">
-      Application #{{ application.application_id }} &mdash;
-      The table below shows what was extracted from the uploaded TOR PDF.
-      Match each scanned course to an existing UP course using the dropdown,
-      edit the grade if needed, and uncheck rows you want to skip.
-      Click <strong>Save to Application</strong> when done.
-    </p>
-  </div>
+<div class="mb-6 mt-4">
+  <h2 class="text-2xl font-bold mb-2">Review Scanned Courses</h2>
+  <p class="text-base-content/70">
+    Application #{{ application.application_id }} &mdash;
+    The table below shows what was extracted from the uploaded TOR PDF.
+    Match each scanned course to an existing UP course using the dropdown,
+    edit the grade if needed, and uncheck rows you want to skip.
+    Click <strong class="font-semibold">Save to Application</strong> when done.
+  </p>
 </div>
 
-{# ── Action bar (mirrors batch_import_confirm pattern) ──────────────── #}
-<div class="mb-3 d-flex gap-2 flex-wrap">
+<div class="mb-6 flex gap-2 flex-wrap">
   <a href="{% url 'courses:add' %}"
      target="_blank"
-     class="btn btn-sm btn-outline-primary">
+     class="btn btn-sm btn-outline btn-primary">
     ＋ Create Course
   </a>
   <a href="{% url 'applications:ocr_preview' application.application_id %}"
-     class="btn btn-sm btn-outline-secondary">
+     class="btn btn-sm btn-outline btn-secondary">
     ↺ Refresh and Auto-Detect Courses
   </a>
 </div>
@@ -35,63 +32,58 @@
 <form method="post">
   {% csrf_token %}
 
-  <div class="card p-3 mb-4">
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle" style="min-width: 1100px;">
-        <thead class="table-light">
+  <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full mb-0 min-w-[1100px]">
+        <thead class="bg-base-200">
           <tr>
-            <th style="width: 4%;">✓</th>
-            <th style="width: 12%;">Scanned Code</th>
-            <th style="width: 18%;">Scanned Course Name</th>
-            <th style="width: 6%;">Scanned Units</th>
-            <th style="width: 34%;">Course Link</th>
-            <th style="width: 10%;">Grade</th>
+            <th class="w-[4%] text-center">✓</th>
+            <th class="w-[12%]">Scanned Code</th>
+            <th class="w-[18%]">Scanned Course Name</th>
+            <th class="w-[6%]">Scanned Units</th>
+            <th class="w-[34%]">Course Link</th>
+            <th class="w-[10%]">Grade</th>
           </tr>
         </thead>
         <tbody>
           {{ formset.management_form }}
           {% for form in formset %}
           <tr>
-            {# Include checkbox #}
             <td class="text-center">
-              {% render_field form.include class="form-check-input" %}
+              {% render_field form.include class="checkbox checkbox-primary checkbox-sm" %}
             </td>
 
-            {# Verbatim OCR output — read-only (using hidden fields for form data) #}
             <td>
-              <span class="font-monospace small">{{ form.scanned_code.value|default_if_none:'' }}</span>
+              <span class="font-mono text-sm">{{ form.scanned_code.value|default_if_none:'' }}</span>
               {{ form.scanned_code }}
             </td>
             <td>
-              <span class="small text-muted">{{ form.scanned_description.value|default_if_none:'' }}</span>
+              <span class="text-sm text-base-content/70">{{ form.scanned_description.value|default_if_none:'' }}</span>
               {{ form.scanned_description }}
             </td>
 
-            {# Scanned Units #}
-            <td class="text-center text-muted small">
+            <td class="text-center text-base-content/70 text-sm">
               {{ form.scanned_units.value|default_if_none:'' }}
               {{ form.scanned_units }}
             </td>
 
-            {# Course dropdown #}
             <td>
-              {{ form.course }}
+              {{ form.course|add_class:"select select-bordered select-sm w-full" }}
               {% if form.course.errors %}
-                <div class="text-danger small mt-1">{{ form.course.errors }}</div>
+                <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
               {% endif %}
             </td>
 
-            {# Grade — free text input #}
             <td>
-              {% render_field form.grade class="form-control form-control-sm" %}
+              {% render_field form.grade class="input input-bordered input-sm w-full" %}
               {% if form.grade.errors %}
-                <div class="text-danger small mt-1">{{ form.grade.errors }}</div>
+                <div class="text-error text-xs mt-1">{{ form.grade.errors }}</div>
               {% endif %}
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="6" class="text-center text-muted">No courses were extracted. Try uploading again.</td>
+            <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -99,10 +91,10 @@
     </div>
   </div>
 
-  <div class="d-flex gap-2">
+  <div class="flex gap-2">
     <button type="submit" class="btn btn-success">Save to Application</button>
     <a href="{% url 'applications:general_edit' application.application_id %}"
-       class="btn btn-secondary">← Back to Edit</a>
+       class="btn btn-ghost">← Back to Edit</a>
   </div>
 </form>
 

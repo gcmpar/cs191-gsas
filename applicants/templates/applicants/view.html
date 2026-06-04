@@ -5,21 +5,25 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="d-flex gap-2">
-    <a href="{% url 'applicants:search' %}" class="btn btn-secondary">← Applicants</a>
+<div class="flex justify-between items-center mb-6 mt-4">
+  <div class="flex gap-2">
+    <a href="{% url 'applicants:search' %}" class="btn btn-ghost btn-sm">← Applicants</a>
   </div>
-  <a href="{% url 'applicants:edit' applicant.applicant_id %}" class="btn btn-primary">Edit</a>
+  <a href="{% url 'applicants:edit' applicant.applicant_id %}" class="btn btn-primary btn-sm">Edit</a>
 </div>
 
-<div class="card mb-4">
-  <div class="card-header"><h5 class="mb-0">Applicant #{{ applicant.applicant_id }}</h5></div>
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body">
-    <p><strong>Name:</strong> {{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}</p>
-    <p><strong>Status:</strong> {{ applicant.applicant_status }}</p>
-    <p><strong>Email:</strong> {{ applicant.email }}</p>
-    <p><strong>Contact:</strong> {{ applicant.contact_number }}</p>
-    <p><strong>Notes:</strong> {{ applicant.notes|default:"—" }}</p>
+    <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Applicant #{{ applicant.applicant_id }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p><strong class="font-semibold text-base-content/70">Name:</strong><br/>{{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}</p>
+      <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
+        <span class="badge badge-primary">{{ applicant.applicant_status }}</span>
+      </p>
+      <p><strong class="font-semibold text-base-content/70">Email:</strong><br/>{{ applicant.email }}</p>
+      <p><strong class="font-semibold text-base-content/70">Contact:</strong><br/>{{ applicant.contact_number }}</p>
+      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ applicant.notes|default:"—" }}</p>
+    </div>
   </div>
 </div>
 
