@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "css:watch": "npx tailwindcss -i static/common/globals.css -o static/common/globals_output.css --watch"
+    "css:watch": "npx tailwindcss -i static/common/css/globals.css -o static/common/css/globals_output.css --watch"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/gcmpar/cs191-gsas#readme",
   "dependencies": {
     "@tailwindcss/cli": "^4.3.0",
+    "daisyui": "^5.5.20",
     "tailwindcss": "^4.3.0"
   }
 }
