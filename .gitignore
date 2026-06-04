@@ -2,3 +2,4 @@
 .DS_Store
 .venv
 .prettierignore
+node_modules
