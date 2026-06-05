@@ -60,10 +60,9 @@ class ApplicantCoursesWidget(ModelSelect2Widget):
 
     def build_attrs(self, base_attrs, extra_attrs=None):
         attrs = super().build_attrs(base_attrs, extra_attrs)
-                                    
+
         base_url = reverse('courses:select2_courses_grouped')
-        
-        attrs['data-ajax--url'] = f"{base_url}?applicant_id={self.applicant.applicant_id}"
+        attrs['data-ajax--url'] = f"{base_url}?applicant={self.applicant.applicant_id if self.applicant else 'none'}"
         
         return attrs
 

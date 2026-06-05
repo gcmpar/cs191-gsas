@@ -365,8 +365,11 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
             encoder=import_string(settings.SELECT2_JSON_ENCODER),
         )
     def get_queryset(self):
+        applicant_id = self.request.GET.get('applicant')
+        if applicant_id == 'none':
+            return Course.objects.none()
+        
         queryset = Course.objects.prefetch_related('programs__school')
-        applicant_id = self.request.GET.get('applicant_id')
         if applicant_id:
             queryset = queryset.filter(
                 applicationtranscript__application__applicant_id=applicant_id

@@ -168,4 +168,11 @@ class ProgramsGroupedAutoResponseView(AutoResponseView):
             encoder=import_string(settings.SELECT2_JSON_ENCODER),
         )
     def get_queryset(self):
-        return Program.objects.select_related('school')
+        queryset = Program.objects.select_related('school')
+        school_id = self.request.GET.get('school')
+        if school_id:
+            queryset = queryset.filter(
+                school__isnull=False,
+                school__school_id=school_id
+            )
+        return queryset
