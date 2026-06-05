@@ -2,24 +2,23 @@
 {% if page_obj.has_other_pages %}
 <div class="join">
   {% if page_obj.has_previous %}
-  <a href="{% param_replace param_name|default:'page' page_obj.previous_page_number %}"
-    class="join-item btn btn-sm">«</a>
+    <a href="{% param_replace param_name|default:'page' page_obj.previous_page_number %}" class="join-item btn btn-sm">«</a>
   {% else %}
-  <button class="join-item btn btn-sm btn-disabled">«</button>
+    <button class="join-item btn btn-sm btn-disabled">«</button>
   {% endif %}
 
   {% for num in page_obj.paginator.page_range %}
-  {% if page_obj.number == num %}
-  <button class="join-item btn btn-sm btn-active pointer-events-none">{{ num }}</button>
-  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
-    href="{% param_replace param_name|default:'page' num %}" class="join-item btn btn-sm">{{ num }}</a>
+    {% if page_obj.number == num %}
+      <button class="join-item btn btn-sm btn-active pointer-events-none">{{ num }}</button>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+      <a href="{% param_replace param_name|default:'page' num %}" class="join-item btn btn-sm">{{ num }}</a>
     {% endif %}
-    {% endfor %}
+  {% endfor %}
 
-    {% if page_obj.has_next %}
+  {% if page_obj.has_next %}
     <a href="{% param_replace param_name|default:'page' page_obj.next_page_number %}" class="join-item btn btn-sm">»</a>
-    {% else %}
+  {% else %}
     <button class="join-item btn btn-sm btn-disabled">»</button>
-    {% endif %}
+  {% endif %}
 </div>
 {% endif %}
