@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+
 
 {% block title %}Edit Application #{{ application.application_id }} - General{% endblock title %}
 
@@ -42,7 +42,7 @@
   <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
     <div class="card-body">
       <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Edit General Info</h2>
-      {{ form|crispy }}
+      {% include "form_snippet.html" with form=form %}
     </div>
   </div>
 

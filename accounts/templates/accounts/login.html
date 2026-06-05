@@ -1,5 +1,5 @@
 {% extends "skeleton.html" %}
-{% load crispy_forms_tags %}
+
 
 
 {% block main %}
@@ -32,7 +32,7 @@
           <p class="text-base-content/70 mt-2">Login to your GSAS account</p>
         </div>
         
-        {{ form|crispy }}
+        {% include "form_snippet.html" with form=form %}
         
         <button type="submit" class="btn btn-primary mt-6 w-full">Sign In</button>
       </form>

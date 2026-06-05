@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+
 
 {% block title %}Add Applicant{% endblock title %}
 
@@ -20,7 +20,7 @@
     <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Add Applicant</h2>
     <form method="post">
       {% csrf_token %}
-      {{ form|crispy }}
+      {% include "form_snippet.html" with form=form %}
       <div class="mt-6 flex justify-end">
         <button type="submit" class="btn btn-success">Add</button>
       </div>
