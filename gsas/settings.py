@@ -81,7 +81,7 @@ TEMPLATES = [
                 'common.context_processors.select2_media',
             ],
             'libraries': {
-                'navbar_tags': 'common.templatetags.navbar_tags',
+                'common_tags': 'common.templatetags.common_tags',
             },
         },
     },
