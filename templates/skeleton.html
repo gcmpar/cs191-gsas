@@ -16,6 +16,15 @@
   <!-- Tailwind CSS -->
   <link rel="stylesheet" href="{% static 'common/css/globals_output.css' %}">
 
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.5.0"
+    integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
+    crossorigin="anonymous"></script>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
   <!-- Force Select2 load -->
   {{ select2_media.css }}
 
@@ -36,18 +45,11 @@
   </main>
 
   <!-- HTMX -->
-  <script src="https://unpkg.com/htmx.org@1.5.0"
-    integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI"
-    crossorigin="anonymous"></script>
   <script>
     document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
   </script>
-
-  <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
   <!-- Force Select2 load -->
   {{ select2_media.js }}
