@@ -21,21 +21,29 @@
 
   {% querystring as query_params %}
   <div class="card bg-base-100 border border-base-300 shadow-sm">
-    <div class="flex flex-col md:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start p-4 border-b border-base-200 gap-4 w-full">
 
-      <div class="flex flex-wrap gap-4 items-center w-full md:w-auto">
-        <h5 class="font-semibold mb-0 whitespace-nowrap">All Courses</h5>
+      <div class="flex flex-col gap-4 w-full flex-1">
+        <h5 class="font-semibold text-lg mb-0 whitespace-nowrap">All Courses</h5>
 
-        <form method="get" class="flex flex-row gap-2 items-center flex-wrap md:w-full">
-          {% render_field query_form.search class="input input-bordered input-sm" placeholder="Search" %}
-
-          {% render_field query_form.school class="select select-bordered" %}
-          {% render_field query_form.program class="select select-bordered" %}
-
-          <button type="submit" class="btn btn-sm btn-primary">Apply</button>
-          {% if query_form.search.value or query_form.school.value or query_form.program.value %}
-            <a href="{% querystring query_clear %}" class="btn btn-sm btn-ghost">Clear</a>
-          {% endif %}
+        <form method="get" class="flex flex-col gap-3">
+          <div class="flex flex-row gap-3 flex-wrap">
+            <div class="w-full md:w-64">
+              {% render_field query_form.search class="input input-sm input-bordered w-full" placeholder="Search" %}
+            </div>
+            <div class="w-full md:w-64">
+              {% render_field query_form.school class="select select-sm select-bordered w-full" %}
+            </div>
+            <div class="w-full md:w-64">
+              {% render_field query_form.program class="select select-sm select-bordered w-full" %}
+            </div>
+          </div>
+          <div class="flex flex-row gap-2 mt-1">
+            <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+            {% if query_form.search.value or query_form.school.value or query_form.program.value %}
+              <a href="{% querystring query_clear %}" class="btn btn-sm btn-ghost">Clear</a>
+            {% endif %}
+          </div>
         </form>
       </div>
 
