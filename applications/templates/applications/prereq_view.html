@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 
 {% block title %}Application #{{ application.application_id }} - Prerequisites{% endblock title %}
 
@@ -17,7 +18,20 @@
 
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl" id="prereq-mappings-section">
   <div class="card-body p-0">
-    <h2 class="card-title text-xl p-4 border-b border-base-200 m-0">Prerequisite Mappings</h2>
+    <div class="p-4 border-b border-base-200 m-0 flex justify-between">
+      <h2 class="card-title text-xl">Prerequisite Mappings</h2>
+      <form method="post" action="{% url 'applications:application_export' application.application_id %}">
+          {% csrf_token %}
+          <div class="py-4 border-b border-base-200 flex flex-wrap justify-end items-center gap-4 bg-base-100">
+            <div class="flex items-center gap-2">
+              <div class="w-48">
+                {% render_field export_form.export_format class="w-full" %}
+              </div>
+              <button type="submit" class="btn btn-sm btn-outline btn-primary">Export Prereq Mappings</button>
+            </div>
+          </div>
+        </form>  
+    </div>
     <div class="overflow-x-auto">
       <table class="table table-zebra w-full mb-0">
         <thead class="bg-base-200">

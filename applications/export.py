@@ -4,6 +4,8 @@ from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, PatternFill, Border, Side, Font
 from .models import ApplicationTranscript
+import zipfile
+from django.http import FileResponse
 
 def get_matched_results_for_application(application):
     results = []
@@ -135,3 +137,28 @@ def generate_xlsx_for_application(application):
         ws.column_dimensions[column].width = min(max_length + 5, 50)
 
     return wb
+
+def generate_export_zip(applications, export_format):
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w') as zipf:
+        for application in applications:
+            filename = f'application_{application.application_number}_export.{export_format}'
+
+            if export_format == 'csv':
+                csv_file = generate_csv_for_application(application)
+                zipf.writestr(filename, csv_file.read())
+
+            elif export_format == 'xlsx':
+                output = io.BytesIO()
+                wb = generate_xlsx_for_application(application)
+                wb.save(output)
+                output.seek(0)
+                zipf.writestr(filename, output.read())
+
+    zip_buffer.seek(0)
+    return FileResponse(
+        zip_buffer,
+        as_attachment=True,
+        filename=f'applications_export_{export_format}.zip',
+        content_type='application/zip'
+    )
