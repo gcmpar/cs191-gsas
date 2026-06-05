@@ -42,6 +42,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
             <h3 class="card-title text-lg m-0">Courses</h3>
             <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {{ apps_query_form.search.as_hidden }}
+              <input
+                type="hidden"
+                name="{{ apps_page_param_name }}"
+                value="{{ apps_page.number }}"
+              >
+              
               {% render_field courses_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
               <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if courses_query_form.search.value %}
@@ -88,6 +95,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
             <h3 class="card-title text-lg m-0">Applicants</h3>
             <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {{ courses_query_form.search.as_hidden }}
+              <input
+                type="hidden"
+                name="{{ courses_page_param_name }}"
+                value="{{ courses_page.number }}"
+              >
+              
               {% render_field apps_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
               <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if apps_query_form.search.value %}

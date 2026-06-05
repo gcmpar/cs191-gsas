@@ -32,6 +32,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
             <h3 class="card-title text-lg m-0">Programs</h3>
             <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {{ apps_query_form.search.as_hidden }}
+              <input
+                type="hidden"
+                name="{{ apps_page_param_name }}"
+                value="{{ apps_page.number }}"
+              >
+
               {% render_field programs_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
               <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if programs_query_form.search.value %}
@@ -74,6 +81,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-base-200 gap-4">
             <h3 class="card-title text-lg m-0">Applicants</h3>
             <form method="get" class="flex gap-2 w-full sm:w-auto">
+              {{ programs_query_form.search.as_hidden }}
+              <input
+                type="hidden"
+                name="{{ programs_page_param_name }}"
+                value="{{ programs_page.number }}"
+              >
+              
               {% render_field apps_query_form.search class="input input-sm input-bordered w-full sm:w-auto" placeholder="Search..." %}
               <button type="submit" class="btn btn-sm btn-neutral">Search</button>
               {% if apps_query_form.search.value %}

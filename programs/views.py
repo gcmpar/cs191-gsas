@@ -50,15 +50,15 @@ def program_view(request, program_id):
     program = get_object_or_404(Program.objects.select_related('school'), pk=program_id)
     
     courses = Course.objects.filter(programs=program)
-    courses_query_form = RelatedCoursesQueryForm(request.GET)
+    courses_query_form = RelatedCoursesQueryForm(request.GET, prefix='courses')
     if courses_query_form.is_valid():
-        query = courses_query_form.cleaned_data.get('search')
+        courses_query = courses_query_form.cleaned_data.get('search')
 
-        if query:
+        if courses_query:
             courses = courses.filter(
-                Q(course_code__icontains=query) |
-                Q(course_name__icontains=query) |
-                Q(description__icontains=query)
+                Q(course_code__icontains=courses_query) |
+                Q(course_name__icontains=courses_query) |
+                Q(description__icontains=courses_query)
             )
     courses_page_param_name = 'courses_page'
     courses_page_number = request.GET.get(courses_page_param_name)
@@ -71,13 +71,15 @@ def program_view(request, program_id):
     courses_query_clear[courses_page_param_name] = None
     
     applications = Application.objects.filter(applicationtranscript__course__programs=program).select_related('applicant').distinct()
-    apps_query_form = RelatedAppsQueryForm(request.GET)
+    apps_query_form = RelatedAppsQueryForm(request.GET, prefix='apps')
     if apps_query_form.is_valid():
-        if query:
+        apps_query = apps_query_form.cleaned_data.get('search')
+
+        if apps_query:
             applications = applications.filter(
-                Q(applicant__first_name__icontains=query) |
-                Q(applicant__last_name__icontains=query) |
-                Q(application_number__icontains=query)
+                Q(applicant__first_name__icontains=apps_query) |
+                Q(applicant__last_name__icontains=apps_query) |
+                Q(application_number__icontains=apps_query)
         )
     apps_page_param_name = 'apps_page'
     apps_page_number = request.GET.get(apps_page_param_name)
