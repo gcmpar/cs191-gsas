@@ -18,7 +18,6 @@ class ApplicationForm(ModelForm):
                     'data-placeholder': 'Applicant',
                     'data-minimum-input-length': 0,
                 },
-                select2_options={'width': '100%'},
             ),
             'application_status': Select2Widget(
                 attrs={
@@ -60,25 +59,21 @@ class ApplicationTranscriptForm(ModelForm):
                 attrs={
                     'data-placeholder': 'Course',
                     'data-minimum-input-length': 0,
-                    'data-width': '10em',
                 },
             ),
             'academic_year': Select2Widget(
                 attrs={
                     'data-placeholder': 'Academic Year',
-                    'data-width': '10em',
                 }
             ),
             'semester': Select2Widget(
                 attrs={
                     'data-placeholder': 'Semester',
-                    'data-width': '10em',
                 }
             ),
             'grade': TextInput(
                 attrs={
                     'placeholder': 'Grade',
-                    'style': 'width: 10em;',
                 }
             ),
         }
@@ -131,7 +126,6 @@ class BatchImportRowForm(ModelForm):
                     'data-placeholder': 'Select Applicant...',
                     'data-minimum-input-length': 0,
                 },
-                select2_options={'width': '100%'},
             ),
             'program': Select2Widget(
                 attrs={
@@ -166,7 +160,6 @@ class OCRRowForm(Form):
                 'data-placeholder': 'Select course...',
                 'data-minimum-input-length': 0,
             },
-            select2_options={'width': '100%'}
         )
     )
     grade = CharField(
