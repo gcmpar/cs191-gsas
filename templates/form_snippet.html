@@ -24,7 +24,7 @@
       {% render_field field class+="select select-bordered w-full" %}
     {% elif field.field.widget.input_type == 'file' %}
       {% render_field field class+="file-input file-input-bordered w-full" %}
-    {% elif 'textarea' in field.field.widget.template_name or field.name == 'description' %}
+    {% elif 'textarea' in field.field.widget.template_name %}
       {% render_field field class+="textarea textarea-bordered w-full" %}
     {% else %}
       {% render_field field class+="input input-bordered w-full" %}
