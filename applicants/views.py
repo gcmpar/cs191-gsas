@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Applicant
-from applications.models import Application, ApplicationTranscript
 from .forms import ApplicantForm, ApplicantsQueryForm
+from applications.models import Application, ApplicationTranscript
+from applications.forms import ExportOptionsForm
 
 
 SEARCH_FIELDS = ['applicant_id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'notes']
@@ -83,6 +84,7 @@ def applicant_view(request, applicant_id):
         'school_list':  school_list,
         'program_list': program_list,
         'course_list':  course_list,
+        'export_form': ExportOptionsForm()
     })
 
 

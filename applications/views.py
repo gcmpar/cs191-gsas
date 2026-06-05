@@ -251,39 +251,41 @@ def applications_search(request):
     return render(request, 'applications/search.html', context)
 
 def applications_export(request):
+    redirect_to = request.GET.get('next', '/')
     if request.method == 'POST':
         application_ids = request.POST.getlist('application_ids')
         
         export_form = ExportOptionsForm(request.POST)
         if not export_form.is_valid():
             messages.error(request, "Please select a valid export format.")
-            return redirect('applications:search')
+            return redirect(redirect_to)
             
         export_format = export_form.cleaned_data['export_format']
 
         if not application_ids:
             messages.warning(request, "Please select at least one application to export.")
-            return redirect('applications:search')
+            return redirect(redirect_to)
 
         applications = Application.objects.filter(pk__in=application_ids)
 
         return generate_export_zip(applications, export_format)
     
-    return redirect('applications:search')
+    return redirect(redirect_to)
 
 def application_export(request, application_id):
+    redirect_to = request.GET.get('next', '/')
     if request.method == 'POST':
         export_form = ExportOptionsForm(request.POST)
         if not export_form.is_valid():
             messages.error(request, "Please select a valid export format.")
-            return redirect('applications:general_view', application_id=application_id)
+            return redirect(redirect_to)
             
         export_format = export_form.cleaned_data['export_format']
 
         application = Application.objects.filter(pk=application_id).first()
         return generate_export_zip([application], export_format)
     
-    return redirect('applications:general_view', application_id=application_id)
+    return redirect(redirect_to)
 
 
 def application_general_view(request, application_id):

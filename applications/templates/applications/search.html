@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <form method="post" action="{% url 'applications:export' %}">
+  <form method="post" action="{% url 'applications:export' %}?next={{ request.path }}">
     {% csrf_token %}
     <div class="p-4 border-b border-base-200 flex flex-wrap justify-between items-center gap-4 bg-base-100">
       <div class="flex items-center gap-2">

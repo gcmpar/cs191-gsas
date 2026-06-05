@@ -18,9 +18,9 @@
 
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl" id="prereq-mappings-section">
   <div class="card-body p-0">
-    <div class="p-4 border-b border-base-200 m-0 flex justify-between">
+    <div class="p-4 border-b border-base-200 m-0 flex items-center justify-between">
       <h2 class="card-title text-xl">Prerequisite Mappings</h2>
-      <form method="post" action="{% url 'applications:application_export' application.application_id %}">
+      <form method="post" action="{% url 'applications:application_export' application.application_id %}?next={{ request.path }}">
           {% csrf_token %}
           <div class="py-4 border-b border-base-200 flex flex-wrap justify-end items-center gap-4 bg-base-100">
             <div class="flex items-center gap-2">

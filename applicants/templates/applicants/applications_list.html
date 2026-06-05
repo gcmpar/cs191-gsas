@@ -1,31 +1,56 @@
+{% load widget_tweaks %}
+
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body p-0">
-    <h2 class="card-title text-xl p-4 border-b border-base-200 m-0">Applications</h2>
-    <div class="overflow-x-auto">
-      <table class="table table-zebra w-full mb-0">
-        <thead class="bg-base-200">
-          <tr>
-            <th>ID</th>
-            <th>App Number</th>
-            <th>Program</th>
-            <th>Date Applied</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for app in applications %}
-          <tr class="hover cursor-pointer" onclick="window.location='{% url 'applications:general_view' app.application_id %}'">
-            <td>{{ app.application_id }}</td>
-            <td>{{ app.application_number }}</td>
-            <td>{{ app.program }}</td>
-            <td>{{ app.date_applied }}</td>
-            <td>{{ app.application_status }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="5" class="text-center text-base-content/50 py-4">No applications.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <form method="post" action="{% url 'applications:export' %}?next={{ request.path }}">
+      {% csrf_token %}
+      <div class="p-4 border-b border-base-200 m-0 flex items-center justify-between">
+        <h2 class="card-title text-xl">Applications</h2>
+        <div class="p-4 border-b border-base-200 flex flex-wrap justify-between items-center gap-4 bg-base-100">
+          <div class="flex items-center gap-2">
+            <div class="w-48">
+              {% render_field export_form.export_format class="w-full" %}
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline btn-primary">Export Prereq Mappings</button>
+          </div>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full mb-0">
+          <thead class="bg-base-200">
+            <tr>
+                <th>
+                  <label>
+                    <input type="checkbox" class="checkbox checkbox-sm" onclick="document.querySelectorAll('input[name=application_ids]').forEach(cb => cb.checked = this.checked)" />
+                  </label>
+                </th>
+              <th>ID</th>
+              <th>App Number</th>
+              <th>Program</th>
+              <th>Date Applied</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in applications %}
+            <tr class="hover cursor-pointer" onclick="window.location='{% url 'applications:general_view' app.application_id %}'">
+              <td onclick="event.stopPropagation();">
+                <label>
+                  <input type="checkbox" name="application_ids" value="{{ app.application_id }}" class="checkbox checkbox-sm" />
+                </label>
+              </td>
+              <td>{{ app.application_id }}</td>
+              <td>{{ app.application_number }}</td>
+              <td>{{ app.program }}</td>
+              <td>{{ app.date_applied }}</td>
+              <td>{{ app.application_status }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-base-content/50 py-4">No applications.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
   </div>
 </div>
