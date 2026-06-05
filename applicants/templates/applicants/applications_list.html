@@ -43,7 +43,7 @@
               <td>{{ app.application_number }}</td>
               <td>{{ app.program }}</td>
               <td>{{ app.date_applied }}</td>
-              <td>{{ app.application_status }}</td>
+              <td><span class="badge badge-primary">{{ app.application_status }}</span></td>
             </tr>
             {% empty %}
             <tr><td colspan="5" class="text-center text-base-content/50 py-4">No applications.</td></tr>
