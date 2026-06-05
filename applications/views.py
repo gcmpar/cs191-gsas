@@ -22,7 +22,8 @@ from courses.models import EquivalenceMap
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
-    PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet
+    PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet,
+    ExportOptionsForm
 )
 from courses.models import Course
 from common.ocr import extract_courses_from_pdf
@@ -248,21 +249,24 @@ def applications_search(request):
     context = {
         'applications_page': page,
         'query_form': query_form,
-        'query_clear': query_clear
+        'query_clear': query_clear,
+        'export_form': ExportOptionsForm()
     }
     return render(request, 'applications/search.html', context)
 
 def applications_export(request):
     if request.method == 'POST':
         application_ids = request.POST.getlist('application_ids')
-        export_format = request.POST.get('export_format')
+        
+        export_form = ExportOptionsForm(request.POST)
+        if not export_form.is_valid():
+            messages.error(request, "Please select a valid export format.")
+            return redirect('applications:search')
+            
+        export_format = export_form.cleaned_data['export_format']
 
         if not application_ids:
             messages.warning(request, "Please select at least one application to export.")
-            return redirect('applications:search')
-
-        if export_format not in ['csv', 'xlsx']:
-            messages.error(request, "Please select a valid export format.")
             return redirect('applications:search')
 
         applications = Application.objects.filter(pk__in=application_ids)

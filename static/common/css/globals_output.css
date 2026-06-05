@@ -2272,6 +2272,9 @@
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
+  }
   .w-52 {
     width: calc(var(--spacing) * 52);
   }

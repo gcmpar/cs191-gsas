@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput, BooleanField, HiddenInput, CheckboxInput
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput, BooleanField, HiddenInput, ChoiceField
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
@@ -175,3 +175,18 @@ class OCRRowForm(Form):
     )
 
 OCRFormSet = formset_factory(OCRRowForm, extra=0)
+
+class ExportOptionsForm(Form):
+    EXPORT_CHOICES = [
+        ('csv', 'CSV'),
+        ('xlsx', 'Excel (XLSX)'),
+    ]
+    export_format = ChoiceField(
+        choices=EXPORT_CHOICES,
+        widget=Select2Widget(
+            attrs={
+                'data-minimum-input-length': 0,
+            }
+        ),
+        required=True
+    )

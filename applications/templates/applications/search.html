@@ -46,10 +46,9 @@
     {% csrf_token %}
     <div class="p-4 border-b border-base-200 flex flex-wrap justify-between items-center gap-4 bg-base-100">
       <div class="flex items-center gap-2">
-        <select name="export_format" class="select select-sm select-bordered">
-          <option value="csv">CSV</option>
-          <option value="xlsx">Excel (XLSX)</option>
-        </select>
+        <div class="w-48">
+          {% render_field export_form.export_format class="w-full" %}
+        </div>
         <button type="submit" class="btn btn-sm btn-outline btn-primary">Export Selected</button>
       </div>
     </div>
