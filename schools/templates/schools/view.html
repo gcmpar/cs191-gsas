@@ -110,7 +110,11 @@
               <tbody>
                 {% for application in apps_page %}
                   <tr>
-                    <td>{{ application.application_number }}</td>
+                    <td>
+                      <a href="{% url 'applications:general_view' application.application_id %}" class="link link-hover link-primary">
+                        {{ application.application_number }}
+                      </a>
+                    </td>
                     <td>
                       <a href="{% url 'applicants:view' application.applicant.applicant_id %}" class="link link-hover link-primary">
                         {{ application.applicant.first_name }} {{ application.applicant.last_name }}
