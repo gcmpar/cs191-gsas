@@ -11,6 +11,7 @@ class Course(models.Model):
     course_name     = models.CharField('Course Name', max_length=50)
     units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(1)])
     description     = models.CharField('Description', max_length=200)
+    notes           = models.TextField('Notes', blank=True, null=True)
 
     @property
     def unique_schools(self):

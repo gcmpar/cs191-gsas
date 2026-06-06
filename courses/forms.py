@@ -15,7 +15,7 @@ COURSE_SEARCH_FIELDS = ['course_id', 'course_name', 'course_code']
 class CourseForm(ModelForm):
     class Meta:
         model = Course
-        fields = ['course_code', 'course_name', 'units', 'description']
+        fields = ['course_code', 'course_name', 'units', 'description', 'notes']
 
 class CoursesQueryForm(Form):
     search = CharField(required=False)

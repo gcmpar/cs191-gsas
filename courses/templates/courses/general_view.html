@@ -22,6 +22,7 @@
       <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/>{{ course.course_name }}</p>
       <p><strong class="font-semibold text-base-content/70">Units:</strong><br/>{{ course.units }}</p>
       <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Description:</strong><br/>{{ course.description }}</p>
+      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ course.notes|default:"&mdash;" }}</p>
     </div>
     
     <div class="divider my-2"></div>
