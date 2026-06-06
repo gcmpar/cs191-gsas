@@ -18,8 +18,8 @@
               </a>
             </td>
             <td>
-              {% for app_id in entry.app_ids %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app_id %}">#{{ app_id }}</a>
+              {% for app in entry.applications %}
+                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>
@@ -40,6 +40,7 @@
         <thead class="bg-base-300 text-base-content/70">
           <tr>
             <th>Program Name</th>
+            <th>School Name</th>
             <th>Found in Applications</th>
           </tr>
         </thead>
@@ -52,13 +53,18 @@
               </a>
             </td>
             <td>
-              {% for app_id in entry.app_ids %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app_id %}">#{{ app_id }}</a>
+              <a href="{% url 'schools:view' entry.program.school.school_id %}" class="link link-hover link-primary">
+                {{ entry.program.school.school_name }}
+              </a>
+            </td>
+            <td>
+              {% for app in entry.applications %}
+                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="2" class="text-center text-base-content/50 py-4">No programs found.</td></tr>
+          <tr><td colspan="3" class="text-center text-base-content/50 py-4">No programs found.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -76,7 +82,7 @@
             <th>Course Code</th>
             <th>Course Name</th>
             <th>School</th>
-            <th>Program(s)</th>
+            <th>Program</th>
             <th>Found in Applications</th>
           </tr>
         </thead>
@@ -112,8 +118,8 @@
               {% endfor %}
             </td>
             <td>
-              {% for app_id in entry.app_ids %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app_id %}">#{{ app_id }}</a>
+              {% for app in entry.applications %}
+                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>
