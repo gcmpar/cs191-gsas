@@ -5,8 +5,8 @@
 {% block title %}Edit Application #{{ application.application_id }} - Transcripts{% endblock title %}
 
 {% block extra_head %}
-{% for transcript_form in transcript_forms %}
-  {{ transcript_form.media.css }}
+{% for data in transcript_data %}
+  {{ data.form.media.css }}
 {% endfor %}
 {% endblock extra_head %}
 
@@ -77,8 +77,8 @@
             </tr>
           </thead>
           <tbody id="transcript-forms">
-            {% for transcript_form in transcript_forms %}
-              {% include "applications/partials/transcript_form.html" with application_id=application.application_id index=forloop.counter0 %}
+            {% for data in transcript_data %}
+              {% include "applications/partials/transcript_form.html" with application_id=application.application_id index=forloop.counter0 transcript_form=data.form course_units=data.course_units %}
             {% endfor %}
           </tbody>
         </table>
@@ -102,8 +102,8 @@
 {% endblock content %}
 
 {% block extra_javascript %}
-{% for transcript_form in transcript_forms %}
-  {{ transcript_form.media.js }}
+{% for data in transcript_data %}
+  {{ data.form.media.js }}
 {% endfor %}
 
 <script>

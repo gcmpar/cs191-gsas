@@ -46,25 +46,38 @@ def get_transcript_forms_from_request(request):
         if param.startswith(TRANSCRIPT_FORM_PREFIX):
             indices.add(transcript_param_index(param))
             
-    transcript_forms = [
-        ApplicationTranscriptForm(request.POST, prefix=transcript_form_prefix(i))
-        for i in indices
-    ]
-    return transcript_forms
+    transcript_data = []
+    for i in indices:
+        form = ApplicationTranscriptForm(request.POST, prefix=transcript_form_prefix(i))
+        course_units = None
+        course_id = request.POST.get(form['course'].html_name)
+        if course_id and str(course_id).isdigit():
+            course = Course.objects.filter(pk=course_id).first()
+            if course:
+                course_units = course.units
+        transcript_data.append({
+            'form': form,
+            'course_units': course_units
+        })
+    return transcript_data
 
 def get_transcript_forms_from_application(application):
     entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
-    transcript_forms = []
+    transcript_data = []
     
     for i, entry in enumerate(entries):
-        transcript_forms.append(
-            ApplicationTranscriptForm(prefix=transcript_form_prefix(i), instance=entry)
-        )
+        transcript_data.append({
+            'form': ApplicationTranscriptForm(prefix=transcript_form_prefix(i), instance=entry),
+            'course_units': entry.course.units if entry.course else None
+        })
         
-    if not transcript_forms:
-        transcript_forms.append(ApplicationTranscriptForm(prefix=transcript_form_prefix(0)))
+    if not transcript_data:
+        transcript_data.append({
+            'form': ApplicationTranscriptForm(prefix=transcript_form_prefix(0)),
+            'course_units': None
+        })
         
-    return transcript_forms
+    return transcript_data
 
 def prereq_map_form_prefix(map_id):
     return f'{PREREQ_MAP_PREFIX}{map_id}_'
@@ -343,11 +356,12 @@ def application_transcripts_edit(request, application_id):
     applicant   = application.applicant
 
     if request.method == 'POST':
-        transcript_forms = get_transcript_forms_from_request(request)
-        if all(form.is_valid() for form in transcript_forms):
+        transcript_data = get_transcript_forms_from_request(request)
+        if all(data['form'].is_valid() for data in transcript_data):
             # Save logic
             saved_course_ids = set()
-            for form in transcript_forms:
+            for data in transcript_data:
+                form = data['form']
                 if not form.cleaned_data.get('course'):
                     continue
                     
@@ -370,12 +384,12 @@ def application_transcripts_edit(request, application_id):
             
             return redirect('applications:transcripts_view', application_id=application_id)
     else:
-        transcript_forms = get_transcript_forms_from_application(application)
+        transcript_data = get_transcript_forms_from_application(application)
 
     return render(request, 'applications/transcripts_edit.html', {
         'applicant':   applicant,
         'application': application,
-        'transcript_forms': transcript_forms,
+        'transcript_data': transcript_data,
     })
 
 def application_transcript_form(request, application_id):
