@@ -15,11 +15,33 @@
 
 {% include "applications/applicant_view.html" %}
 
+<div class="flex items-center justify-end max-w-4xl">
+  <div class="tooltip tooltip-top">
+    <div class="tooltip-content text-start">
+      <p>
+        The Application ID (e.g. #{{ application.application_id }}) is for the GSAS database to differentiate between applications, just like the IDs for Applicants, Schools, and others.
+      </p><br />
+      <p>
+        The Application Number (e.g. {{ application.application_number }}) is the external reference for the application, such as the one listed in NGSE data.
+      </p>
+    </div>
+    <button
+      class="btn btn-ghost btn-info btn-xs flex justify-start items-center m-0 p-0"
+    >
+      <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" class="w-4 h-4 stroke-current">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      What's the difference between Application ID and Number?
+    </button>
+  </div>
+</div>
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body">
     <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Application #{{ application.application_id }}</h2>
+    <div class="flex flex-row items-start justify-start mb-6">
+      <p><strong class="font-semibold text-base-content/70">Application Number:</strong><br/><span class="font-semibold text-xl">{{ application.application_number }}</span></p>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p><strong class="font-semibold text-base-content/70">Application Number:</strong><br/>{{ application.application_number }}</p>
       <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
         <span class="badge badge-primary">{{ application.application_status }}</span>
       </p>

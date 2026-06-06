@@ -18,6 +18,7 @@
         <table class="table table-zebra w-full mb-0">
             <thead class="bg-base-300 text-base-content/70">
                 <tr>
+                    <th>ID</th>
                     <th>Application No.</th>
                     <th>Name</th>
                     <th>Program</th>
@@ -29,6 +30,7 @@
             <tbody>
                 {% for app in applications_page %}
                 <tr>
+                    <td>{{ app.application_id }}</td>
                     <td>{{ app.application_number }}</td>
                     <td>{{ app.applicant.last_name }}, {{ app.applicant.first_name }}</td>
                     <td>{{ app.program }}</td>
@@ -52,7 +54,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center text-base-content/50 py-4">No applications found in this batch.</td>
+                    <td colspan="7" class="text-center text-base-content/50 py-4">No applications found in this batch.</td>
                 </tr>
                 {% endfor %}
             </tbody>
