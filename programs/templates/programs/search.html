@@ -52,6 +52,7 @@ Programs
           <th>Program Name</th>
           <th>School</th>
           <th>Description</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody>
@@ -61,10 +62,11 @@ Programs
           <td>{{ program.program_name }}</td>
           <td>{{ program.school.school_name }}</td>
           <td>{{ program.description }}</td>
+          <td class="max-w-[10ch] truncate">{{ program.notes }}</td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="4" class="text-center text-base-content/50 py-4">No programs found.</td>
+          <td colspan="5" class="text-center text-base-content/50 py-4">No programs found.</td>
         </tr>
         {% endfor %}
       </tbody>

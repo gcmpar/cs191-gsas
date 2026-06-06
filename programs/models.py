@@ -7,6 +7,7 @@ class Program(models.Model):
     school          = models.ForeignKey(School, on_delete=models.CASCADE)
     program_name    = models.CharField('Program Name', max_length=50)
     description     = models.TextField('Description', max_length=200)
+    notes           = models.TextField('Notes', blank=True, null=True)
 
     class Meta:
         db_table = 'program'

@@ -8,7 +8,7 @@ from .models import Program
 class ProgramForm(ModelForm):
     class Meta:
         model = Program
-        fields = ['school', 'program_name', 'description']
+        fields = ['school', 'program_name', 'description', 'notes']
         widgets = {
             'school': SchoolsWidget(
                 attrs={
