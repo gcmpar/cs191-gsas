@@ -8,8 +8,9 @@
 {% include "applications/navigation_tabs.html" %}
 
 <div class="flex justify-between items-center mb-6 mt-4">
-  <div class="flex gap-2">
+  <div class="flex gap-2 items-center">
     <a href="{% url 'applications:search' %}" class="btn btn-ghost btn-sm">← Applications</a>
+    <a href="{% url 'applications:batch_import_history' %}" class="btn btn-info btn-sm ml-auto">View Imports</a>
   </div>
   <a href="{% url 'applications:prereq_edit' application.application_id %}" class="btn btn-primary btn-sm">Edit Prerequisite Mapping</a>
 </div>

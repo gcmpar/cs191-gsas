@@ -28,10 +28,6 @@ NAVBAR_BUTTONS = {
         'url': 'courses:search',
         'text': 'Courses',
     },
-    'application': {
-        'url': 'applications:batch_import_history',
-        'text': 'Imports',
-    },
 }
 
 
