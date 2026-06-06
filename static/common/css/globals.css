@@ -5,19 +5,19 @@
   themes: corporate;
 }
 
+@plugin "daisyui/theme" {
+  name: "corporate";
+
+  --color-primary: oklch(0.4228 0.1434 17.15);
+  --color-primary-content: oklch(1 0 0);
+  --color-secondary: oklch(0.405214 0.083481 166.5768);
+  --color-secondary-content: oklch(1 0 0);
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-@plugin "daisyui/theme" {
-  name: "corporate";
-  --color-primary: #8b1e30;
-  --color-primary-content: #ffffff;
-  --color-secondary: #00573f;
-  --color-secondary-content: #ffffff;
-}
-
-@source "../../../**/*.html";
 @source "../../../**/*.html";
 @source "../../../**/forms.py";
 
