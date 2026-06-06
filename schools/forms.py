@@ -5,7 +5,7 @@ from .models import School
 class SchoolForm(ModelForm):
     class Meta:
         model = School
-        fields = ['school_name']
+        fields = ['school_name', 'notes']
 
 class SchoolsQueryForm(Form):
     search = CharField(required=False)

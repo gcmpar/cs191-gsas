@@ -39,6 +39,7 @@ Schools
         <tr>
           <th>ID</th>
           <th>School Name</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody>
@@ -46,10 +47,11 @@ Schools
         <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'schools:view' school.school_id %}'">
           <td>{{ school.school_id }}</td>
           <td>{{ school.school_name }}</td>
+          <td class="max-w-[10ch] truncate">{{ school.notes }}</td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="2" class="text-center text-base-content/50 py-4">No schools found.</td>
+          <td colspan="3" class="text-center text-base-content/50 py-4">No schools found.</td>
         </tr>
         {% endfor %}
       </tbody>

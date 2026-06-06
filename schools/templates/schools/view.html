@@ -19,10 +19,13 @@
     <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
       <div class="card-body">
         <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">School #{{ school.school_id }}</h2>
-        <p class="mb-0">
-          <strong class="font-semibold text-base-content/70">School Name:</strong><br/>
-          {{ school.school_name }}
-        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p class="mb-0">
+            <strong class="font-semibold text-base-content/70">School Name:</strong><br/>
+            {{ school.school_name }}
+          </p>
+          <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ school.notes|default:"&mdash;" }}</p>
+        </div>
       </div>
     </div>
 
