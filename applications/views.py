@@ -380,13 +380,26 @@ def application_transcripts_edit(request, application_id):
 
 def application_transcript_form(request, application_id):
     index = int(request.GET.get('index', 0))
-    transcript_form = ApplicationTranscriptForm(prefix=transcript_form_prefix(index))
+    update = request.GET.get('update')
+
+    transcript_form = ApplicationTranscriptForm(request.GET, prefix=transcript_form_prefix(index))
+
+    units = None
+    if transcript_form['course'].html_name in request.GET:
+        course_id = request.GET.get(transcript_form['course'].html_name)
+        course = Course.objects.filter(course_id=course_id).first()
+        if course:
+            units = course.units
+
     return render(
         request,
         'applications/partials/transcript_form.html',
         {
             'transcript_form': transcript_form,
+            'application_id': application_id,
             'index': index,
+            'update': update,
+            'course_units': units,
         }
     )
 

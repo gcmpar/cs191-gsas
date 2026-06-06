@@ -72,12 +72,13 @@
               <th>AY</th>
               <th>Semester</th>
               <th>Grade</th>
+              <th>Units</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="transcript-forms">
             {% for transcript_form in transcript_forms %}
-              {% include "applications/partials/transcript_form.html" with index=forloop.counter0 %}
+              {% include "applications/partials/transcript_form.html" with application_id=application.application_id index=forloop.counter0 %}
             {% endfor %}
           </tbody>
         </table>

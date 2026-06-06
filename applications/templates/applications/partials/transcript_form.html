@@ -1,10 +1,16 @@
 {% load widget_tweaks %}
 
 <tr class="transcript-form" data-index="{{ index }}">
-    <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" %}</td>
+    {% url 'applications:partial_transcript_form' application_id as transcript_form_url %}
+    {% with index_param=index|stringformat:"s" %}
+        {% with transcript_form_url|add:"?index="|add:index_param|add:"&update=true" as transcript_form_full_url %}
+            <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-target="closest .transcript-form" hx-swap="none" %}</td>
+        {% endwith %}
+    {% endwith %}
     <td>{% render_field transcript_form.academic_year class="select select-bordered select-sm w-full" %}</td>
     <td>{% render_field transcript_form.semester class="select select-bordered select-sm w-full" %}</td>
     <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}</td>
+    <td id="transcript-form-units-{{ index }}" {% if update %}hx-swap-oob="true"{% endif %}>{{ course_units|default:"&mdash;" }}</td>
     <td class="align-middle">
         <button type="button" class="btn btn-sm btn-outline btn-error" onclick="this.closest('tr').remove()" aria-label="Remove">
             Remove
