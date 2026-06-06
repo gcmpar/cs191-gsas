@@ -7,7 +7,7 @@
         
         <div class="space-y-2 mb-4" id="equiv-forms-{{ map_id }}">
             {% for equiv_form in equiv_forms %}
-                {% include "courses/partials/equiv_form.html" %}
+                {% include "courses/partials/equiv_form.html" with index=forloop.counter0 %}
             {% endfor %}
         </div>
         

@@ -29,9 +29,7 @@ def get_program_forms_from_request(request):
             index = programs_param_index(param)
             indices.add(index)
     program_forms = [ProgramRowForm(request.POST, prefix=programs_param_form_prefix(i)) for i in indices]
-    next_index = max(indices)+1 if indices else 0
-
-    return program_forms, next_index
+    return program_forms
 def get_program_forms_from_course(course):
     program_forms = []
     for i, program in enumerate(course.programs.all()):
@@ -41,9 +39,7 @@ def get_program_forms_from_course(course):
     if len(program_forms) == 0:
         program_forms.append(ProgramRowForm(prefix=programs_param_form_prefix(0)))
     
-    next_index = len(program_forms)
-
-    return program_forms, next_index
+    return program_forms
 
 def equiv_param_form_prefix(map_id, index):
     return f'{EQUIV_PARAM_PREFIX}{map_id}_{index}_'
@@ -70,8 +66,7 @@ def get_equiv_snapshot_from_request(request):
             'equiv_forms': [
                 EquivRowForm(request.POST, prefix=equiv_param_form_prefix(map_id, i))
                 for i in indices
-            ],
-            'next_index': max(indices)+1 if indices else 0
+            ]
         }
     return equiv_snapshot
 def get_equiv_snapshot_from_course(course):
@@ -103,8 +98,7 @@ def get_equiv_snapshot_from_course(course):
             equiv_forms.append(EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)))
 
         equiv_snapshot[equiv_map.map_id] = {
-            'equiv_forms': equiv_forms,
-            'next_index': len(equiv_forms)
+            'equiv_forms': equiv_forms
         }
     return equiv_snapshot
 
@@ -164,7 +158,7 @@ def course_general_edit(request, course_id):
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
 
-        program_forms, next_index = get_program_forms_from_request(request)
+        program_forms = get_program_forms_from_request(request)
 
         if form.is_valid() and all(program_form.is_valid() for program_form in program_forms):
             form.save()
@@ -178,13 +172,12 @@ def course_general_edit(request, course_id):
             return redirect('courses:general_view', course_id=course_id)
     else:
         form = CourseForm(instance=course)
-        program_forms, next_index = get_program_forms_from_course(course)
+        program_forms = get_program_forms_from_course(course)
 
     return render(request, 'courses/general_edit.html', {
         'course': course,
         'form': form,
         'program_forms': program_forms,
-        'next_index': next_index,
     })
 def course_general_program_form(request):
     index = int(request.GET.get('index', 0))
@@ -195,6 +188,7 @@ def course_general_program_form(request):
         'courses/partials/program_form.html',
         {
             'program_form': program_form,
+            'index': index,
         }
     )
 
@@ -307,6 +301,7 @@ def course_equiv_form(request, map_id):
         'courses/partials/equiv_form.html',
         {
             'equiv_form': equiv_form,
+            'index': index,
         }
     )
 

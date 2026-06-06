@@ -50,7 +50,7 @@ def get_transcript_forms_from_request(request):
         ApplicationTranscriptForm(request.POST, prefix=transcript_form_prefix(i))
         for i in indices
     ]
-    return transcript_forms, max(indices) + 1 if indices else 0
+    return transcript_forms
 
 def get_transcript_forms_from_application(application):
     entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
@@ -64,7 +64,7 @@ def get_transcript_forms_from_application(application):
     if not transcript_forms:
         transcript_forms.append(ApplicationTranscriptForm(prefix=transcript_form_prefix(0)))
         
-    return transcript_forms, len(transcript_forms)
+    return transcript_forms
 
 def prereq_map_form_prefix(map_id):
     return f'{PREREQ_MAP_PREFIX}{map_id}_'
@@ -125,8 +125,7 @@ def get_prereq_snapshot_from_request(request, application):
             
         snapshot[map_id] = {
             'map_form': PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id)),
-            'course_data': course_data,
-            'next_index': max(indices)+1 if indices else 0
+            'course_data': course_data
         }
     return snapshot
 
@@ -186,8 +185,7 @@ def get_prereq_snapshot_from_application(application):
             
         snapshot[prereq_map.map_id] = {
             'map_form': map_form,
-            'course_data': course_data,
-            'next_index': len(course_data)
+            'course_data': course_data
         }
     return snapshot
 
@@ -345,7 +343,7 @@ def application_transcripts_edit(request, application_id):
     applicant   = application.applicant
 
     if request.method == 'POST':
-        transcript_forms, _ = get_transcript_forms_from_request(request)
+        transcript_forms = get_transcript_forms_from_request(request)
         if all(form.is_valid() for form in transcript_forms):
             # Save logic
             saved_course_ids = set()
@@ -372,13 +370,12 @@ def application_transcripts_edit(request, application_id):
             
             return redirect('applications:transcripts_view', application_id=application_id)
     else:
-        transcript_forms, next_index = get_transcript_forms_from_application(application)
+        transcript_forms = get_transcript_forms_from_application(application)
 
     return render(request, 'applications/transcripts_edit.html', {
         'applicant':   applicant,
         'application': application,
         'transcript_forms': transcript_forms,
-        'next_index': next_index,
     })
 
 def application_transcript_form(request, application_id):
@@ -389,6 +386,7 @@ def application_transcript_form(request, application_id):
         'applications/partials/transcript_form.html',
         {
             'transcript_form': transcript_form,
+            'index': index,
         }
     )
 

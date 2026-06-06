@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<div class="equiv-form flex items-center gap-2">
+<div class="equiv-form flex items-center gap-2" data-index="{{ index }}">
     {% if equiv_form.errors %}
         <div class="text-error text-sm">{{ equiv_form.errors }}</div>
     {% endif %}

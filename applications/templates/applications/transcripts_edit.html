@@ -77,7 +77,7 @@
           </thead>
           <tbody id="transcript-forms">
             {% for transcript_form in transcript_forms %}
-              {% include "applications/partials/transcript_form.html" %}
+              {% include "applications/partials/transcript_form.html" with index=forloop.counter0 %}
             {% endfor %}
           </tbody>
         </table>
@@ -124,9 +124,14 @@
       bindSelect2HTMX();
   });
 
-  let nextIndex = {{ next_index }};
   function getTranscriptNextIndex() {
-      return nextIndex++;
+      const container = document.getElementById('transcript-forms');
+      if (!container) return 0;
+      let maxIndex = -1;
+      container.querySelectorAll('[data-index]').forEach(el => {
+          maxIndex = Math.max(maxIndex, parseInt(el.dataset.index, 10));
+      });
+      return maxIndex + 1;
   }
 </script>
 

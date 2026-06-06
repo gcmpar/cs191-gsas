@@ -76,16 +76,14 @@
       bindSelect2HTMX();
   });
 
-  const prereqNextIndices = {
-    {% for map_id, info in prereq_snapshot.items %}
-      {{ map_id }}: {{ info.next_index }},
-    {% endfor %}
-  }
-
   function getPrereqNextIndex(mapId) {
-      const current = prereqNextIndices[mapId] ?? 0;
-      prereqNextIndices[mapId] = current + 1;
-      return current;
+      const container = document.getElementById('prereq-forms-' + mapId);
+      if (!container) return 0;
+      let maxIndex = -1;
+      container.querySelectorAll('[data-index]').forEach(el => {
+          maxIndex = Math.max(maxIndex, parseInt(el.dataset.index, 10));
+      });
+      return maxIndex + 1;
   }
 </script>
 

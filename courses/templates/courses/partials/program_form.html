@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<div class="program-form flex items-center gap-2">
+<div class="program-form flex items-center gap-2" data-index="{{ index }}">
     {% if program_form.errors %}
         <div class="text-error text-sm">{{ program_form.errors }}</div>
     {% endif %}

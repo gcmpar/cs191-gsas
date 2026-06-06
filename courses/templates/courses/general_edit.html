@@ -34,7 +34,7 @@
         <label class="label pb-1"><span class="label-text font-semibold">Programs</span></label>
         <div id="program-forms" class="space-y-2 mb-2">
           {% for program_form in program_forms %}
-            {% include "courses/partials/program_form.html" %}
+            {% include "courses/partials/program_form.html" with index=forloop.counter0 %}
           {% endfor %}
         </div>
         <button
@@ -79,12 +79,14 @@
       }
   );
 
-  let programsNextIndex = {{ next_index }};
-
   function getProgramsNextIndex() {
-      const current = programsNextIndex;
-      programsNextIndex += 1;
-      return current;
+      const container = document.getElementById('program-forms');
+      if (!container) return 0;
+      let maxIndex = -1;
+      container.querySelectorAll('[data-index]').forEach(el => {
+          maxIndex = Math.max(maxIndex, parseInt(el.dataset.index, 10));
+      });
+      return maxIndex + 1;
   }
 </script>
 
