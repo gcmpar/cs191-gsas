@@ -111,13 +111,13 @@ def get_prereq_snapshot_from_request(request, application):
             form = PrereqCourseForm(request.POST, application=application, prefix=prefix)
             
             course_id = request.POST.get(form['course'].html_name)
-            target_course_id = request.POST.get(prereq_map_form_prefix(map_id) + 'target_course')
+            target_course_id = request.POST.get(prereq_map_form_prefix(map_id) + '-target_course')
             
             similarity = None
             grade = None
             description = None
             
-            if course_id and str(course_id).isdigit():
+            if course_id and str(course_id).isdigit() and target_course_id and str(target_course_id).isdigit():
                 course = Course.objects.filter(pk=course_id).first()
                 target_course = Course.objects.filter(pk=target_course_id).first()
                 if course:
@@ -399,8 +399,8 @@ def application_transcript_form(request, application_id):
     transcript_form = ApplicationTranscriptForm(request.GET, prefix=transcript_form_prefix(index))
 
     units = None
-    if transcript_form['course'].html_name in request.GET:
-        course_id = request.GET.get(transcript_form['course'].html_name)
+    course_id = request.GET.get(transcript_form['course'].html_name)
+    if course_id and str(course_id).isdigit():
         course = Course.objects.filter(course_id=course_id).first()
         if course:
             units = course.units
@@ -544,8 +544,8 @@ def application_prereq_form(request, map_id):
     grade = None
     description = None
 
-    if course_form['course'].html_name in request.GET:
-        course_id = request.GET.get(course_form['course'].html_name)
+    course_id = request.GET.get(course_form['course'].html_name)
+    if course_id and str(course_id).isdigit():
         target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
         if target_course_id and str(target_course_id).isdigit():
             target_course = Course.objects.filter(pk=target_course_id).first()
