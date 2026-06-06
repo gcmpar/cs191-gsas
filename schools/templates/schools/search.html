@@ -43,7 +43,7 @@ Schools
       </thead>
       <tbody>
         {% for school in schools_page %}
-        <tr class="hover cursor-pointer" onclick="window.location='{% url 'schools:view' school.school_id %}'">
+        <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'schools:view' school.school_id %}'">
           <td>{{ school.school_id }}</td>
           <td>{{ school.school_name }}</td>
         </tr>

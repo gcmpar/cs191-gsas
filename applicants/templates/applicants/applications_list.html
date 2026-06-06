@@ -33,7 +33,7 @@
           </thead>
           <tbody>
             {% for app in applications %}
-            <tr class="hover cursor-pointer" onclick="window.location='{% url 'applications:general_view' app.application_id %}'">
+            <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'applications:general_view' app.application_id %}'">
               <td onclick="event.stopPropagation();">
                 <label>
                   <input type="checkbox" name="application_ids" value="{{ app.application_id }}" class="checkbox checkbox-sm" />

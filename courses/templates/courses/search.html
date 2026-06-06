@@ -66,7 +66,7 @@
         </thead>
         <tbody>
           {% for course in courses_page %}
-            <tr class="hover cursor-pointer"
+            <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer"
                 onclick="window.location='{% url 'courses:general_view' course.course_id %}'">
               <td>{{ course.course_id }}</td>
               <td>{{ course.course_code }}</td>

@@ -73,7 +73,7 @@
       </thead>
       <tbody>
         {% for application in applications_page %}
-        <tr class="hover cursor-pointer"
+        <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer"
           onclick="window.location='{% url 'applications:general_view' application.application_id %}'">
           <td onclick="event.stopPropagation();">
             <label>

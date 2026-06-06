@@ -56,7 +56,7 @@ Programs
       </thead>
       <tbody>
         {% for program in programs_page %}
-        <tr class="hover cursor-pointer" onclick="window.location='{% url 'programs:view' program.program_id %}'">
+        <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'programs:view' program.program_id %}'">
           <td>{{ program.program_id }}</td>
           <td>{{ program.program_name }}</td>
           <td>{{ program.school.school_name }}</td>
