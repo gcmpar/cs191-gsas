@@ -398,12 +398,12 @@ def application_transcript_form(request, application_id):
 
     transcript_form = ApplicationTranscriptForm(request.GET, prefix=transcript_form_prefix(index))
 
-    units = None
+    course_units = None
     course_id = request.GET.get(transcript_form['course'].html_name)
     if course_id and str(course_id).isdigit():
         course = Course.objects.filter(course_id=course_id).first()
         if course:
-            units = course.units
+            course_units = course.units
 
     return render(
         request,
@@ -413,7 +413,7 @@ def application_transcript_form(request, application_id):
             'application_id': application_id,
             'index': index,
             'update': update,
-            'course_units': units,
+            'course_units': course_units,
         }
     )
 
