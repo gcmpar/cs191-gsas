@@ -104,6 +104,7 @@ def get_prereq_snapshot_from_request(request, application):
     snapshot = {}
     for map_id in map_ids:
         indices = indices_map[map_id]
+        map_form = PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id))
         
         course_data = []
         for i in indices:
@@ -111,7 +112,7 @@ def get_prereq_snapshot_from_request(request, application):
             form = PrereqCourseForm(request.POST, application=application, prefix=prefix)
             
             course_id = request.POST.get(form['course'].html_name)
-            target_course_id = request.POST.get(prereq_map_form_prefix(map_id) + '-target_course')
+            target_course_id = request.POST.get(map_form['target_course'].html_name)
             
             similarity = None
             grade = None
@@ -137,7 +138,7 @@ def get_prereq_snapshot_from_request(request, application):
             })
             
         snapshot[map_id] = {
-            'map_form': PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id)),
+            'map_form': map_form,
             'course_data': course_data
         }
     return snapshot
