@@ -153,7 +153,7 @@ def get_prereq_snapshot_from_application(application):
     all_descs = None
     
     if not existing_maps:
-        dummy_map = PrerequisiteMap(application=application, map_id=0)
+        dummy_map = PrerequisiteMap.objects.create(application=application)
         existing_maps.append(dummy_map)
 
     for prereq_map in existing_maps:
@@ -547,8 +547,9 @@ def application_prereq_form(request, application_id, map_id):
     description = None
 
     course_id = request.GET.get(course_form['course'].html_name)
+    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+    course, target_course = None, None
     if course_id and str(course_id).isdigit():
-        target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
         if target_course_id and str(target_course_id).isdigit():
             target_course = Course.objects.filter(pk=target_course_id).first()
         
@@ -584,6 +585,7 @@ def application_prereq_detect_equiv(request, application_id, map_id):
     prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
     
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+    target_course = None
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
         
@@ -636,6 +638,7 @@ def application_prereq_detect_similar(request, application_id, map_id):
     prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
     
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+    target_course = None
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
         

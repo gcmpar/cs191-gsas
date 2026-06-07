@@ -79,7 +79,7 @@ def get_equiv_snapshot_from_course(course):
     equiv_snapshot = {}
 
     if not existing_maps:
-        dummy_map = EquivalenceMap(target_course=course, map_id=0)
+        dummy_map = EquivalenceMap.objects.create(target_course=course)
         existing_maps.append(dummy_map)
 
     for equiv_map in existing_maps:
