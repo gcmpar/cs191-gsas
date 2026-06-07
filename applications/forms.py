@@ -10,7 +10,12 @@ from django.forms import formset_factory
 class ApplicationForm(ModelForm):
     class Meta:
         model = Application
-        fields = ['applicant', 'application_number', 'application_status', 'date_applied', 'program', 'folder_link', 'study_load', 'notes']
+        fields = [
+            'applicant', 'application_number', 'application_status', 'date_applied', 'program', 'folder_link', 'study_load', 'notes',
+            'unit', 'research_field_1', 'research_field_2', 'research_field_3', 'special_project_topic_interest',
+            'undergraduate_gwa', 'undergraduate_failed_subjects', 'graduate_gwa', 'graduate_failed_subjects',
+            'ngse_requirements_complete', 'ngse_remarks'
+        ]
         widgets = {
             'date_applied': DateInput(attrs={'type': 'date'}),
             'applicant': ApplicantsWidget(
@@ -119,7 +124,12 @@ class BatchImportRowForm(ModelForm):
 
     class Meta:
         model = Application
-        fields = ['application_number', 'applicant', 'program', 'study_load', 'application_status', 'notes']
+        fields = [
+            'application_number', 'applicant', 'program', 'study_load', 'application_status', 'notes',
+            'unit', 'research_field_1', 'research_field_2', 'research_field_3', 'special_project_topic_interest',
+            'undergraduate_gwa', 'undergraduate_failed_subjects', 'graduate_gwa', 'graduate_failed_subjects',
+            'ngse_requirements_complete', 'ngse_remarks'
+        ]
         widgets = {
             'applicant': ApplicantsWidget(
                 attrs={

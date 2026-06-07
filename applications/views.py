@@ -911,7 +911,18 @@ def batch_import_upload(request):
                     'folder_link': str(row_dict.get('link to applicant main folder', '') or '').strip(),
                     'program': program_raw,
                     'study_load': load_raw,
-                    'notes': notes
+                    'notes': notes,
+                    'unit': str(row_dict.get('unit', '') or '').strip(),
+                    'research_field_1': str(row_dict.get('research field 1', '') or '').strip(),
+                    'research_field_2': str(row_dict.get('research field 2', '') or '').strip(),
+                    'research_field_3': str(row_dict.get('research field 3', '') or '').strip(),
+                    'special_project_topic_interest': str(row_dict.get('special project topic interest', '') or '').strip(),
+                    'undergraduate_gwa': str(row_dict.get('undergradute gwa \n(ex. ge subj)', '') or row_dict.get('undergraduate gwa', '') or '').strip(),
+                    'undergraduate_failed_subjects': str(row_dict.get('undergraduate number of failed subjects', '') or '').strip(),
+                    'graduate_gwa': str(row_dict.get('graduate\ngwa', '') or row_dict.get('graduate gwa', '') or '').strip(),
+                    'graduate_failed_subjects': str(row_dict.get('graduate\nnumber of failed subjects', '') or row_dict.get('graduate number of failed subjects', '') or '').strip(),
+                    'ngse_requirements_complete': str(row_dict.get('ngse\nrequirements complete?', '') or row_dict.get('ngse requirements complete', '') or '').strip().lower() in ['yes', 'true', '1', 'y'],
+                    'ngse_remarks': str(row_dict.get('ngse remarks', '') or '').strip()
                 })
 
             request.session['batch_import_data'] = data
@@ -980,6 +991,17 @@ def batch_import_confirm(request):
                 'study_load': row.get('study_load'),
                 'application_status': row.get('application_status'),
                 'notes': row.get('notes'),
+                'unit': row.get('unit'),
+                'research_field_1': row.get('research_field_1'),
+                'research_field_2': row.get('research_field_2'),
+                'research_field_3': row.get('research_field_3'),
+                'special_project_topic_interest': row.get('special_project_topic_interest'),
+                'undergraduate_gwa': row.get('undergraduate_gwa'),
+                'undergraduate_failed_subjects': row.get('undergraduate_failed_subjects'),
+                'graduate_gwa': row.get('graduate_gwa'),
+                'graduate_failed_subjects': row.get('graduate_failed_subjects'),
+                'ngse_requirements_complete': row.get('ngse_requirements_complete'),
+                'ngse_remarks': row.get('ngse_remarks'),
             })
         formset = BatchImportFormSet(initial=initial_data)
         

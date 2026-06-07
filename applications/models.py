@@ -50,6 +50,18 @@ class Application(models.Model):
     study_load          = models.CharField('Study Load', max_length=StudyLoad.max_length(), choices=StudyLoad)
     notes               = models.TextField('Notes', blank=True, null=True)
 
+    unit                            = models.CharField('Unit', max_length=100, blank=True, null=True)
+    research_field_1                = models.CharField('Research Field 1', max_length=100, blank=True, null=True)
+    research_field_2                = models.CharField('Research Field 2', max_length=100, blank=True, null=True)
+    research_field_3                = models.CharField('Research Field 3', max_length=100, blank=True, null=True)
+    special_project_topic_interest  = models.CharField('Special Project Topic Interest', max_length=100, blank=True, null=True)
+    undergraduate_gwa               = models.CharField('Undergraduate GWA', max_length=10, blank=True, null=True)
+    undergraduate_failed_subjects   = models.CharField('Undergraduate Number of Failed Subjects', max_length=10, blank=True, null=True)
+    graduate_gwa                    = models.CharField('Graduate GWA', max_length=10, blank=True, null=True)
+    graduate_failed_subjects        = models.CharField('Graduate Number of Failed Subjects', max_length=10, blank=True, null=True)
+    ngse_requirements_complete      = models.BooleanField('NGSE Requirements Complete', default=False)
+    ngse_remarks                    = models.CharField('NGSE Remarks', max_length=100, blank=True, null=True)
+
     class Meta:
         db_table = 'application'
 

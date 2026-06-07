@@ -51,7 +51,35 @@
       <p><strong class="font-semibold text-base-content/70">Folder Link:</strong><br/>
         <a href="{{ application.folder_link }}" target="_blank" class="link link-hover link-primary break-all">{{ application.folder_link }}</a>
       </p>
-      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ application.notes|default:"&mdash;" }}</p>
+
+      <!-- New Fields -->
+      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Academic Information</div>
+      <p><strong class="font-semibold text-base-content/70">Unit:</strong><br/>{{ application.unit|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Special Project Topic Interest:</strong><br/>{{ application.special_project_topic_interest|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Research Field 1:</strong><br/>{{ application.research_field_1|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Research Field 2:</strong><br/>{{ application.research_field_2|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Research Field 3:</strong><br/>{{ application.research_field_3|default:"&mdash;" }}</p>
+      
+      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Undergraduate Details</div>
+      <p><strong class="font-semibold text-base-content/70">Undergraduate GWA:</strong><br/>{{ application.undergraduate_gwa|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Failed Subjects:</strong><br/>{{ application.undergraduate_failed_subjects|default:"&mdash;" }}</p>
+
+      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Graduate Details</div>
+      <p><strong class="font-semibold text-base-content/70">Graduate GWA:</strong><br/>{{ application.graduate_gwa|default:"&mdash;" }}</p>
+      <p><strong class="font-semibold text-base-content/70">Failed Subjects:</strong><br/>{{ application.graduate_failed_subjects|default:"&mdash;" }}</p>
+
+      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">NGSE Details</div>
+      <p><strong class="font-semibold text-base-content/70">Requirements Complete:</strong><br/>
+        {% if application.ngse_requirements_complete %}
+          <span class="badge badge-success">Yes</span>
+        {% else %}
+          <span class="badge badge-error">No</span>
+        {% endif %}
+      </p>
+      <p><strong class="font-semibold text-base-content/70">NGSE Remarks:</strong><br/>{{ application.ngse_remarks|default:"&mdash;" }}</p>
+
+      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Other</div>
+      <p class="col-span-1 md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ application.notes|default:"&mdash;" }}</p>
     </div>
   </div>
 </div>
