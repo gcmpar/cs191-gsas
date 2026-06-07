@@ -100,7 +100,8 @@ def get_prereq_snapshot_from_request(request, application):
             index = int(rest[1])
             if map_id in indices_map:
                 indices_map[map_id].add(index)
-            
+    
+    all_descs = [c.description for c in Course.objects.all()]
     snapshot = {}
     for map_id in map_ids:
         indices = indices_map[map_id]
@@ -127,7 +128,6 @@ def get_prereq_snapshot_from_request(request, application):
                     if transcript:
                         grade = transcript.grade
                     if target_course:
-                        all_descs = [c.description for c in Course.objects.all()]
                         similarity = compute_similarity(course.description, target_course.description, all_descs)
 
             course_data.append({
@@ -150,8 +150,8 @@ def get_prereq_snapshot_from_application(application):
         'prerequisitemapcourses_set__course'
     ).order_by('map_id'))
 
+    all_descs = [c.description for c in Course.objects.all()]
     snapshot = {}
-    all_descs = None
     
     if not existing_maps:
         dummy_map = PrerequisiteMap.objects.create(application=application)
@@ -174,8 +174,6 @@ def get_prereq_snapshot_from_application(application):
                 
             similarity = None
             if prereq_map.target_course:
-                if all_descs is None:
-                    all_descs = [c.description for c in Course.objects.all()]
                 similarity = compute_similarity(course.description, prereq_map.target_course.description, all_descs)
                 
             course_data.append({
