@@ -7,7 +7,12 @@
             <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-target="closest .transcript-form" hx-swap="none" %}</td>
         {% endwith %}
     {% endwith %}
-    <td>{% render_field transcript_form.academic_year class="select select-bordered select-sm w-full" %}</td>
+    <td class="flex items-center gap-2">
+        <span class="text-base font-semibold text-base-content/50">AY</span>
+        {% render_field transcript_form.academic_year class="transcript-form-ay select select-bordered select-sm w-full" %}
+        <span class="text-base font-semibold text-base-content/50">/</span>
+        <span class="transcript-form-ay-next text-base font-semibold text-base-content/50">&mdash;</span>
+    </td>
     <td>{% render_field transcript_form.semester class="select select-bordered select-sm w-full" %}</td>
     <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}</td>
     <td id="transcript-form-units-{{ index }}" {% if update %}hx-swap-oob="true"{% endif %}>{{ course_units|default:"&mdash;" }}</td>

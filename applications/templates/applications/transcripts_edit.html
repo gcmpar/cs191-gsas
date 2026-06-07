@@ -65,11 +65,11 @@
     <div class="card-body p-0">
       <h2 class="card-title text-xl p-4 border-b border-base-200">Past Course Transcripts</h2>
       <div class="overflow-x-auto">
-        <table class="table w-full mb-0">
+        <table class="table table-fixed w-full mb-0">
           <thead class="bg-base-300 text-base-content/70">
             <tr>
-              <th>Course</th>
-              <th>AY</th>
+              <th class="w-1/4">Course</th>
+              <th class="w-1/5">AY</th>
               <th>Semester</th>
               <th>Grade</th>
               <th>Units</th>
@@ -119,7 +119,22 @@
         .djangoSelect2();
   }
 
-  $(document).ready(bindSelect2HTMX);
+  $(document).ready(function() {
+      bindSelect2HTMX();
+
+      // update "AY / AY+1" format
+      $(document).on('select2:select select2:unselect', '.transcript-form-ay', function(e) {
+          let year = parseInt($(e.target).val());
+          let nextLabel = $(e.target).closest('.transcript-form').find('.transcript-form-ay-next');
+
+          if (year) {
+              nextLabel.text(year + 1);
+          } else {
+              nextLabel.text('&mdash;');
+          }
+      });
+      $('.transcript-form-ay').trigger('select2:select');
+  });
 
   document.body.addEventListener("htmx:afterSettle", function (e) {
       bindSelect2HTMX();
