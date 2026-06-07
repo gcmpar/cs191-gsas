@@ -1,6 +1,6 @@
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body">
-    <h3 class="text-sm font-bold text-base-content/50 uppercase tracking-wider mb-2">Applicant</h3>
+    <h3 class="text-sm font-bold text-base-content/50 uppercase tracking-wider mb-2">Applicant #{{ applicant.applicant_id }}</h3>
     <a href="{% url 'applicants:view' applicant.applicant_id %}" class="text-lg font-semibold link link-hover link-primary">
       {{ applicant.first_name }} {{ applicant.middle_name }} {{ applicant.last_name }}
     </a>
