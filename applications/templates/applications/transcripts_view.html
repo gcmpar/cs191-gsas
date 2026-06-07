@@ -28,6 +28,7 @@
             <th>AY</th>
             <th>Semester</th>
             <th>Grade</th>
+            <th>Units</th>
           </tr>
         </thead>
         <tbody>
@@ -35,12 +36,13 @@
           <tr>
             <td><a href="{% url 'courses:general_view' entry.course.course_id %}" class="link link-hover link-primary">{{ entry.course.course_code }}</a></td>
             <td><a href="{% url 'courses:general_view' entry.course.course_id %}" class="link link-hover link-primary">{{ entry.course.course_name }}</a></td>
-            <td>{{ entry.academic_year }}</td>
+            <td>{{ entry.academic_year }} - {{ entry.academic_year|add:"1" }}</td>
             <td>{{ entry.semester }}</td>
-            <td>{{ entry.grade }}</td>
+            <td><span class="badge badge-info">{{ entry.grade }}</span></td>
+            <td><span class="badge badge-neutral">{{ entry.course.units }}</span></td>
           </tr>
           {% empty %}
-          <tr><td colspan="5" class="text-center text-base-content/50 py-4">No transcript entries.</td></tr>
+          <tr><td colspan="6" class="text-center text-base-content/50 py-4">No transcript entries.</td></tr>
           {% endfor %}
         </tbody>
       </table>

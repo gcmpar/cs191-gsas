@@ -3083,6 +3083,12 @@
       --size: calc(var(--size-field, 0.25rem) * 6);
     }
   }
+  .badge-info {
+    @layer daisyui.l1.l2 {
+      --badge-color: var(--color-info);
+      --badge-fg: var(--color-info-content);
+    }
+  }
   .badge-neutral {
     @layer daisyui.l1.l2 {
       --badge-color: var(--color-neutral);

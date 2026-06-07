@@ -15,7 +15,15 @@
     </td>
     <td>{% render_field transcript_form.semester class="select select-bordered select-sm w-full" %}</td>
     <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}</td>
-    <td id="transcript-form-units-{{ index }}" {% if update %}hx-swap-oob="true"{% endif %}>{{ course_units|default:"&mdash;" }}</td>
+    <td>
+        <span
+            id="transcript-form-units-{{ index }}"
+            {% if update %}hx-swap-oob="true"{% endif %}
+            class="badge badge-neutral"
+        >
+            {{ course_units|default:"&mdash;" }}
+        </span>
+    </td>
     <td class="align-middle">
         <button type="button" class="btn btn-sm btn-outline btn-error" onclick="this.closest('tr').remove()" aria-label="Remove">
             Remove
