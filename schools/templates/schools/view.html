@@ -63,7 +63,7 @@
                     <td>
                       <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">{{ program.program_name }}</a>
                     </td>
-                    <td>{{ program.description|default:"—" }}</td>
+                    <td>{{ program.description|default:"&mdash;" }}</td>
                   </tr>
                 {% empty %}
                   <tr>
