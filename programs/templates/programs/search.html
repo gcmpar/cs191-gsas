@@ -60,7 +60,11 @@ Programs
         <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'programs:view' program.program_id %}'">
           <td>{{ program.program_id }}</td>
           <td>{{ program.program_name }}</td>
-          <td>{{ program.school.school_name }}</td>
+          <td>
+            <a href="{% url 'schools:view' program.school.school_id %}"
+              class="link link-hover link-primary"
+              onclick="event.stopPropagation();">{{ program.school.school_name }}</a>
+          </td>
           <td>{{ program.description }}</td>
           <td class="inline-block truncate max-w-[20ch]">{{ program.notes|default:"" }}</td>
         </tr>
