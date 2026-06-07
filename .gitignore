@@ -3,3 +3,4 @@
 .venv
 .prettierignore
 node_modules
+*.xlsx
