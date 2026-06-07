@@ -551,8 +551,6 @@ def application_prereq_form(request, application_id, map_id):
         target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
         if target_course_id and str(target_course_id).isdigit():
             target_course = Course.objects.filter(pk=target_course_id).first()
-        else:
-            target_course = prereq_map.target_course if prereq_map else None
         
         course = Course.objects.filter(pk=course_id).first()
         
@@ -588,8 +586,6 @@ def application_prereq_detect_equiv(request, application_id, map_id):
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
-    else:
-        target_course = prereq_map.target_course if prereq_map else None
         
     if not target_course:
         return HttpResponse("")
@@ -642,8 +638,6 @@ def application_prereq_detect_similar(request, application_id, map_id):
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
-    else:
-        target_course = prereq_map.target_course if prereq_map else None
         
     if not target_course:
         return HttpResponse("")

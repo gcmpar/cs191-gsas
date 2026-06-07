@@ -34,6 +34,7 @@
                 type="button"
                 hx-get="{% url 'applications:partial_prereq_form' application.application_id map_id %}"
                 hx-vals="js:{index:getPrereqNextIndex({{ map_id }})}"
+                hx-include="closest .prereq-map"
                 hx-target="#prereq-forms-{{ map_id }}"
                 hx-swap="beforeend"
             >+ Add Course</button>
