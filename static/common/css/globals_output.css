@@ -2497,6 +2497,9 @@
   .w-auto {
     width: auto;
   }
+  .w-fit {
+    width: fit-content;
+  }
   .w-full {
     width: 100%;
   }
@@ -2544,6 +2547,18 @@
   }
   .min-w-\[150px\] {
     min-width: 150px;
+  }
+  .min-w-\[200px\] {
+    min-width: 200px;
+  }
+  .min-w-\[300\] {
+    min-width: 300;
+  }
+  .min-w-\[600\] {
+    min-width: 600;
+  }
+  .min-w-\[600px\] {
+    min-width: 600px;
   }
   .min-w-\[1100px\] {
     min-width: 1100px;

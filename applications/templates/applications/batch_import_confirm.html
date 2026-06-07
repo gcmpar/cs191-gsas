@@ -52,45 +52,45 @@
                     <tbody>
                         {% for form in formset %}
                         <tr>
-                            <td>{% render_field form.application_number class="input input-sm input-bordered w-full" %}</td>
-                            <td>{% render_field form.scanned_name class="input input-sm input-bordered w-full" %}</td>
+                            <td>{% render_field form.application_number class="input input-sm input-bordered w-auto" %}</td>
+                            <td>{% render_field form.scanned_name class="input input-sm input-bordered w-auto" %}</td>
                             <td>
-                                {% render_field form.scanned_email class="input input-sm input-bordered w-full mb-1" placeholder="Email" %}
-                                {% render_field form.scanned_contact_number class="input input-sm input-bordered w-full" placeholder="Contact #" %}
+                                {% render_field form.scanned_email class="input input-sm input-bordered w-auto mb-1" placeholder="Email" %}
+                                {% render_field form.scanned_contact_number class="input input-sm input-bordered w-auto" placeholder="Contact #" %}
                             </td>
-                            <td>{% render_field form.applicant class="select select-sm select-bordered w-full min-w-[150px]" %}</td>
-                            <td>{% render_field form.program class="select select-sm select-bordered w-full" %}</td>
-                            <td>{% render_field form.study_load class="select select-sm select-bordered w-full" %}</td>
-                            <td>{% render_field form.application_status class="select select-sm select-bordered w-full" %}</td>
+                            <td>{% render_field form.applicant class="select select-sm select-bordered w-auto min-w-[150px]" %}</td>
+                            <td>{% render_field form.program class="select select-sm select-bordered w-auto" %}</td>
+                            <td>{% render_field form.study_load class="select select-sm select-bordered w-auto" %}</td>
+                            <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
                             <td>
-                                {% render_field form.unit class="input input-sm input-bordered w-full" %}
-                            </td>
-                            <td>
-                                {% render_field form.research_field_1 class="input input-sm input-bordered w-full" %}
+                                {% render_field form.unit class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.research_field_2 class="input input-sm input-bordered w-full" %}
+                                {% render_field form.research_field_1 class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.research_field_3 class="input input-sm input-bordered w-full" %}
+                                {% render_field form.research_field_2 class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.special_project_topic_interest class="input input-sm input-bordered w-full" %}
+                                {% render_field form.research_field_3 class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.undergraduate_gwa class="input input-sm input-bordered w-full" %}
+                                {% render_field form.special_project_topic_interest class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.undergraduate_failed_subjects class="input input-sm input-bordered w-full" %}
+                                {% render_field form.undergraduate_gwa class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.graduate_gwa class="input input-sm input-bordered w-full" %}
+                                {% render_field form.undergraduate_failed_subjects class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.graduate_failed_subjects class="input input-sm input-bordered w-full" %}
+                                {% render_field form.graduate_gwa class="input input-sm input-bordered w-auto" %}
                             </td>
                             <td>
-                                {% render_field form.ngse_requirements_complete class+="select select-sm select-bordered w-full" %}
+                                {% render_field form.graduate_failed_subjects class="input input-sm input-bordered w-auto" %}
+                            </td>
+                            <td>
+                                {% render_field form.ngse_requirements_complete class+="select select-sm select-bordered w-auto" %}
                             </td>
                             <td>
                                 {% render_field form.ngse_remarks rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
