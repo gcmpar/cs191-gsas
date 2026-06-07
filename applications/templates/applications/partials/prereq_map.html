@@ -16,7 +16,7 @@
                 <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
             {% endif %}
             {% url 'applications:partial_prereq_map_update' application.application_id map_id as prereq_map_update_url %}
-            {% render_field map_form.target_course class="w-full" hx-get=prereq_map_update_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-map" hx-swap="none" %}
+            {% render_field map_form.target_course class="w-full" hx-get=prereq_map_update_url hx-include="closest .prereq-map" hx-trigger="change" hx-swap="none" %}
         </div>
         
         <label class="label">

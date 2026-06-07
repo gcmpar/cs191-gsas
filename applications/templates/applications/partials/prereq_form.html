@@ -16,7 +16,7 @@
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}
-                    {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="none" %}
+                    {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-swap="none" %}
                 {% endwith %}
             {% endwith %}
         </div>

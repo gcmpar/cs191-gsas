@@ -4,7 +4,7 @@
     {% url 'applications:partial_transcript_form' application_id as transcript_form_url %}
     {% with index_param=index|stringformat:"s" %}
         {% with transcript_form_url|add:"?index="|add:index_param|add:"&update=true" as transcript_form_full_url %}
-            <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-target="closest .transcript-form" hx-swap="none" %}</td>
+            <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-swap="none" %}</td>
         {% endwith %}
     {% endwith %}
     <td class="flex items-center gap-2">
