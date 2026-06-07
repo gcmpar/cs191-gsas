@@ -14,39 +14,46 @@
         <div class="md:col-span-5">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course</span></label>
             {% url 'applications:partial_prereq_form' map_id as prereq_form_url %}
-            {% with index_str=index|stringformat:"s" %}
-                {% with prereq_form_url|add:"?index="|add:index_str as prereq_form_full_url %}
-                    {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="outerHTML" %}
+            {% with index_param=index|stringformat:"s" %}
+                {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}
+                    {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-form" hx-swap="none" %}
                 {% endwith %}
             {% endwith %}
         </div>
         
         <div class="md:col-span-3">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Similarity</span></label>
-            <div class="font-bold">
+            <div
+                id="prereq-form-similarity-{{ map_id }}-{{ index }}"
+                {% if update %}hx-swap-oob="true"{% endif %}
+                class="font-bold"
+            >
                 {% if similarity != None %}
                     {{ similarity }}%
                 {% else %}
-                    -
+                    &mdash;
                 {% endif %}
             </div>
         </div>
         
         <div class="md:col-span-4">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Grade</span></label>
-            <div>
-                {% if grade %}
-                    {{ grade }}
-                {% else %}
-                    -
-                {% endif %}
+            <div
+                id="prereq-form-grade-{{ map_id }}-{{ index }}"
+                {% if update %}hx-swap-oob="true"{% endif %}
+            >
+                {{ grade|default:"&mdash;" }}
             </div>
         </div>
     </div>
-    
-    {% if description %}
+
     <div class="mt-4 text-sm bg-base-200 p-3 rounded text-base-content/80">
-        <strong>Description:</strong> {{ description }}
+        <strong>Description:</strong>
+        <span
+            id="prereq-form-description-{{ map_id }}-{{ index }}"
+            {% if update %}hx-swap-oob="true"{% endif %}
+        >
+            {{ description|default:"&mdash;" }}
+        </span>
     </div>
-    {% endif %}
 </div>

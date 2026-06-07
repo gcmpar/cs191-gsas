@@ -411,9 +411,9 @@ def application_transcript_form(request, application_id):
         {
             'transcript_form': transcript_form,
             'application_id': application_id,
+            'course_units': course_units,
             'index': index,
             'update': update,
-            'course_units': course_units,
         }
     )
 
@@ -537,6 +537,7 @@ def application_prereq_form(request, map_id):
     application = prereq_map.application
 
     index = int(request.GET.get('index', 0))
+    update = request.GET.get('update')
     prefix = prereq_course_form_prefix(prereq_map.map_id, index)
 
     course_form = PrereqCourseForm(request.GET, prefix=prefix, application=application)
@@ -575,6 +576,7 @@ def application_prereq_form(request, map_id):
             'description': description,
             'map_id': map_id,
             'index': index,
+            'update': update,
         }
     )
 
