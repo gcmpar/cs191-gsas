@@ -85,15 +85,15 @@ def prereq_map_form_prefix(map_id):
 def prereq_course_form_prefix(map_id, index):
     return f'{PREREQ_COURSE_PREFIX}{map_id}_{index}_'
 
-def get_prereq_snapshot_from_request(request, application):
+def get_prereq_snapshot_from_request(request_params, application):
     map_ids = set()
-    for param in request.POST.keys():
+    for param in request_params.keys():
         if param.startswith(PREREQ_MAP_PREFIX):
             map_id = param[len(PREREQ_MAP_PREFIX):].split('_')[0]
             map_ids.add(int(map_id))
             
     indices_map = {map_id: set() for map_id in map_ids}
-    for param in request.POST.keys():
+    for param in request_params.keys():
         if param.startswith(PREREQ_COURSE_PREFIX):
             rest = param[len(PREREQ_COURSE_PREFIX):].split('_')
             map_id = int(rest[0])
@@ -105,15 +105,15 @@ def get_prereq_snapshot_from_request(request, application):
     snapshot = {}
     for map_id in map_ids:
         indices = indices_map[map_id]
-        map_form = PrereqMapForm(request.POST, prefix=prereq_map_form_prefix(map_id))
+        map_form = PrereqMapForm(request_params, prefix=prereq_map_form_prefix(map_id))
         
         course_data = []
         for i in indices:
             prefix = prereq_course_form_prefix(map_id, i)
-            form = PrereqCourseForm(request.POST, application=application, prefix=prefix)
+            form = PrereqCourseForm(request_params, application=application, prefix=prefix)
             
-            course_id = request.POST.get(form['course'].html_name)
-            target_course_id = request.POST.get(map_form['target_course'].html_name)
+            course_id = request_params.get(form['course'].html_name)
+            target_course_id = request_params.get(map_form['target_course'].html_name)
             
             similarity = None
             grade = None
@@ -134,7 +134,8 @@ def get_prereq_snapshot_from_request(request, application):
                 'form': form,
                 'similarity': similarity,
                 'grade': grade,
-                'description': description
+                'description': description,
+                'index': index,
             })
             
         snapshot[map_id] = {
@@ -184,7 +185,8 @@ def get_prereq_snapshot_from_application(application):
                 ),
                 'similarity': similarity,
                 'grade': grade,
-                'description': description
+                'description': description,
+                'index': i,
             })
             
         if len(course_data) == 0:
@@ -192,7 +194,8 @@ def get_prereq_snapshot_from_application(application):
                 'form': PrereqCourseForm(prefix=prereq_course_form_prefix(prereq_map.map_id, 0), application=application),
                 'similarity': None,
                 'grade': None,
-                'description': None
+                'description': None,
+                'index': 0,
             })
             
         snapshot[prereq_map.map_id] = {
@@ -436,7 +439,7 @@ def application_prereq_edit(request, application_id):
     applicant   = application.applicant
 
     if request.method == 'POST':
-        prereq_snapshot = get_prereq_snapshot_from_request(request, application)
+        prereq_snapshot = get_prereq_snapshot_from_request(request.POST, application)
 
         # Validate all forms
         all_valid = True
@@ -504,6 +507,8 @@ def application_prereq_edit(request, application_id):
         'prereq_snapshot': prereq_snapshot,
     })
 
+# Unlike entries, maps are created immediately on every add.
+# Thus, let's separate add and update into two partial views.
 def application_prereq_map(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     prereq_map = PrerequisiteMap.objects.create(application=application)
@@ -515,7 +520,28 @@ def application_prereq_map(request, application_id):
             'map_id': prereq_map.map_id,
             'map_form': PrereqMapForm(prefix=prereq_map_form_prefix(prereq_map.map_id)),
             'course_data': [],
-            'application': application
+            'application': application,
+        }
+    )
+def application_prereq_map_update(request, application_id, map_id):
+    application = get_object_or_404(Application, pk=application_id)
+    prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
+
+    prereq_snapshot = get_prereq_snapshot_from_request(request.GET, application)
+    map_snapshot = prereq_snapshot.get(prereq_map.map_id)
+    if not map_snapshot:
+        raise Http404()
+    
+    # set update=True for the HTMX OOB swaps for each entry form.
+    return render(
+        request,
+        'applications/partials/prereq_map.html',
+        {
+            'map_id': prereq_map.map_id,
+            'map_form': map_snapshot['map_form'],
+            'course_data': map_snapshot['course_data'],
+            'application': application,
+            'update': True,
         }
     )
 
@@ -669,38 +695,6 @@ def application_prereq_detect_similar(request, application_id, map_id):
         data['application'] = application
         html += render_to_string('applications/partials/prereq_form.html', data, request=request)
         
-    return HttpResponse(html)
-
-def application_prereq_update_similarities(request, application_id, map_id):
-    application = get_object_or_404(Application, pk=application_id)
-    
-    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
-    target_course = None
-    if target_course_id and str(target_course_id).isdigit():
-        target_course = Course.objects.filter(pk=target_course_id).first()
-
-    html = ""
-    prefix_map = prereq_course_form_prefix(map_id, "")
-    indices = set()
-    for param in request.GET.keys():
-        if param.startswith(prefix_map):
-            rest = param[len(prefix_map):]
-            index_str = rest.split('_')[0]
-            if index_str.isdigit():
-                indices.add(int(index_str))
-
-    all_descs = [c.description for c in Course.objects.all()] if target_course else []
-    for index in indices:
-        course_id = request.GET.get(f'{prefix_map}{index}_course')
-        similarity = None
-        if course_id and str(course_id).isdigit() and target_course:
-            course = Course.objects.filter(pk=course_id).first()
-            if course:
-                similarity = compute_similarity(course.description, target_course.description, all_descs)
-        
-        similarity_text = f"{similarity}%" if similarity is not None else "&mdash;"
-        html += f'<div id="prereq-form-similarity-{map_id}-{index}" hx-swap-oob="true" class="font-bold">{similarity_text}</div>\n'
-
     return HttpResponse(html)
 
 

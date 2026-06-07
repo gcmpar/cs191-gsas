@@ -81,7 +81,7 @@ class ApplicationTranscriptForm(ModelForm):
 class PrereqMapForm(Form):
     target_course = ModelChoiceField(
         queryset=Course.objects.all(),
-        required=True,
+        required=False,
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select Target Course',

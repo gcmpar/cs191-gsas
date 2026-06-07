@@ -15,8 +15,8 @@
             {% if map_form.target_course.errors %}
                 <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
             {% endif %}
-            {% url 'applications:partial_prereq_update_similarities' application.application_id map_id as update_sim_url %}
-            {% render_field map_form.target_course class="w-full" hx-get=update_sim_url hx-include="closest .prereq-map" hx-swap="none" hx-trigger="change" %}
+            {% url 'applications:partial_prereq_map_update' application.application_id map_id as prereq_map_update_url %}
+            {% render_field map_form.target_course class="w-full" hx-get=prereq_map_update_url hx-include="closest .prereq-map" hx-trigger="change" hx-target="closest .prereq-map" hx-swap="none" %}
         </div>
         
         <label class="label">
@@ -25,7 +25,7 @@
         <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
         <div class="space-y-4 mb-4" id="prereq-forms-{{ map_id }}">
             {% for data in course_data %}
-                {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=forloop.counter0 %}
+                {% include "applications/partials/prereq_form.html" with course_form=data.form similarity=data.similarity grade=data.grade description=data.description index=data.index %}
             {% endfor %}
         </div>
         <div class="flex flex-wrap gap-2">
