@@ -451,8 +451,6 @@ def application_prereq_edit(request, application_id):
             raw_snapshot = {}
             for map_id, info in prereq_snapshot.items():
                 target_course = info['map_form'].cleaned_data.get('target_course')
-                if not target_course:
-                    continue # Skip maps without target course
                 
                 course_ids = {
                     data['form'].cleaned_data['course'].course_id
@@ -486,17 +484,6 @@ def application_prereq_edit(request, application_id):
                     for c_id in course_ids
                     if c_id not in existing_course_ids
                 ])
-
-            # Remove maps with empty target courses or empty source courses
-            PrerequisiteMap.objects.filter(
-                application=application,
-                prerequisitemapcourses__isnull=True
-            ).delete()
-
-            PrerequisiteMap.objects.filter(
-                application=application,
-                target_course__isnull=True
-            ).delete()
 
             # Remove deleted maps entirely
             submitted_map_ids = set(raw_snapshot.keys())
