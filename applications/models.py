@@ -59,8 +59,8 @@ class Application(models.Model):
     undergraduate_failed_subjects   = models.CharField('Undergraduate Number of Failed Subjects', max_length=10, blank=True, null=True)
     graduate_gwa                    = models.CharField('Graduate GWA', max_length=10, blank=True, null=True)
     graduate_failed_subjects        = models.CharField('Graduate Number of Failed Subjects', max_length=10, blank=True, null=True)
-    ngse_requirements_complete      = models.BooleanField('NGSE Requirements Complete', default=False)
-    ngse_remarks                    = models.CharField('NGSE Remarks', max_length=100, blank=True, null=True)
+    ngse_requirements_complete      = models.BooleanField('NGSE Requirements Complete', blank=True, null=True, default=None)
+    ngse_remarks                    = models.TextField('NGSE Remarks', blank=True, null=True)
 
     class Meta:
         db_table = 'application'

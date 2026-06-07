@@ -33,7 +33,20 @@
                             <th>Program</th>
                             <th>Study Load</th>
                             <th>Status</th>
+
+                            <th>Unit</th>
+                            <th>Research Field 1</th>
+                            <th>Research Field 2</th>
+                            <th>Research Field 3</th>
+                            <th>Special Project Topic Interest</th>
+                            <th>Undergraduate GWA</th>
+                            <th>Undergraduate Failed Subjects</th>
+                            <th>Graduate GWA</th>
+                            <th>Graduate Failed Subjects</th>
+                            <th>NGSE Requirements Complete</th>
+                            <th>NGSE Remarks</th>
                             <th>Notes</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -50,18 +63,40 @@
                             <td>{% render_field form.study_load class="select select-sm select-bordered w-full" %}</td>
                             <td>{% render_field form.application_status class="select select-sm select-bordered w-full" %}</td>
                             <td>
+                                {% render_field form.unit class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.research_field_1 class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.research_field_2 class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.research_field_3 class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.special_project_topic_interest class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.undergraduate_gwa class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.undergraduate_failed_subjects class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.graduate_gwa class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.graduate_failed_subjects class="input input-sm input-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.ngse_requirements_complete class+="select select-sm select-bordered w-full" %}
+                            </td>
+                            <td>
+                                {% render_field form.ngse_remarks class="textarea textarea-bordered textarea-sm w-full" %}
+                            </td>
+                            <td>
                                 {% render_field form.notes rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
-                                {% render_field form.unit class="hidden" %}
-                                {% render_field form.research_field_1 class="hidden" %}
-                                {% render_field form.research_field_2 class="hidden" %}
-                                {% render_field form.research_field_3 class="hidden" %}
-                                {% render_field form.special_project_topic_interest class="hidden" %}
-                                {% render_field form.undergraduate_gwa class="hidden" %}
-                                {% render_field form.undergraduate_failed_subjects class="hidden" %}
-                                {% render_field form.graduate_gwa class="hidden" %}
-                                {% render_field form.graduate_failed_subjects class="hidden" %}
-                                {% render_field form.ngse_requirements_complete class="hidden" %}
-                                {% render_field form.ngse_remarks class="hidden" %}
                             </td>
                         </tr>
                         {% endfor %}

@@ -2011,6 +2011,9 @@
   .col-8 {
     grid-column: 8;
   }
+  .col-span-1 {
+    grid-column: span 1 / span 1;
+  }
   .container {
     width: 100%;
     @media (width >= 40rem) {
@@ -3086,6 +3089,12 @@
       --size: calc(var(--size-field, 0.25rem) * 6);
     }
   }
+  .badge-error {
+    @layer daisyui.l1.l2 {
+      --badge-color: var(--color-error);
+      --badge-fg: var(--color-error-content);
+    }
+  }
   .badge-info {
     @layer daisyui.l1.l2 {
       --badge-color: var(--color-info);
@@ -3102,6 +3111,12 @@
     @layer daisyui.l1.l2 {
       --badge-color: var(--color-primary);
       --badge-fg: var(--color-primary-content);
+    }
+  }
+  .badge-success {
+    @layer daisyui.l1.l2 {
+      --badge-color: var(--color-success);
+      --badge-fg: var(--color-success-content);
     }
   }
   .btn-error {

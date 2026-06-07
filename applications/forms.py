@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, inlineformset_factory, TextInput, BooleanField, HiddenInput, ChoiceField
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, TypedChoiceField, TextInput, BooleanField, HiddenInput, ChoiceField
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
@@ -40,6 +40,24 @@ class ApplicationForm(ModelForm):
                 }
             ),
         }
+    ngse_requirements_complete = TypedChoiceField(
+        choices=[
+            ('null', 'Unknown'),
+            ('true', 'Yes'),
+            ('false', 'No'),
+        ],
+        coerce=lambda v: {
+            'null': None,
+            'true': True,
+            'false': False,
+        }[v],
+        required=False,
+        widget=Select2Widget(
+            attrs={
+                'data-placeholder': 'Complete?',
+            }
+        ),
+    )
 
 class ApplicationsQueryForm(Form):
     search = CharField(required=False)
@@ -153,6 +171,24 @@ class BatchImportRowForm(ModelForm):
                 }
             ),
         }
+    ngse_requirements_complete = TypedChoiceField(
+        choices=[
+            ('null', 'Unknown'),
+            ('true', 'Yes'),
+            ('false', 'No'),
+        ],
+        coerce=lambda v: {
+            'null': None,
+            'true': True,
+            'false': False,
+        }[v],
+        required=False,
+        widget=Select2Widget(
+            attrs={
+                'data-placeholder': 'Complete?',
+            }
+        ),
+    )
 
 BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 

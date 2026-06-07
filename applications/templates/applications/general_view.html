@@ -72,8 +72,10 @@
       <p><strong class="font-semibold text-base-content/70">Requirements Complete:</strong><br/>
         {% if application.ngse_requirements_complete %}
           <span class="badge badge-success">Yes</span>
-        {% else %}
+        {% elif application.ngse_requirements_complete == False %}
           <span class="badge badge-error">No</span>
+        {% else %}
+          <span class="badge badge-neutral">Unknown</span>
         {% endif %}
       </p>
       <p><strong class="font-semibold text-base-content/70">NGSE Remarks:</strong><br/>{{ application.ngse_remarks|default:"&mdash;" }}</p>
