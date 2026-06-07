@@ -47,7 +47,7 @@ Schools
         <tr class="hover:bg-slate-200! transition duration-200 cursor-pointer" onclick="window.location='{% url 'schools:view' school.school_id %}'">
           <td>{{ school.school_id }}</td>
           <td>{{ school.school_name }}</td>
-          <td class="inline-block truncate max-w-[20ch]">{{ school.notes }}</td>
+          <td class="inline-block truncate max-w-[20ch]">{{ school.notes|default:"" }}</td>
         </tr>
         {% empty %}
         <tr>

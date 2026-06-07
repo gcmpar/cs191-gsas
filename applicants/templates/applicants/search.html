@@ -65,7 +65,7 @@ Applicants
           <td>{{ applicant.contact_number }}</td>
           <td><span class="badge badge-primary">{{ applicant.applicant_status }}</span></td>
           <td>
-            <span class="inline-block truncate max-w-[20ch]">{{ applicant.notes }}</span>
+            <span class="inline-block truncate max-w-[20ch]">{{ applicant.notes|default:"" }}</span>
           </td>
         </tr>
         {% empty %}
