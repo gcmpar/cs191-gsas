@@ -23,7 +23,7 @@
         {{ formset.management_form }}
         <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
             <div class="overflow-x-auto">
-                <table class="table table-zebra w-full mb-0 min-w-[1200px]">
+                <table class="table table-zebra w-full mb-0 min-w-[4000px] max-w-none">
                     <thead class="bg-base-300 text-base-content/70">
                         <tr>
                             <th>Application No.</th>
@@ -93,7 +93,7 @@
                                 {% render_field form.ngse_requirements_complete class+="select select-sm select-bordered w-full" %}
                             </td>
                             <td>
-                                {% render_field form.ngse_remarks class="textarea textarea-bordered textarea-sm w-full" %}
+                                {% render_field form.ngse_remarks rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
                             </td>
                             <td>
                                 {% render_field form.notes rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
