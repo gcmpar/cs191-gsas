@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class YearField(models.PositiveSmallIntegerField):
-    def __init__(self, *args, min_year=1900, max_year=datetime.now().year+10, **kwargs):
+    def __init__(self, *args, min_year=1970, max_year=datetime.now().year+10, **kwargs):
         self.min_year           = min_year
         self.max_year           = max_year
         kwargs['choices']       = [(r, str(r)) for r in range(min_year, max_year)]
