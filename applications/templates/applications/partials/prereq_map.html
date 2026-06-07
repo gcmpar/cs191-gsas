@@ -15,7 +15,8 @@
             {% if map_form.target_course.errors %}
                 <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
             {% endif %}
-            {% render_field map_form.target_course class="w-full" %}
+            {% url 'applications:partial_prereq_update_similarities' application.application_id map_id as update_sim_url %}
+            {% render_field map_form.target_course class="w-full" hx-get=update_sim_url hx-include="closest .prereq-map" hx-swap="none" hx-trigger="change" %}
         </div>
         
         <label class="label">
@@ -31,7 +32,7 @@
             <button
                 class="btn btn-sm btn-neutral"
                 type="button"
-                hx-get="{% url 'applications:partial_prereq_form' map_id %}"
+                hx-get="{% url 'applications:partial_prereq_form' application.application_id map_id %}"
                 hx-vals="js:{index:getPrereqNextIndex({{ map_id }})}"
                 hx-target="#prereq-forms-{{ map_id }}"
                 hx-swap="beforeend"
@@ -39,7 +40,7 @@
             <button
                 class="btn btn-sm btn-info"
                 type="button"
-                hx-get="{% url 'applications:partial_prereq_detect_equiv' map_id %}"
+                hx-get="{% url 'applications:partial_prereq_detect_equiv' application.application_id map_id %}"
                 hx-include="closest .prereq-map"
                 hx-target="#prereq-forms-{{ map_id }}"
                 hx-swap="innerHTML"
@@ -47,7 +48,7 @@
             <button
                 class="btn btn-sm btn-info"
                 type="button"
-                hx-get="{% url 'applications:partial_prereq_detect_similar' map_id %}"
+                hx-get="{% url 'applications:partial_prereq_detect_similar' application.application_id map_id %}"
                 hx-include="closest .prereq-map"
                 hx-target="#prereq-forms-{{ map_id }}"
                 hx-swap="innerHTML"

@@ -528,17 +528,18 @@ def application_prereq_map(request, application_id):
         {
             'map_id': prereq_map.map_id,
             'map_form': PrereqMapForm(prefix=prereq_map_form_prefix(prereq_map.map_id)),
-            'course_data': []
+            'course_data': [],
+            'application': application
         }
     )
 
-def application_prereq_form(request, map_id):
-    prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
-    application = prereq_map.application
+def application_prereq_form(request, application_id, map_id):
+    application = get_object_or_404(Application, pk=application_id)
+    prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
 
     index = int(request.GET.get('index', 0))
     update = request.GET.get('update')
-    prefix = prereq_course_form_prefix(prereq_map.map_id, index)
+    prefix = prereq_course_form_prefix(map_id, index)
 
     course_form = PrereqCourseForm(request.GET, prefix=prefix, application=application)
     similarity = None
@@ -551,20 +552,19 @@ def application_prereq_form(request, map_id):
         if target_course_id and str(target_course_id).isdigit():
             target_course = Course.objects.filter(pk=target_course_id).first()
         else:
-            target_course = prereq_map.target_course
+            target_course = prereq_map.target_course if prereq_map else None
         
-        if course_id and str(course_id).isdigit():
-            course = Course.objects.filter(pk=course_id).first()
-            
-            if course:
-                description = course.description
-                transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
-                if transcript_entry:
-                    grade = transcript_entry.grade
-                    
-                if target_course:
-                    all_descs = [c.description for c in Course.objects.all()]
-                    similarity = compute_similarity(course.description, target_course.description, all_descs)
+        course = Course.objects.filter(pk=course_id).first()
+        
+        if course:
+            description = course.description
+            transcript_entry = ApplicationTranscript.objects.filter(application=application, course=course).first()
+            if transcript_entry:
+                grade = transcript_entry.grade
+                
+            if target_course:
+                all_descs = [c.description for c in Course.objects.all()]
+                similarity = compute_similarity(course.description, target_course.description, all_descs)
 
     return render(
         request,
@@ -577,18 +577,19 @@ def application_prereq_form(request, map_id):
             'map_id': map_id,
             'index': index,
             'update': update,
+            'application': application,
         }
     )
 
-def application_prereq_detect_equiv(request, map_id):
-    prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
-    application = prereq_map.application
+def application_prereq_detect_equiv(request, application_id, map_id):
+    application = get_object_or_404(Application, pk=application_id)
+    prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
     
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
     else:
-        target_course = prereq_map.target_course
+        target_course = prereq_map.target_course if prereq_map else None
         
     if not target_course:
         return HttpResponse("")
@@ -629,19 +630,20 @@ def application_prereq_detect_equiv(request, map_id):
     
     html = ""
     for data in matched_forms_data:
+        data['application'] = application
         html += render_to_string('applications/partials/prereq_form.html', data, request=request)
         
     return HttpResponse(html)
 
-def application_prereq_detect_similar(request, map_id):
-    prereq_map = get_object_or_404(PrerequisiteMap, pk=map_id)
-    application = prereq_map.application
+def application_prereq_detect_similar(request, application_id, map_id):
+    application = get_object_or_404(Application, pk=application_id)
+    prereq_map = PrerequisiteMap.objects.filter(pk=map_id).first()
     
     target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
     else:
-        target_course = prereq_map.target_course
+        target_course = prereq_map.target_course if prereq_map else None
         
     if not target_course:
         return HttpResponse("")
@@ -681,8 +683,41 @@ def application_prereq_detect_similar(request, map_id):
     
     html = ""
     for data in matched_forms_data:
+        data['application'] = application
         html += render_to_string('applications/partials/prereq_form.html', data, request=request)
         
+    return HttpResponse(html)
+
+def application_prereq_update_similarities(request, application_id, map_id):
+    application = get_object_or_404(Application, pk=application_id)
+    
+    target_course_id = request.GET.get(prereq_map_form_prefix(map_id) + '-target_course')
+    target_course = None
+    if target_course_id and str(target_course_id).isdigit():
+        target_course = Course.objects.filter(pk=target_course_id).first()
+
+    html = ""
+    prefix_map = prereq_course_form_prefix(map_id, "")
+    indices = set()
+    for param in request.GET.keys():
+        if param.startswith(prefix_map):
+            rest = param[len(prefix_map):]
+            index_str = rest.split('_')[0]
+            if index_str.isdigit():
+                indices.add(int(index_str))
+
+    all_descs = [c.description for c in Course.objects.all()] if target_course else []
+    for index in indices:
+        course_id = request.GET.get(f'{prefix_map}{index}_course')
+        similarity = None
+        if course_id and str(course_id).isdigit() and target_course:
+            course = Course.objects.filter(pk=course_id).first()
+            if course:
+                similarity = compute_similarity(course.description, target_course.description, all_descs)
+        
+        similarity_text = f"{similarity}%" if similarity is not None else "&mdash;"
+        html += f'<div id="prereq-form-similarity-{map_id}-{index}" hx-swap-oob="true" class="font-bold">{similarity_text}</div>\n'
+
     return HttpResponse(html)
 
 

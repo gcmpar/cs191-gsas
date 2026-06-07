@@ -294,8 +294,7 @@ def course_equiv_map(request, course_id):
 def course_equiv_form(request, map_id):
     index = int(request.GET.get('index', 0))
 
-    equiv_map = get_object_or_404(EquivalenceMap, pk=map_id)
-    equiv_form = EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, index))
+    equiv_form = EquivRowForm(prefix=equiv_param_form_prefix(map_id, index))
     return render(
         request,
         'courses/partials/equiv_form.html',
