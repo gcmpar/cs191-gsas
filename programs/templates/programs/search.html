@@ -65,7 +65,7 @@ Programs
               class="link link-hover link-primary"
               onclick="event.stopPropagation();">{{ program.school.school_name }}</a>
           </td>
-          <td>{{ program.description }}</td>
+          <td class="inline-block truncate max-w-[10ch]">{{ program.description }}</td>
           <td class="inline-block truncate max-w-[20ch]">{{ program.notes|default:"" }}</td>
         </tr>
         {% empty %}

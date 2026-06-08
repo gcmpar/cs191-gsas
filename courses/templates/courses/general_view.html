@@ -17,18 +17,9 @@
 <div class="card bg-base-100 border border-base-300 shadow-sm max-w-4xl">
   <div class="card-body">
     <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Course #{{ course.course_id }}</h2>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p><strong class="font-semibold text-base-content/70">Course Code:</strong><br/>{{ course.course_code }}</p>
-      <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/>{{ course.course_name }}</p>
-      <p><strong class="font-semibold text-base-content/70">Units:</strong><br/>{{ course.units }}</p>
-      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Description:</strong><br/>{{ course.description }}</p>
-      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ course.notes|default:"&mdash;" }}</p>
-    </div>
-    
-    <div class="divider my-2"></div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p><strong class="font-semibold text-base-content/70">Schools:</strong><br/>
+      <p><strong class="font-semibold text-base-content/70">School:</strong><br/>
         {% for school in course.unique_schools %}
         <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary">
           {{ school.school_name }}
@@ -37,7 +28,7 @@
         <span class="text-base-content/50">&mdash;</span>
         {% endfor %}
       </p>
-      <p><strong class="font-semibold text-base-content/70">Programs:</strong><br/>
+      <p><strong class="font-semibold text-base-content/70">Program(s):</strong><br/>
         {% for program in course.programs.all %}
         <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">
           {{ program.program_name }}
@@ -47,6 +38,17 @@
         {% endfor %}
       </p>
     </div>
+
+    <div class="divider my-2"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p><strong class="font-semibold text-base-content/70">Course Code:</strong><br/>{{ course.course_code }}</p>
+      <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/>{{ course.course_name }}</p>
+      <p><strong class="font-semibold text-base-content/70">Units:</strong><br/>{{ course.units }}</p>
+      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Description:</strong><br/>{{ course.description }}</p>
+      <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ course.notes|default:"&mdash;" }}</p>
+    </div>
+  
   </div>
 </div>
 

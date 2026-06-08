@@ -2496,6 +2496,9 @@
   .max-w-7xl {
     max-width: var(--container-7xl);
   }
+  .max-w-\[10ch\] {
+    max-width: 10ch;
+  }
   .max-w-\[20ch\] {
     max-width: 20ch;
   }
