@@ -41,46 +41,56 @@
     <div class="flex flex-row items-start justify-start mb-6">
       <p><strong class="font-semibold text-base-content/70">Application Number:</strong><br/><span class="font-semibold text-xl">{{ application.application_number }}</span></p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
-        <span class="badge badge-primary">{{ application.application_status }}</span>
-      </p>
-      <p><strong class="font-semibold text-base-content/70">Date Applied:</strong><br/>{{ application.date_applied }}</p>
-      <p><strong class="font-semibold text-base-content/70">Program:</strong><br/>{{ application.program }}</p>
-      <p><strong class="font-semibold text-base-content/70">Study Load:</strong><br/>{{ application.study_load }}</p>
-      <p><strong class="font-semibold text-base-content/70">Folder Link:</strong><br/>
-        <a href="{{ application.folder_link }}" target="_blank" class="link link-hover link-primary break-all">{{ application.folder_link }}</a>
-      </p>
+    <div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
+          <span class="badge badge-primary">{{ application.application_status }}</span>
+        </p>
+        <p><strong class="font-semibold text-base-content/70">Date Applied:</strong><br/>{{ application.date_applied }}</p>
+        <p><strong class="font-semibold text-base-content/70">Program:</strong><br/>{{ application.program }}</p>
+        <p><strong class="font-semibold text-base-content/70">Study Load:</strong><br/>{{ application.study_load }}</p>
+        <p><strong class="font-semibold text-base-content/70">Folder Link:</strong><br/>
+          <a href="{{ application.folder_link }}" target="_blank" class="link link-hover link-primary break-all">{{ application.folder_link }}</a>
+        </p>
+      </div>
 
       <!-- New Fields -->
-      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Academic Information</div>
-      <p><strong class="font-semibold text-base-content/70">Unit:</strong><br/>{{ application.unit|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Special Project Topic Interest:</strong><br/>{{ application.special_project_topic_interest|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Research Field 1:</strong><br/>{{ application.research_field_1|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Research Field 2:</strong><br/>{{ application.research_field_2|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Research Field 3:</strong><br/>{{ application.research_field_3|default:"&mdash;" }}</p>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 items-start">
+        <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">Academic Information</div>
+        <p><strong class="font-semibold text-base-content/70">Unit:</strong><br/>{{ application.unit|default:"&mdash;" }}</p>
+        <p><strong class="font-semibold text-base-content/70">Special Project Topic Interest:</strong><br/>{{ application.special_project_topic_interest|default:"&mdash;" }}</p>
+        <p><strong class="font-semibold text-base-content/70">Research Field 1:</strong><br/>{{ application.research_field_1|default:"&mdash;" }}</p>
+        <p><strong class="font-semibold text-base-content/70">Research Field 2:</strong><br/>{{ application.research_field_2|default:"&mdash;" }}</p>
+        <p><strong class="font-semibold text-base-content/70">Research Field 3:</strong><br/>{{ application.research_field_3|default:"&mdash;" }}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-8 mt-2 items-start">
+        <div class="flex flex-col items-start justify-center">
+          <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">Undergraduate Details</div>
+          <p><strong class="font-semibold text-base-content/70">Undergraduate GWA:</strong><br/><span class="badge badge-info">{{ application.undergraduate_gwa|default:"&mdash;" }}</span></p>
+          <p><strong class="font-semibold text-base-content/70">Undergraduate Failed Subjects:</strong><br/>{{ application.undergraduate_failed_subjects|default:"&mdash;" }}</p>
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">Graduate Details</div>
+          <p><strong class="font-semibold text-base-content/70">Graduate GWA:</strong><br/><span class="badge badge-info">{{ application.graduate_gwa|default:"&mdash;" }}</span></p>
+          <p><strong class="font-semibold text-base-content/70">Graduate Failed Subjects:</strong><br/>{{ application.graduate_failed_subjects|default:"&mdash;" }}</p>
+        </div>
+      </div>
       
-      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Undergraduate Details</div>
-      <p><strong class="font-semibold text-base-content/70">Undergraduate GWA:</strong><br/>{{ application.undergraduate_gwa|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Failed Subjects:</strong><br/>{{ application.undergraduate_failed_subjects|default:"&mdash;" }}</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 items-start">
+        <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">NGSE Details</div>
+        <p><strong class="font-semibold text-base-content/70">Requirements Complete:</strong><br/>
+          {% if application.ngse_requirements_complete %}
+            <span class="badge badge-success">Yes</span>
+          {% elif application.ngse_requirements_complete == False %}
+            <span class="badge badge-error">No</span>
+          {% else %}
+            <span class="badge badge-neutral">Unknown</span>
+          {% endif %}
+        </p>
+        <p><strong class="font-semibold text-base-content/70">NGSE Remarks:</strong><br/>{{ application.ngse_remarks|default:"&mdash;" }}</p>
+      </div>
 
-      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Graduate Details</div>
-      <p><strong class="font-semibold text-base-content/70">Graduate GWA:</strong><br/>{{ application.graduate_gwa|default:"&mdash;" }}</p>
-      <p><strong class="font-semibold text-base-content/70">Failed Subjects:</strong><br/>{{ application.graduate_failed_subjects|default:"&mdash;" }}</p>
-
-      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">NGSE Details</div>
-      <p><strong class="font-semibold text-base-content/70">Requirements Complete:</strong><br/>
-        {% if application.ngse_requirements_complete %}
-          <span class="badge badge-success">Yes</span>
-        {% elif application.ngse_requirements_complete == False %}
-          <span class="badge badge-error">No</span>
-        {% else %}
-          <span class="badge badge-neutral">Unknown</span>
-        {% endif %}
-      </p>
-      <p><strong class="font-semibold text-base-content/70">NGSE Remarks:</strong><br/>{{ application.ngse_remarks|default:"&mdash;" }}</p>
-
-      <div class="col-span-1 md:col-span-2 divider mb-0 mt-2">Other</div>
+      <div class="col-span-1 md:col-span-2 divider mb-2 mt-2 text-lg text-base-content/70 font-semibold">Other</div>
       <p class="col-span-1 md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ application.notes|default:"&mdash;" }}</p>
     </div>
   </div>
