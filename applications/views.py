@@ -858,7 +858,7 @@ def batch_import_upload(request):
     if request.method == 'POST':
         if 'excel_file' in request.FILES:
             excel_file = request.FILES['excel_file']
-            wb = openpyxl.load_workbook(excel_file)
+            wb = openpyxl.load_workbook(excel_file, data_only=True)
             sheet = wb.active
             rows = list(sheet.iter_rows(values_only=True))
             
@@ -882,9 +882,10 @@ def batch_import_upload(request):
                     contact_raw = contact_raw[:-2]
                     
                 program_raw = str(row_dict.get('program', '') or '').strip()
-                if 'phd' in program_raw.lower(): program_raw = 'PhD CS'
-                elif 'bio' in program_raw.lower(): program_raw = 'MS Bioinfo'
-                elif 'ms' in program_raw.lower(): program_raw = 'MS CS'
+                program_raw_lower = program_raw.lower()
+                if any(text in program_raw_lower for text in ['bio']): program_raw = 'MS Bioinfo'
+                elif any(text in program_raw_lower for text in ['phd', 'doctor', 'philosophy']): program_raw = 'PhD CS'
+                elif any(text in program_raw_lower for text in ['ms', 'master']): program_raw = 'MS CS'
 
                 load_raw = str(row_dict.get('applying as full-time or part-time', '') or '').strip()
                 if not load_raw:
@@ -899,7 +900,15 @@ def batch_import_upload(request):
                 if 'accept' in status_raw.lower(): status_raw = 'Accepted'
                 elif 'reject' in status_raw.lower(): status_raw = 'Rejected'
                 else: status_raw = 'Processing'
-                    
+
+                ngse_requirements_complete_raw = str(row_dict.get('ngse\nrequirements complete?', '') or row_dict.get('ngse requirements complete', '') or '').strip().lower()
+                if ngse_requirements_complete_raw in ['yes', 'true', '1', 'y']:
+                    ngse_requirements_complete_raw = True
+                elif ngse_requirements_complete_raw in ['no', 'false', '0', 'n']:
+                    ngse_requirements_complete_raw = False
+                else:
+                    ngse_requirements_complete_raw = None
+
                 data.append({
                     'application_number': app_no,
                     'last_name': str(row_dict.get('last name', '') or '').strip(),
@@ -921,7 +930,7 @@ def batch_import_upload(request):
                     'undergraduate_failed_subjects': str(row_dict.get('undergraduate number of failed subjects', '') or '').strip(),
                     'graduate_gwa': str(row_dict.get('graduate\ngwa', '') or row_dict.get('graduate gwa', '') or '').strip(),
                     'graduate_failed_subjects': str(row_dict.get('graduate\nnumber of failed subjects', '') or row_dict.get('graduate number of failed subjects', '') or '').strip(),
-                    'ngse_requirements_complete': str(row_dict.get('ngse\nrequirements complete?', '') or row_dict.get('ngse requirements complete', '') or '').strip().lower() in ['yes', 'true', '1', 'y'],
+                    'ngse_requirements_complete': ngse_requirements_complete_raw,
                     'ngse_remarks': str(row_dict.get('ngse remarks', '') or '').strip()
                 })
 
@@ -980,7 +989,17 @@ def batch_import_confirm(request):
                         matching_applicant = best_match
 
             applicant_id = matching_applicant.pk if matching_applicant else None
-            
+
+            # For ngse_requirements_complete field.
+            ngse_requirements_complete_raw = row.get('ngse_requirements_complete')
+            ngse_requirements_complete = None
+            if ngse_requirements_complete_raw == True:
+                ngse_requirements_complete = 'true'
+            elif ngse_requirements_complete_raw == False:
+                ngse_requirements_complete = 'false'
+            else:
+                ngse_requirements_complete = 'null'
+
             initial_data.append({
                 'application_number': row.get('application_number'),
                 'scanned_name': f"{row.get('last_name')}, {row.get('first_name')} {row.get('middle_name')}".strip(),
@@ -1000,7 +1019,7 @@ def batch_import_confirm(request):
                 'undergraduate_failed_subjects': row.get('undergraduate_failed_subjects'),
                 'graduate_gwa': row.get('graduate_gwa'),
                 'graduate_failed_subjects': row.get('graduate_failed_subjects'),
-                'ngse_requirements_complete': row.get('ngse_requirements_complete'),
+                'ngse_requirements_complete': ngse_requirements_complete,
                 'ngse_remarks': row.get('ngse_remarks'),
             })
         formset = BatchImportFormSet(initial=initial_data)

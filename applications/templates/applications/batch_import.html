@@ -3,22 +3,28 @@
 {% block title %}Batch Import Applications{% endblock title %}
 
 {% block content %}
-<div class="row pt-4 mb-4">
-    <div class="col-8">
-        <h2>Batch Import Applications from NGSE Excel</h2>
-    </div>
+
+<div class="flex flex-col justify-start items-start mb-6 mt-4">
+    <h2 class="text-2xl font-bold">Batch Import Data</h2>
+    <a href="{% url 'applications:batch_import_history' %}" class="btn btn-ghost btn-sm">← Back to History</a>
 </div>
 
-<div class="card p-5">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="excelFile" class="form-label">Upload NGSE Excel File (.xlsx)</label>
-            <input class="form-control" type="file" id="excelFile" name="excel_file" accept=".xlsx" required>
+<div class="card p-5 mt-4 bg-base-100 border border-base-300 shadow-sm max-w-2xl mx-auto">
+    <div class="card-body">
+            <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-6">Import Application Data</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-rows-[5fr-1fr]">
+                    <label for="excelFile" class="label text-lg">Import from NGSE Excel File (.xlsx)</label>
+                    <input type="file" id="excelFile" name="excel_file" accept=".xlsx" required class="file-input file-input-bordered file-input-lg w-full">
+                    <div class="flex justify-end gap-4 items-center w-full border-t border-base-200 mt-4 pt-2">
+                        <a href="{% url 'applications:batch_import_history' %}" class="btn btn-error btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-success">Parse File</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary">Parse File</button>
-        <a href="{% url 'applications:batch_import_history' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    </div>
 </div>
 
 {% endblock content %}
