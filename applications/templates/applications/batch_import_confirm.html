@@ -29,10 +29,11 @@
                             <th>Application No.</th>
                             <th>Scanned Name</th>
                             <th>Scanned Contact Info</th>
-                            <th>Applicant Link</th>
+                            <th>Applicant</th>
+                            <th>Application Status</th>
+                            <th>Folder Link</th>
                             <th>Program</th>
                             <th>Study Load</th>
-                            <th>Status</th>
 
                             <th>Unit</th>
                             <th>Research Field 1</th>
@@ -59,9 +60,13 @@
                                 {% render_field form.scanned_contact_number class="input input-sm input-bordered w-auto" placeholder="Contact #" %}
                             </td>
                             <td>{% render_field form.applicant class="select select-sm select-bordered w-auto min-w-[150px]" %}</td>
+                            <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
+                            <td>
+                                {% render_field form.folder_link class="input input-sm input-bordered w-auto" %}
+                            </td>
                             <td>{% render_field form.program class="select select-sm select-bordered w-auto" %}</td>
                             <td>{% render_field form.study_load class="select select-sm select-bordered w-auto" %}</td>
-                            <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
+                            
                             <td>
                                 {% render_field form.unit class="input input-sm input-bordered w-auto" %}
                             </td>

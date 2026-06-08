@@ -43,15 +43,15 @@
     </div>
     <div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <p><strong class="font-semibold text-base-content/70">Date Applied:</strong><br/>{{ application.date_applied }}</p>
         <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
           <span class="badge badge-primary">{{ application.application_status }}</span>
         </p>
-        <p><strong class="font-semibold text-base-content/70">Date Applied:</strong><br/>{{ application.date_applied }}</p>
-        <p><strong class="font-semibold text-base-content/70">Program:</strong><br/>{{ application.program }}</p>
-        <p><strong class="font-semibold text-base-content/70">Study Load:</strong><br/>{{ application.study_load }}</p>
         <p><strong class="font-semibold text-base-content/70">Folder Link:</strong><br/>
           <a href="{{ application.folder_link }}" target="_blank" class="link link-hover link-primary break-all">{{ application.folder_link }}</a>
         </p>
+        <p><strong class="font-semibold text-base-content/70">Program:</strong><br/>{{ application.program }}</p>
+        <p><strong class="font-semibold text-base-content/70">Study Load:</strong><br/>{{ application.study_load }}</p>
       </div>
 
       <!-- New Fields -->

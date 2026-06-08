@@ -11,10 +11,11 @@ class ApplicationForm(ModelForm):
     class Meta:
         model = Application
         fields = [
-            'applicant', 'application_number', 'application_status', 'date_applied', 'program', 'folder_link', 'study_load', 'notes',
+            'applicant', 'application_number', 'application_status', 'date_applied', 'folder_link', 'program', 'study_load',
             'unit', 'research_field_1', 'research_field_2', 'research_field_3', 'special_project_topic_interest',
             'undergraduate_gwa', 'undergraduate_failed_subjects', 'graduate_gwa', 'graduate_failed_subjects',
-            'ngse_requirements_complete', 'ngse_remarks'
+            'ngse_requirements_complete', 'ngse_remarks',
+            'notes',
         ]
         widgets = {
             'date_applied': DateInput(attrs={'type': 'date'}),
@@ -143,10 +144,11 @@ class BatchImportRowForm(ModelForm):
     class Meta:
         model = Application
         fields = [
-            'application_number', 'applicant', 'program', 'study_load', 'application_status', 'notes',
+            'application_number', 'applicant', 'application_status', 'folder_link', 'program', 'study_load',
             'unit', 'research_field_1', 'research_field_2', 'research_field_3', 'special_project_topic_interest',
             'undergraduate_gwa', 'undergraduate_failed_subjects', 'graduate_gwa', 'graduate_failed_subjects',
-            'ngse_requirements_complete', 'ngse_remarks'
+            'ngse_requirements_complete', 'ngse_remarks',
+            'notes',
         ]
         widgets = {
             'applicant': ApplicantsWidget(

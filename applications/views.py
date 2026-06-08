@@ -871,7 +871,7 @@ def batch_import_upload(request):
                     
                 row_dict = dict(zip(headers, row))
                 
-                notes = str(row_dict.get('ngse remarks', '') or '').strip()
+                notes = ''
                 
                 app_no = str(row_dict.get('application no.', ''))
                 if not app_no:
@@ -917,10 +917,9 @@ def batch_import_upload(request):
                     'contact_number': contact_raw.strip(),
                     'email': str(row_dict.get('email address', '') or '').strip(),
                     'application_status': status_raw,
-                    'folder_link': str(row_dict.get('link to applicant main folder', '') or '').strip(),
+                    'folder_link': str(row_dict.get('link to applicant\nmain folder', '') or row_dict.get('link to applicant main folder', '') or '').strip(),
                     'program': program_raw,
                     'study_load': load_raw,
-                    'notes': notes,
                     'unit': str(row_dict.get('unit', '') or '').strip(),
                     'research_field_1': str(row_dict.get('research field 1', '') or '').strip(),
                     'research_field_2': str(row_dict.get('research field 2', '') or '').strip(),
@@ -931,7 +930,8 @@ def batch_import_upload(request):
                     'graduate_gwa': str(row_dict.get('graduate\ngwa', '') or row_dict.get('graduate gwa', '') or '').strip(),
                     'graduate_failed_subjects': str(row_dict.get('graduate\nnumber of failed subjects', '') or row_dict.get('graduate number of failed subjects', '') or '').strip(),
                     'ngse_requirements_complete': ngse_requirements_complete_raw,
-                    'ngse_remarks': str(row_dict.get('ngse remarks', '') or '').strip()
+                    'ngse_remarks': str(row_dict.get('ngse remarks', '') or '').strip(),
+                    'notes': notes,
                 })
 
             request.session['batch_import_data'] = data
@@ -1006,10 +1006,10 @@ def batch_import_confirm(request):
                 'scanned_email': row.get('email'),
                 'scanned_contact_number': row.get('contact_number'),
                 'applicant': applicant_id,
+                'application_status': row.get('application_status'),
+                'folder_link': row.get('folder_link'),
                 'program': row.get('program'),
                 'study_load': row.get('study_load'),
-                'application_status': row.get('application_status'),
-                'notes': row.get('notes'),
                 'unit': row.get('unit'),
                 'research_field_1': row.get('research_field_1'),
                 'research_field_2': row.get('research_field_2'),
@@ -1021,6 +1021,7 @@ def batch_import_confirm(request):
                 'graduate_failed_subjects': row.get('graduate_failed_subjects'),
                 'ngse_requirements_complete': ngse_requirements_complete,
                 'ngse_remarks': row.get('ngse_remarks'),
+                'notes': row.get('notes'),
             })
         formset = BatchImportFormSet(initial=initial_data)
         
