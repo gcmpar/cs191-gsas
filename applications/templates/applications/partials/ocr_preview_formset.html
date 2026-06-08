@@ -69,7 +69,7 @@
             <td>
                 <span id="{{ form.prefix }}-swap-course_id" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
                   {% if form.course_instance %}
-                    <a href={% url 'courses:general_view' form.course_instance.course_id %} class="link link-hover link-primary">{{ form.course_instance.course_code }}</a>
+                    <a href={% url 'courses:general_view' form.course_instance.course_id %} class="link link-hover link-primary text-lg">{{ form.course_instance.course_code }}</a>
                   {% else %}
                     &mdash;
                   {% endif %}
