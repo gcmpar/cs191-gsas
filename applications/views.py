@@ -282,9 +282,7 @@ def get_matching_applicant(first_name, middle_name, last_name, email, applicants
             if best_ratio > 0.8:
                 matching_applicant = best_match
 
-    applicant_id = matching_applicant.pk if matching_applicant else None
-
-    return applicant_id
+    return matching_applicant
 
 
 def applications_search(request):
@@ -812,17 +810,12 @@ def application_ocr_preview(request, application_id):
     """GET: Show editable OCR preview table. POST: Save confirmed rows as ApplicationTranscript."""
     application = get_object_or_404(Application, pk=application_id)
 
-    detect_courses = request.GET.get('detect_courses')
-    update = request.GET.get('update')
-
     session_key = f'ocr_preview_{application_id}'
     scanned_courses = request.session.get(session_key)
 
     if not scanned_courses:
         messages.error(request, 'No OCR data found. Please upload the TOR again.')
         return redirect('applications:transcripts_edit', application_id=application_id)
-
-    all_courses = Course.objects.prefetch_related('programs__school').order_by('course_code')
 
     if request.method == 'POST':
         formset = OCRFormSet(request.POST)
@@ -863,14 +856,16 @@ def application_ocr_preview(request, application_id):
             messages.error(request, 'Please correct the errors below.')
 
         for form in formset:
-            course_id = course_id=form['course'].value()
+            course_id = form['course'].value()
             if course_id:
                 form.course_instance = Course.objects.filter(course_id=course_id).first()
             else:
                 form.course_instance = None
 
     else:
-        all_courses_list = list(all_courses)
+        detect_courses = request.GET.get('detect_courses')
+        update = request.GET.get('update')
+        all_courses_list = list(Course.objects.prefetch_related('programs__school').order_by('course_code'))
 
         if detect_courses:
             get = request.GET.copy()
@@ -895,12 +890,11 @@ def application_ocr_preview(request, application_id):
                 'application':    application,
                 'formset':        formset,
                 'detect_courses': detect_courses,
-                'update':         update,
             })
         elif update:
             formset = OCRFormSet(request.GET)
             for form in formset:
-                course_id = course_id=form['course'].value()
+                course_id = form['course'].value()
                 if course_id:
                     form.course_instance = Course.objects.filter(course_id=course_id).first()
                 else:
@@ -909,7 +903,6 @@ def application_ocr_preview(request, application_id):
             return render(request, 'applications/partials/ocr_preview_formset.html', {
                 'application':    application,
                 'formset':        formset,
-                'detect_courses': detect_courses,
                 'update':         update,
             })
 
@@ -934,7 +927,7 @@ def application_ocr_preview(request, application_id):
             
             formset = OCRFormSet(initial=initial_data)
             for form in formset:
-                course_id = course_id=form['course'].value()
+                course_id = form['course'].value()
                 if course_id:
                     form.course_instance = Course.objects.filter(course_id=course_id).first()
                 else:
@@ -1035,91 +1028,127 @@ def batch_import_confirm(request):
     data = request.session.get('batch_import_data', [])
     if not data:
         return redirect('applications:batch_import_upload')
+    
 
     if request.method == 'POST':
-        
-        if request.POST.get('action') == 'detect_applicants':
-            post = request.POST.copy()
-            formset = BatchImportFormSet(post)
-            applicants = list(Applicant.objects.all())
-
-            for form in formset.forms:
-                applicant_id = get_matching_applicant(
-                    post.get(form.add_prefix('scanned_first_name')),
-                    post.get(form.add_prefix('scanned_middle_name')),
-                    post.get(form.add_prefix('scanned_last_name')),
-                    post.get(form.add_prefix('scanned_email')),
-                    applicants
-                )
-
-                post[form.add_prefix('applicant')] = applicant_id
+        formset = BatchImportFormSet(request.POST)
+        if formset.is_valid():
+            batch_import = BatchImport.objects.create()
             
-            formset = BatchImportFormSet(post)
-
-        else:
-            formset = BatchImportFormSet(request.POST)
-            if formset.is_valid():
-                batch_import = BatchImport.objects.create()
+            for form in formset:
+                application = form.save(commit=False)
+                application.date_applied = date.today()
+                application.batch_import = batch_import
+                application.save()
                 
-                for form in formset:
-                    application = form.save(commit=False)
-                    application.date_applied = date.today()
-                    application.batch_import = batch_import
-                    application.save()
-                    
-                if 'batch_import_data' in request.session:
-                    del request.session['batch_import_data']
-                    
-                return redirect('applications:batch_import_history')
+            if 'batch_import_data' in request.session:
+                del request.session['batch_import_data']
+                
+            return redirect('applications:batch_import_history')
+
+        for form in formset:
+            applicant_id = form['applicant'].value()
+            if applicant_id:
+                form.applicant_instance = Applicant.objects.filter(applicant_id=applicant_id).first()
+            else:
+                form.applicant_instance = None
         
     else:
-        initial_data = []
-        applicants = list(Applicant.objects.all())
-        for row in data:
-            applicant_id = get_matching_applicant(
-                row.get('first_name'),
-                row.get('middle_name'),
-                row.get('last_name'),
-                row.get('email'),
-                applicants
-            )
+        detect_applicants = request.GET.get('detect_applicants')
+        update = request.GET.get('update')
+        all_applicants_list = list(Applicant.objects.all())
 
-            # For ngse_requirements_complete field.
-            ngse_requirements_complete_raw = row.get('ngse_requirements_complete')
-            ngse_requirements_complete = None
-            if ngse_requirements_complete_raw == True:
-                ngse_requirements_complete = 'true'
-            elif ngse_requirements_complete_raw == False:
-                ngse_requirements_complete = 'false'
-            else:
-                ngse_requirements_complete = 'null'
+        if detect_applicants:
+            get = request.GET.copy()
+            matching_applicants = {}
 
-            initial_data.append({
-                'application_number': row.get('application_number'),
-                'scanned_last_name': row.get('last_name'),
-                'scanned_first_name': row.get('first_name'),
-                'scanned_middle_name': row.get('middle_name'),
-                'scanned_email': row.get('email'),
-                'scanned_contact_number': row.get('contact_number'),
-                'applicant': applicant_id,
-                'application_status': row.get('application_status'),
-                'folder_link': row.get('folder_link'),
-                'program': row.get('program'),
-                'study_load': row.get('study_load'),
-                'unit': row.get('unit'),
-                'research_field_1': row.get('research_field_1'),
-                'research_field_2': row.get('research_field_2'),
-                'research_field_3': row.get('research_field_3'),
-                'special_project_topic_interest': row.get('special_project_topic_interest'),
-                'undergraduate_gwa': row.get('undergraduate_gwa'),
-                'undergraduate_failed_subjects': row.get('undergraduate_failed_subjects'),
-                'graduate_gwa': row.get('graduate_gwa'),
-                'graduate_failed_subjects': row.get('graduate_failed_subjects'),
-                'ngse_requirements_complete': ngse_requirements_complete,
-                'ngse_remarks': row.get('ngse_remarks'),
-                'notes': row.get('notes'),
+            formset = BatchImportFormSet(get)
+            for form in formset.forms:
+                matching_applicant = get_matching_applicant(
+                    get.get(form.add_prefix('scanned_first_name')),
+                    get.get(form.add_prefix('scanned_middle_name')),
+                    get.get(form.add_prefix('scanned_last_name')),
+                    get.get(form.add_prefix('scanned_email')),
+                    all_applicants_list
+                )
+
+                get[form.add_prefix('applicant')] = matching_applicant
+                matching_applicants[form.prefix] = matching_applicant
+            
+            formset = BatchImportFormSet(get)
+            for form in formset:
+                form.applicant_instance = matching_applicants.get(form.prefix)
+            return render(request, 'applications/partials/batch_import_confirm_formset.html', {
+                'formset': formset,
+                'detect_applicants': detect_applicants,
             })
-        formset = BatchImportFormSet(initial=initial_data)
+
+        elif update:
+            formset = BatchImportFormSet(request.GET)
+            for form in formset:
+                applicant_id = form['applicant'].value()
+                if applicant_id:
+                    form.applicant_instance = Applicant.objects.filter(applicant_id=applicant_id).first()
+                else:
+                    form.applicant_instance = None
+            return render(request, 'applications/partials/batch_import_confirm_formset.html', {
+                'formset': formset,
+                'update': update,
+            })
+        else:
+
+            initial_data = []
+            for row in data:
+                matching_applicant = get_matching_applicant(
+                    row.get('first_name'),
+                    row.get('middle_name'),
+                    row.get('last_name'),
+                    row.get('email'),
+                    all_applicants_list
+                )
+
+                # For ngse_requirements_complete field.
+                ngse_requirements_complete_raw = row.get('ngse_requirements_complete')
+                ngse_requirements_complete = None
+                if ngse_requirements_complete_raw == True:
+                    ngse_requirements_complete = 'true'
+                elif ngse_requirements_complete_raw == False:
+                    ngse_requirements_complete = 'false'
+                else:
+                    ngse_requirements_complete = 'null'
+
+                initial_data.append({
+                    'application_number': row.get('application_number'),
+                    'scanned_last_name': row.get('last_name'),
+                    'scanned_first_name': row.get('first_name'),
+                    'scanned_middle_name': row.get('middle_name'),
+                    'scanned_email': row.get('email'),
+                    'scanned_contact_number': row.get('contact_number'),
+                    'applicant': matching_applicant.applicant_id if matching_applicant else None,
+                    'application_status': row.get('application_status'),
+                    'folder_link': row.get('folder_link'),
+                    'program': row.get('program'),
+                    'study_load': row.get('study_load'),
+                    'unit': row.get('unit'),
+                    'research_field_1': row.get('research_field_1'),
+                    'research_field_2': row.get('research_field_2'),
+                    'research_field_3': row.get('research_field_3'),
+                    'special_project_topic_interest': row.get('special_project_topic_interest'),
+                    'undergraduate_gwa': row.get('undergraduate_gwa'),
+                    'undergraduate_failed_subjects': row.get('undergraduate_failed_subjects'),
+                    'graduate_gwa': row.get('graduate_gwa'),
+                    'graduate_failed_subjects': row.get('graduate_failed_subjects'),
+                    'ngse_requirements_complete': ngse_requirements_complete,
+                    'ngse_remarks': row.get('ngse_remarks'),
+                    'notes': row.get('notes'),
+                })
+            formset = BatchImportFormSet(initial=initial_data)
+            for form in formset:
+                applicant_id = form['applicant'].value()
+                if applicant_id:
+                    form.applicant_instance = Applicant.objects.filter(applicant_id=applicant_id).first()
+                else:
+                    form.applicant_instance = None
         
     return render(request, 'applications/batch_import_confirm.html', {
         'formset': formset,

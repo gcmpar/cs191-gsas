@@ -1,10 +1,18 @@
+{% load widget_tweaks %}
+
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}
     <div>
         <div class="mb-6 flex gap-2 flex-wrap">
             <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-primary">Create New Applicant</a>
-            <button type="submit" name="action" value="detect_applicants" class="btn btn-sm btn-outline btn-secondary">Refresh and Auto-Detect Applicants</button>
+            <button 
+                hx-get="{% url 'applications:batch_import_confirm' %}?detect_applicants=true"
+                hx-include="closest form"
+                hx-swap="none"
+                class="btn btn-sm btn-outline btn-secondary">
+                ↺ Refresh and Auto-Detect Applicants
+            </button>
         </div>
         <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
             <div class="overflow-x-auto">
@@ -14,12 +22,12 @@
                             <th>Application No.</th>
                             <th>Scanned Name</th>
                             <th>Scanned Contact Info</th>
-                            <th>Applicant</th>
+                            <th class="min-w-[200px]">Applicant</th>
+                            <th class="min-w-[200px]">Applicant Link</th>
                             <th>Application Status</th>
                             <th>Folder Link</th>
                             <th>Program</th>
                             <th>Study Load</th>
-
                             <th>Unit</th>
                             <th>Research Field 1</th>
                             <th>Research Field 2</th>
@@ -67,7 +75,27 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{% render_field form.applicant class="select select-sm select-bordered w-auto min-w-[150px]" %}</td>
+                            <td>
+                                <span id="{{ form.prefix }}-swap-applicant" {% if detect_applicants %}hx-swap-oob="true"{% endif %}>
+                                    {% url 'applications:batch_import_confirm' as batch_import_confirm_url %}
+                                    {% with batch_import_confirm_full_url=batch_import_confirm_url|add:"?update=true" %}
+                                        {% render_field form.applicant class="select select-sm select-bordered w-auto" hx-get=batch_import_confirm_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+                                    {% endwith %}
+                                </span>
+                            </td>
+                            <td>
+                                <span id="{{ form.prefix }}-swap-applicant_id" {% if detect_applicants or update %}hx-swap-oob="true"{% endif %} class="w-auto">
+                                {% if form.applicant_instance %}
+                                    <a href={% url 'applicants:view' form.applicant_instance.applicant_id %} class="link link-hover link-primary text-lg">
+                                        {{ form.applicant_instance.first_name }}
+                                        {{ form.applicant_instance.middle_name }}
+                                        {{ form.applicant_instance.last_name }}
+                                    </a>
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                                </span>
+                            </td>
                             <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
                             <td>
                                 {% render_field form.folder_link class="input input-sm input-bordered w-auto" %}
