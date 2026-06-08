@@ -79,7 +79,8 @@ def program_view(request, program_id):
             applications = applications.filter(
                 Q(applicant__first_name__icontains=apps_query) |
                 Q(applicant__last_name__icontains=apps_query) |
-                Q(application_number__icontains=apps_query)
+                Q(application_number__icontains=apps_query) |
+                Q(program__icontains=apps_query)
         )
     apps_page_param_name = 'apps_page'
     apps_page_number = request.GET.get(apps_page_param_name)
