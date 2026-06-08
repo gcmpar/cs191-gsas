@@ -225,7 +225,39 @@ def get_equiv_transcripts(transcripts, target_course):
                 transcripts_map[c.course_id] for c in group
             ]
     return None
+
+def get_matching_course(course_code, course_name, all_courses_list):
+    matching_course = None
+    
+    if course_code:
+        # Exact match on course code first
+        for course in all_courses_list:
+            if course.course_code.strip().lower() == course_code:
+                matching_course = course
+                break
+                
+    if not matching_course:
+        best_match = None
+        best_ratio = 0.0
+        
+        for course in all_courses_list:
+            c_code = (course.course_code or '').strip().lower()
+            c_name = (course.course_name or '').strip().lower()
             
+            code_ratio = difflib.SequenceMatcher(None, course_code, c_code).ratio() if course_code and c_code else 0.0
+            name_ratio = difflib.SequenceMatcher(None, course_name, c_name).ratio() if course_name and c_name else 0.0
+            
+            ratio = max(code_ratio, name_ratio)
+            
+            if ratio > best_ratio:
+                best_ratio = ratio
+                best_match = course
+                
+        if best_ratio > 0.8:
+            matching_course = best_match
+
+    return matching_course
+
 def get_matching_applicant(first_name, middle_name, last_name, email, applicants):
     matching_applicant = None
     
@@ -780,6 +812,9 @@ def application_ocr_preview(request, application_id):
     """GET: Show editable OCR preview table. POST: Save confirmed rows as ApplicationTranscript."""
     application = get_object_or_404(Application, pk=application_id)
 
+    detect_courses = request.GET.get('detect_courses')
+    update = request.GET.get('update')
+
     session_key = f'ocr_preview_{application_id}'
     scanned_courses = request.session.get(session_key)
 
@@ -827,58 +862,87 @@ def application_ocr_preview(request, application_id):
         else:
             messages.error(request, 'Please correct the errors below.')
 
+        for form in formset:
+            course_id = course_id=form['course'].value()
+            if course_id:
+                form.course_instance = Course.objects.filter(course_id=course_id).first()
+            else:
+                form.course_instance = None
 
     else:
-        # GET: build context — attempt auto-match on course_code and description for each scanned row.
-        initial_data = []
         all_courses_list = list(all_courses)
-        for idx, row in enumerate(scanned_courses):
-            matched_course = None
-            scanned_code = (row.get('course_code') or '').strip().lower()
-            scanned_desc = (row.get('description') or '').strip().lower()
-            
-            if scanned_code:
-                # Exact match on course code first
-                for course in all_courses_list:
-                    if course.course_code.strip().lower() == scanned_code:
-                        matched_course = course
-                        break
-                        
-            if not matched_course:
-                best_match = None
-                best_ratio = 0.0
-                
-                for course in all_courses_list:
-                    c_code = (course.course_code or '').strip().lower()
-                    c_name = (course.course_name or '').strip().lower()
-                    
-                    code_ratio = difflib.SequenceMatcher(None, scanned_code, c_code).ratio() if scanned_code and c_code else 0.0
-                    name_ratio = difflib.SequenceMatcher(None, scanned_desc, c_name).ratio() if scanned_desc and c_name else 0.0
-                    
-                    ratio = max(code_ratio, name_ratio)
-                    
-                    if ratio > best_ratio:
-                        best_ratio = ratio
-                        best_match = course
-                        
-                if best_ratio > 0.8:
-                    matched_course = best_match
 
-            initial_data.append({
-                'include': True,
-                'scanned_code': row.get('course_code'),
-                'scanned_description': row.get('description'),
-                'scanned_units': row.get('units'),
-                'course': matched_course.pk if matched_course else None,
-                'grade': row.get('grade')
-            })
+        if detect_courses:
+            get = request.GET.copy()
+            matching_courses = {}
+
+            formset = OCRFormSet(get)
+            for form in formset:
+                matching_course = get_matching_course(
+                    (get.get(form.add_prefix('scanned_code')) or '').lower(),
+                    (get.get(form.add_prefix('scanned_description')) or '').lower(),
+                    all_courses_list
+                )
+
+                get[form.add_prefix('course')] = matching_course.course_id if matching_course else None
+                matching_courses[form.prefix] = matching_course
+        
+            formset = OCRFormSet(get)
+            for form in formset:
+                form.course_instance = matching_courses.get(form.prefix)
             
-        formset = OCRFormSet(initial=initial_data)
+            return render(request, 'applications/partials/ocr_preview_formset.html', {
+                'application':    application,
+                'formset':        formset,
+                'detect_courses': detect_courses,
+                'update':         update,
+            })
+        elif update:
+            formset = OCRFormSet(request.GET)
+            for form in formset:
+                course_id = course_id=form['course'].value()
+                if course_id:
+                    form.course_instance = Course.objects.filter(course_id=course_id).first()
+                else:
+                    form.course_instance = None
+            
+            return render(request, 'applications/partials/ocr_preview_formset.html', {
+                'application':    application,
+                'formset':        formset,
+                'detect_courses': detect_courses,
+                'update':         update,
+            })
+
+        else:
+            # GET: build context — attempt auto-match on course_code and description for each scanned row.
+            initial_data = []
+            for idx, row in enumerate(scanned_courses):
+                matching_course = get_matching_course(
+                    (row.get('course_code') or '').strip().lower(),
+                    (row.get('description') or '').strip().lower(),
+                    all_courses_list
+                )
+
+                initial_data.append({
+                    'include': True,
+                    'scanned_code': row.get('course_code'),
+                    'scanned_description': row.get('description'),
+                    'scanned_units': row.get('units'),
+                    'course': matching_course.course_id if matching_course else None,
+                    'grade': row.get('grade')
+                })
+            
+            formset = OCRFormSet(initial=initial_data)
+            for form in formset:
+                course_id = course_id=form['course'].value()
+                if course_id:
+                    form.course_instance = Course.objects.filter(course_id=course_id).first()
+                else:
+                    form.course_instance = None
 
     return render(request, 'applications/ocr_preview.html', {
         'application':   application,
         'formset':       formset,
-        'all_courses':   all_courses,
     })
 
 

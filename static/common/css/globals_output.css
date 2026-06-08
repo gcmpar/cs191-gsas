@@ -2436,6 +2436,18 @@
   .w-1\/5 {
     width: calc(1 / 5 * 100%);
   }
+  .w-1\/6 {
+    width: calc(1 / 6 * 100%);
+  }
+  .w-1\/8 {
+    width: calc(1 / 8 * 100%);
+  }
+  .w-1\/10 {
+    width: calc(1 / 10 * 100%);
+  }
+  .w-2\/5 {
+    width: calc(2 / 5 * 100%);
+  }
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
@@ -2507,6 +2519,15 @@
   }
   .min-w-\[1100px\] {
     min-width: 1100px;
+  }
+  .min-w-\[1200px\] {
+    min-width: 1200px;
+  }
+  .min-w-\[1500px\] {
+    min-width: 1500px;
+  }
+  .min-w-\[2000px\] {
+    min-width: 2000px;
   }
   .min-w-\[4000px\] {
     min-width: 4000px;
@@ -3157,6 +3178,15 @@
   .select-none {
     -webkit-user-select: none;
     user-select: none;
+  }
+  .\[swap\:course\] {
+    swap: course;
+  }
+  .\[swap\:course_id\] {
+    swap: course id;
+  }
+  .\[swap\:course_units\] {
+    swap: course units;
   }
   .hover\:-translate-y-1 {
     &:hover {

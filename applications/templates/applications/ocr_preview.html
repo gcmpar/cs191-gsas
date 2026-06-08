@@ -17,85 +17,28 @@
   </p>
 </div>
 
-<div class="mb-6 flex gap-2 flex-wrap">
-  <a href="{% url 'courses:add' %}"
-     target="_blank"
-     class="btn btn-sm btn-outline btn-primary">
-    ＋ Create Course
-  </a>
-  <a href="{% url 'applications:ocr_preview' application.application_id %}"
-     class="btn btn-sm btn-outline btn-secondary">
-    ↺ Refresh and Auto-Detect Courses
-  </a>
-</div>
-
-<form method="post">
-  {% csrf_token %}
-
-  <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
-    <div class="overflow-x-auto">
-      <table class="table table-zebra w-full mb-0 min-w-[1100px]">
-        <thead class="bg-base-300 text-base-content/70">
-          <tr>
-            <th class="w-[4%] text-center">✓</th>
-            <th class="w-[12%]">Scanned Code</th>
-            <th class="w-[18%]">Scanned Course Name</th>
-            <th class="w-[6%]">Scanned Units</th>
-            <th class="w-[34%]">Course Link</th>
-            <th class="w-[10%]">Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{ formset.management_form }}
-          {% for form in formset %}
-          <tr>
-            <td class="text-center">
-              {% render_field form.include class="checkbox checkbox-primary checkbox-sm" %}
-            </td>
-
-            <td>
-              <span class="font-mono text-sm">{{ form.scanned_code.value|default_if_none:'' }}</span>
-              {{ form.scanned_code }}
-            </td>
-            <td>
-              <span class="text-sm text-base-content/70">{{ form.scanned_description.value|default_if_none:'' }}</span>
-              {{ form.scanned_description }}
-            </td>
-
-            <td class="text-center text-base-content/70 text-sm">
-              {{ form.scanned_units.value|default_if_none:'' }}
-              {{ form.scanned_units }}
-            </td>
-
-            <td>
-              {{ form.course|add_class:"select select-bordered select-sm w-full" }}
-              {% if form.course.errors %}
-                <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
-              {% endif %}
-            </td>
-
-            <td>
-              {% render_field form.grade class="input input-bordered input-sm w-full" %}
-              {% if form.grade.errors %}
-                <div class="text-error text-xs mt-1">{{ form.grade.errors }}</div>
-              {% endif %}
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="flex gap-2">
-    <button type="submit" class="btn btn-success">Save to Application</button>
-    <a href="{% url 'applications:general_edit' application.application_id %}"
-       class="btn btn-ghost">← Back to Edit</a>
-  </div>
-</form>
+{% include "applications/partials/ocr_preview_formset.html" %}
 
 {% endblock content %}
+
+{% block extra_javascript %}
+<script>
+  function bindSelect2HTMX() {
+    $("select")
+        .off("select2:select select2:unselect")
+        .on("select2:select select2:unselect", function (e) {
+            e.currentTarget.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+
+    $(".django-select2")
+        .not(".select2-hidden-accessible")
+        .djangoSelect2();
+  }
+
+  $(document).ready(bindSelect2HTMX);
+
+  document.body.addEventListener("htmx:afterSettle", function (e) {
+      bindSelect2HTMX();
+  });
+</script>
+{% endblock extra_javascript %}

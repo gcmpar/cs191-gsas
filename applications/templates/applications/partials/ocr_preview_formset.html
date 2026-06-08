@@ -1,0 +1,111 @@
+{% load widget_tweaks %}
+
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-6 flex gap-2 flex-wrap">
+    <a href="{% url 'courses:add' %}"
+      target="_blank"
+      class="btn btn-sm btn-outline btn-primary">
+      ＋ Create Course
+    </a>
+    <button 
+      hx-get="{% url 'applications:ocr_preview' application.application_id %}?detect_courses=true"
+      hx-include="closest form"
+      hx-swap="none"
+      class="btn btn-sm btn-outline btn-secondary">
+      ↺ Refresh and Auto-Detect Courses
+    </button>
+  </div>
+
+  <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full mb-0 min-w-[1200px]">
+        <thead class="bg-base-300 text-base-content/70">
+          <tr>
+            <th>✓</th>
+            <th>Scanned Code</th>
+            <th>Scanned Name</th>
+            <th>Scanned Units</th>
+            <th>Course</th>
+            <th>Course Link</th>
+            <th>Grade</th>
+            <th>Units</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ formset.management_form }}
+          {% for form in formset %}
+          <tr>
+            <td class="text-center">
+              {% render_field form.include class="checkbox checkbox-primary checkbox-sm" %}
+            </td>
+
+            <td>
+              <span class="font-mono text-sm">{{ form.scanned_code.value|default_if_none:'' }}</span>
+              {{ form.scanned_code }}
+            </td>
+            <td>
+              <span class="text-sm text-base-content/70">{{ form.scanned_description.value|default_if_none:'' }}</span>
+              {{ form.scanned_description }}
+            </td>
+
+            <td class="text-center text-base-content/70 text-sm">
+              {{ form.scanned_units.value|default_if_none:'' }}
+              {{ form.scanned_units }}
+            </td>
+
+            <td>
+              <span id="{{ form.prefix }}-swap-course" {% if detect_courses %}hx-swap-oob="true"{% endif %}>
+                {% url 'applications:ocr_preview' application.application_id as ocr_preview_url %}
+                {% with ocr_preview_full_url=ocr_preview_url|add:"?update=true" %}
+                  {% render_field form.course class+="select select-bordered select-sm w-full" hx-get=ocr_preview_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+                {% endwith %}
+                {% if form.course.errors %}
+                    <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
+                {% endif %}
+              </span>
+            </td>
+
+            <td>
+                <span id="{{ form.prefix }}-swap-course_id" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
+                  {% if form.course_instance %}
+                    <a href={% url 'courses:general_view' form.course_instance.course_id %} class="link link-hover link-primary">{{ form.course_instance.course_code }}</a>
+                  {% else %}
+                    &mdash;
+                  {% endif %}
+                </span>
+            </td>
+
+            <td>
+              {% render_field form.grade class="input input-bordered input-sm w-full" %}
+              {% if form.grade.errors %}
+                <div class="text-error text-xs mt-1">{{ form.grade.errors }}</div>
+              {% endif %}
+            </td>
+
+            <td>
+                <span id="{{ form.prefix }}-swap-course_units" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
+                  {% if form.course_instance %}
+                    {{ form.course_instance.units }}</span>
+                  {% else %}
+                    &mdash;
+                  {% endif %}
+                </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <button type="submit" class="btn btn-success">Save to Application</button>
+    <a href="{% url 'applications:transcripts_edit' application.application_id %}"
+       class="btn btn-ghost">← Back to Edit</a>
+  </div>
+</form>
