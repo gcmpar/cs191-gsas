@@ -226,6 +226,34 @@ def get_equiv_transcripts(transcripts, target_course):
             ]
     return None
             
+def get_matching_applicant(first_name, middle_name, last_name, email, applicants):
+    matching_applicant = None
+    
+    if email:
+        for app in applicants:
+            if (app.email or '').strip().lower() == email:
+                matching_applicant = app
+                break
+    
+    if not matching_applicant:
+        target_name = f"{first_name} {last_name}".strip().lower()
+        if target_name:
+            best_match = None
+            best_ratio = 0.0
+            for app in applicants:
+                app_name = f"{app.first_name} {app.last_name}".strip().lower()
+                ratio = difflib.SequenceMatcher(None, target_name, app_name).ratio()
+                if ratio > best_ratio:
+                    best_ratio = ratio
+                    best_match = app
+            
+            if best_ratio > 0.8:
+                matching_applicant = best_match
+
+    applicant_id = matching_applicant.pk if matching_applicant else None
+
+    return applicant_id
+
 
 def applications_search(request):
     applications = Application.objects.select_related('applicant')
@@ -945,50 +973,52 @@ def batch_import_confirm(request):
         return redirect('applications:batch_import_upload')
 
     if request.method == 'POST':
-        formset = BatchImportFormSet(request.POST)
-        if formset.is_valid():
-            batch_import = BatchImport.objects.create()
+        
+        if request.POST.get('action') == 'detect_applicants':
+            post = request.POST.copy()
+            formset = BatchImportFormSet(post)
+            applicants = list(Applicant.objects.all())
+
+            for form in formset.forms:
+                applicant_id = get_matching_applicant(
+                    post.get(form.add_prefix('scanned_first_name')),
+                    post.get(form.add_prefix('scanned_middle_name')),
+                    post.get(form.add_prefix('scanned_last_name')),
+                    post.get(form.add_prefix('scanned_email')),
+                    applicants
+                )
+
+                post[form.add_prefix('applicant')] = applicant_id
             
-            for form in formset:
-                application = form.save(commit=False)
-                application.date_applied = date.today()
-                application.batch_import = batch_import
-                application.save()
+            formset = BatchImportFormSet(post)
+
+        else:
+            formset = BatchImportFormSet(request.POST)
+            if formset.is_valid():
+                batch_import = BatchImport.objects.create()
                 
-            if 'batch_import_data' in request.session:
-                del request.session['batch_import_data']
-                
-            return redirect('applications:batch_import_history')
+                for form in formset:
+                    application = form.save(commit=False)
+                    application.date_applied = date.today()
+                    application.batch_import = batch_import
+                    application.save()
+                    
+                if 'batch_import_data' in request.session:
+                    del request.session['batch_import_data']
+                    
+                return redirect('applications:batch_import_history')
         
     else:
         initial_data = []
         applicants = list(Applicant.objects.all())
         for row in data:
-            matching_applicant = None
-            row_email = (row.get('email') or '').strip().lower()
-            
-            if row_email:
-                for app in applicants:
-                    if (app.email or '').strip().lower() == row_email:
-                        matching_applicant = app
-                        break
-            
-            if not matching_applicant:
-                target_name = f"{row.get('first_name', '')} {row.get('last_name', '')}".strip().lower()
-                if target_name:
-                    best_match = None
-                    best_ratio = 0.0
-                    for app in applicants:
-                        app_name = f"{app.first_name} {app.last_name}".strip().lower()
-                        ratio = difflib.SequenceMatcher(None, target_name, app_name).ratio()
-                        if ratio > best_ratio:
-                            best_ratio = ratio
-                            best_match = app
-                    
-                    if best_ratio > 0.8:
-                        matching_applicant = best_match
-
-            applicant_id = matching_applicant.pk if matching_applicant else None
+            applicant_id = get_matching_applicant(
+                row.get('first_name'),
+                row.get('middle_name'),
+                row.get('last_name'),
+                row.get('email'),
+                applicants
+            )
 
             # For ngse_requirements_complete field.
             ngse_requirements_complete_raw = row.get('ngse_requirements_complete')
@@ -1002,7 +1032,9 @@ def batch_import_confirm(request):
 
             initial_data.append({
                 'application_number': row.get('application_number'),
-                'scanned_name': f"{row.get('last_name')}, {row.get('first_name')} {row.get('middle_name')}".strip(),
+                'scanned_last_name': row.get('last_name'),
+                'scanned_first_name': row.get('first_name'),
+                'scanned_middle_name': row.get('middle_name'),
                 'scanned_email': row.get('email'),
                 'scanned_contact_number': row.get('contact_number'),
                 'applicant': applicant_id,

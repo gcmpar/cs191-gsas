@@ -13,14 +13,14 @@
     <p class="text-base-content/70">Please review the entries to be created below. Click 'Save to Database' if correct.</p>
 </div>
 
-<div>
-    <div class="mb-6 flex gap-2 flex-wrap">
-        <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-primary">Create New Applicant</a>
-        <a href="{% url 'applications:batch_import_confirm' %}" class="btn btn-sm btn-outline btn-secondary">Refresh and Auto-Detect Applicants</a>
-    </div>
-    <form method="post">
-        {% csrf_token %}
-        {{ formset.management_form }}
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div>
+        <div class="mb-6 flex gap-2 flex-wrap">
+            <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-primary">Create New Applicant</a>
+            <button type="submit" name="action" value="detect_applicants" class="btn btn-sm btn-outline btn-secondary">Refresh and Auto-Detect Applicants</button>
+        </div>
         <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
             <div class="overflow-x-auto">
                 <table class="table table-zebra w-full mb-0 min-w-[4000px] max-w-none">
@@ -54,10 +54,33 @@
                         {% for form in formset %}
                         <tr>
                             <td>{% render_field form.application_number class="input input-sm input-bordered w-auto" %}</td>
-                            <td>{% render_field form.scanned_name class="input input-sm input-bordered w-auto" %}</td>
                             <td>
-                                {% render_field form.scanned_email class="input input-sm input-bordered w-auto mb-1" placeholder="Email" %}
-                                {% render_field form.scanned_contact_number class="input input-sm input-bordered w-auto" placeholder="Contact #" %}
+                                <div class="flex flex-row gap-2">
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-base-content/70">Last Name</span>
+                                        {% render_field form.scanned_last_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-base-content/70">First Name</span>
+                                        {% render_field form.scanned_first_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-base-content/70">Middle Name</span>
+                                        {% render_field form.scanned_middle_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-base-content/70">Email</span>
+                                        {% render_field form.scanned_email class="input input-sm input-bordered w-auto mb-1 bg-base-300/50 cursor-not-allowed" readonly=true placeholder="Email" %}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-base-content/70">Contact No.</span>
+                                        {% render_field form.scanned_contact_number class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true placeholder="Contact #" %}
+                                    </div>
+                                </div>
                             </td>
                             <td>{% render_field form.applicant class="select select-sm select-bordered w-auto min-w-[150px]" %}</td>
                             <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
@@ -116,8 +139,8 @@
             <button type="submit" name="confirm" class="btn btn-success">Save to Database</button>
             <a href="{% url 'applications:batch_import_upload' %}" class="btn btn-error btn-outline">Cancel / Re-upload</a>
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock content %}
 
 {% block extra_javascript %}

@@ -137,9 +137,11 @@ class PrereqCourseForm(Form):
         ).prefetch_related('programs__school').distinct()
 
 class BatchImportRowForm(ModelForm):
-    scanned_name = CharField(disabled=True, required=False)
-    scanned_email = CharField(disabled=True, required=False)
-    scanned_contact_number = CharField(disabled=True, required=False)
+    scanned_last_name = CharField(required=False, max_length=50, widget=TextInput(attrs={'readonly': True}))
+    scanned_first_name = CharField(required=False, max_length=50, widget=TextInput(attrs={'readonly': True}))
+    scanned_middle_name = CharField(required=False,max_length=50, widget=TextInput(attrs={'readonly': True}))
+    scanned_email = CharField(required=False, max_length=100, widget=TextInput(attrs={'readonly': True}))
+    scanned_contact_number = CharField(required=False, max_length=20, widget=TextInput(attrs={'readonly': True}))
 
     class Meta:
         model = Application
