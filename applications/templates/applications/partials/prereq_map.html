@@ -35,6 +35,15 @@
             <div class="label-text font-semibold">Potentially Equivalent Prerequisite Courses</div>
         </label>
         <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
+        <div class="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center p-4 border-b border-base-200">
+            <div class="label">Course</div>
+            <div class="label">Course Link</div>
+            <div class="label">Similarity</div>
+            <div class="label">Grade</div>
+            <div class="label">Units</div>
+            <div class="label">Description</div>
+            <div></div>
+        </div>
         <div class="space-y-4 mb-4" id="prereq-forms-{{ map_id }}">
             {% for data in course_data %}
                 {% include "applications/partials/prereq_form.html" with course_form=data.form course=data.course grade=data.grade similarity=data.similarity index=data.index %}

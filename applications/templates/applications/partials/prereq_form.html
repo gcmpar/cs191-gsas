@@ -1,18 +1,13 @@
 {% load widget_tweaks %}
 
 
-<div class="prereq-form border border-base-300 rounded p-4 mb-3 relative bg-base-100 shadow-sm" data-index="{{ index }}">
-    <button type="button" class="btn btn-circle btn-ghost btn-xs absolute top-2 right-2" onclick="this.closest('.prereq-form').remove()" aria-label="Close">
-        ✕
-    </button>
-    
+<div class="prereq-form border border-base-300 p-4 rounded bg-base-100 shadow-lg" data-index="{{ index }}">
     {% if course_form.errors %}
         <div class="text-error text-sm mb-2">{{ course_form.errors }}</div>
     {% endif %}
-    
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        <div class="md:col-span-3">
-            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course</span></label>
+
+    <div class="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
+        <div>
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}
@@ -21,8 +16,7 @@
             {% endwith %}
         </div>
 
-        <div class="md:col-span-3">
-            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course Link</span></label>
+        <div>
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-course_id"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -35,8 +29,7 @@
             </div>
         </div>
         
-        <div class="md:col-span-2">
-            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Similarity</span></label>
+        <div>
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-similarity"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -50,8 +43,7 @@
             </div>
         </div>
         
-        <div class="md:col-span-2">
-            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Grade</span></label>
+        <div>
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-grade"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -60,8 +52,7 @@
             </div>
         </div>
 
-        <div class="md:col-span-2">
-            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Units</span></label>
+        <div>
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-units"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -73,19 +64,27 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="mt-4 text-sm bg-base-200 p-3 rounded text-base-content/80">
-        <strong>Description:</strong>
-        <span
-            id="prereq-form-{{ map_id }}-{{ index }}-swap-description"
-            {% if update %}hx-swap-oob="true"{% endif %}
-        >
-            {% if course %}
-                {{ course.description }}
-            {% else %}
-                &mdash;
-            {% endif %}
-        </span>
+        <div>
+            <div class="bg-base-200 p-3 rounded text-base-content/80">
+                <div
+                    id="prereq-form-{{ map_id }}-{{ index }}-swap-description"
+                    {% if update %}hx-swap-oob="true"{% endif %}
+                    class="text-sm inline-block truncate max-w-[20ch]"
+                >
+                    {% if course %}
+                        {{ course.description }}
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="ml-auto mb-auto relative">
+            <button type="button" class="btn btn-circle btn-ghost btn-error btn-lg hover:bg-transparent absolute top-1 right-1 translate-x-1/2 -translate-y-1/2" onclick="this.closest('.prereq-form').remove()" aria-label="Close">
+                ✕
+            </button>
+        </div>
     </div>
 </div>
