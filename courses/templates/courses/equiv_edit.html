@@ -6,8 +6,8 @@
 {% block extra_head %}
 
 {% for info in equiv_snapshot.values %}
-  {% for equiv_form in info.equiv_forms %}
-    {{ equiv_form.media.css }}
+  {% for data in info.course_data %}
+    {{ data.form.media.css }}
   {% endfor %}
 {% endfor %}
 
@@ -41,7 +41,7 @@
 
   <div id="equiv-maps" class="space-y-4">
   {% for map_id, info in equiv_snapshot.items %}
-    {% include "courses/partials/equiv_map.html" with equiv_forms=info.equiv_forms %}
+    {% include "courses/partials/equiv_map.html" with course_data=info.course_data %}
   {% endfor %}
   </div>
   <button
@@ -59,8 +59,8 @@
 {% block extra_javascript %}
 
 {% for info in equiv_snapshot.values %}
-  {% for equiv_form in info.equiv_forms %}
-    {{ equiv_form.media.js }}
+  {% for data in info.course_data %}
+    {{ data.form.media.js }}
   {% endfor %}
 {% endfor %}
 

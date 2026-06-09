@@ -65,9 +65,9 @@ def equiv_param_id_index(param):
     index = int(rest_split[1])
 
     return map_id, index
-def get_equiv_snapshot_from_request(request):
+def get_equiv_snapshot_from_request(request_params):
     indices_map = {}
-    for param in request.POST.keys():
+    for param in request_params.keys():
         if param.startswith(EQUIV_PARAM_PREFIX):
             map_id, index = equiv_param_id_index(param)
             if map_id not in indices_map:
@@ -76,13 +76,18 @@ def get_equiv_snapshot_from_request(request):
     
     equiv_snapshot = {}
     for map_id, indices in indices_map.items():
+        course_data = []
+        for i in indices:
+            form = EquivRowForm(request_params, prefix=equiv_param_form_prefix(map_id, i))
+            course_data.append({
+                'form': form,
+                'index': i,
+            })
         equiv_snapshot[map_id] = {
-            'equiv_forms': [
-                EquivRowForm(request.POST, prefix=equiv_param_form_prefix(map_id, i))
-                for i in indices
-            ]
+            'course_data': course_data,
         }
     return equiv_snapshot
+
 def get_equiv_snapshot_from_course(course):
     existing_maps = list(EquivalenceMap.objects.filter(
         target_course=course
@@ -97,22 +102,27 @@ def get_equiv_snapshot_from_course(course):
         existing_maps.append(dummy_map)
 
     for equiv_map in existing_maps:
-        equiv_forms = []
+        course_data = []
         for i, entry in enumerate(equiv_map.equivalencemapcourses_set.all()):
-            equiv_forms.append(
-                EquivRowForm(
-                    prefix=equiv_param_form_prefix(equiv_map.map_id, i),
-                    initial={
-                        'course': entry.course
-                    }
-                )
+            form = EquivRowForm(
+                prefix=equiv_param_form_prefix(equiv_map.map_id, i),
+                initial={
+                    'course': entry.course
+                }
             )
+            course_data.append({
+                'form': form,
+                'index': i,
+            })
 
-        if len(equiv_forms) == 0:
-            equiv_forms.append(EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)))
+        if len(course_data) == 0:
+            course_data.append({
+                'form': EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)),
+                'index': 0,
+            })
 
         equiv_snapshot[equiv_map.map_id] = {
-            'equiv_forms': equiv_forms
+            'course_data': course_data,
         }
     return equiv_snapshot
 
@@ -230,18 +240,20 @@ def course_equiv_edit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
 
     if request.method == 'POST':
-        equiv_snapshot = get_equiv_snapshot_from_request(request)
+        equiv_snapshot = get_equiv_snapshot_from_request(request.POST)
 
-        if all(
-            form.is_valid()
-            for info in equiv_snapshot.values()
-            for form in info['equiv_forms']
-        ):
+        all_valid = True
+        for info in equiv_snapshot.values():
+            for data in info['course_data']:
+                if not data['form'].is_valid():
+                    all_valid = False
+
+        if all_valid:
             raw_snapshot = {
                 map_id: {
-                    form.cleaned_data['course'].course_id
-                    for form in info['equiv_forms']
-                    if form.cleaned_data.get('course')
+                    data['form'].cleaned_data['course'].course_id
+                    for data in info['course_data']
+                    if data['form'].cleaned_data.get('course')
                 } for map_id, info in equiv_snapshot.items()
             }
 
@@ -302,18 +314,21 @@ def course_equiv_map(request, course_id):
         'courses/partials/equiv_map.html',
         {
             'map_id': equiv_map.map_id,
-            'equiv_forms': [EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0))]
+            'course_data': [{
+                'form': EquivRowForm(prefix=equiv_param_form_prefix(equiv_map.map_id, 0)),
+                'index': 0,
+            }]
         }
     )
 def course_equiv_form(request, map_id):
     index = int(request.GET.get('index', 0))
 
-    equiv_form = EquivRowForm(prefix=equiv_param_form_prefix(map_id, index))
+    course_form = EquivRowForm(prefix=equiv_param_form_prefix(map_id, index))
     return render(
         request,
         'courses/partials/equiv_form.html',
         {
-            'equiv_form': equiv_form,
+            'course_form': course_form,
             'index': index,
         }
     )

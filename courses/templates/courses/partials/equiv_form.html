@@ -1,11 +1,11 @@
 {% load widget_tweaks %}
 
 <div class="equiv-form flex items-center gap-2" data-index="{{ index }}">
-    {% if equiv_form.errors %}
-        <div class="text-error text-sm">{{ equiv_form.errors }}</div>
+    {% if course_form.errors %}
+        <div class="text-error text-sm">{{ course_form.errors }}</div>
     {% endif %}
     <div class="flex-grow max-w-md">
-        {% render_field equiv_form.course class="select select-bordered select-sm w-full" %}
+        {% render_field course_form.course class="select select-bordered select-sm w-full" %}
     </div>
 
     <button
