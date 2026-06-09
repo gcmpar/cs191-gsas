@@ -21,7 +21,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <p><strong class="font-semibold text-base-content/70">School:</strong><br/>
         {% for school in course.unique_schools %}
-        <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary">
+        <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary text-lg">
           {{ school.school_name }}
         </a>{% if not forloop.last %}, {% endif %}
         {% empty %}
@@ -30,7 +30,7 @@
       </p>
       <p><strong class="font-semibold text-base-content/70">Program(s):</strong><br/>
         {% for program in course.programs.all %}
-        <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">
+        <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary text-lg">
           {{ program.program_name }}
         </a>{% if not forloop.last %}, {% endif %}
         {% empty %}
@@ -42,8 +42,8 @@
     <div class="divider my-2"></div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p><strong class="font-semibold text-base-content/70">Course Code:</strong><br/>{{ course.course_code }}</p>
-      <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/>{{ course.course_name }}</p>
+      <p><strong class="font-semibold text-base-content/70">Course Code:</strong><br/><span class="text-lg">{{ course.course_code }}</span></p>
+      <p><strong class="font-semibold text-base-content/70">Course Name:</strong><br/><span class="text-lg">{{ course.course_name }}</span></p>
       <p><strong class="font-semibold text-base-content/70">Units:</strong><br/><span class="badge badge-neutral">{{ course.units }}</span></p>
       <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Description:</strong><br/>{{ course.description }}</p>
       <p class="md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ course.notes|default:"&mdash;" }}</p>

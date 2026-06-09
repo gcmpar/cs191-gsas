@@ -22,7 +22,7 @@
         
         <p>
           <strong class="font-semibold text-base-content/70">School:</strong><br/>
-          <a href="{% url 'schools:view' program.school.school_id %}" class="link link-hover link-primary">{{ program.school.school_name }}</a>
+          <a href="{% url 'schools:view' program.school.school_id %}" class="link link-hover link-primary text-lg">{{ program.school.school_name }}</a>
         </p>
         
         <div class="divider my-2"></div>
@@ -30,7 +30,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <p>
             <strong class="font-semibold text-base-content/70">Program Name:</strong><br/>
-            {{ program.program_name }}
+            <span class="text-lg">{{ program.program_name }}</span>
           </p>
           <p class="md:col-span-2">
             <strong class="font-semibold text-base-content/70">Description:</strong><br/>
