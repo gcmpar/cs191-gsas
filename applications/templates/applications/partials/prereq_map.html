@@ -8,7 +8,7 @@
             <button type="button" class="btn btn-sm btn-error" onclick="this.closest('.prereq-map').remove()">Remove Map</button>
         </div>
         
-        <div class="mb-6">
+        <div class="flex flex-col mb-6">
             <label class="label">
                 <span class="label-text font-semibold">Target Prerequisite Course</span>
             </label>
@@ -17,11 +17,11 @@
             {% endif %}
             {% url 'applications:partial_prereq_map_update' application.application_id map_id as prereq_map_update_url %}
             {% render_field map_form.target_course class="w-full" hx-get=prereq_map_update_url hx-include="closest .prereq-map" hx-trigger="change" hx-swap="none" %}
-            <span id="prereq-map-{{ map_id }}-swap-target_course_id" {% if update %}hx-swap-oob="true"{% endif %}>
+            <span id="prereq-map-{{ map_id }}-swap-target_course_id" {% if update %}hx-swap-oob="true"{% endif %} class="mt-4">
                 {% if target_course %}
                     <a
                         href="{% url 'courses:general_view' target_course.course_id %}"
-                        class="link link-hover link-primary text-lg"
+                        class="link link-hover link-primary text-xl"
                     >
                         {{ target_course.course_code }}
                     </a>
