@@ -22,24 +22,38 @@ def programs_param_index(param):
     rest = param[len(PROGRAMS_PARAM_PREFIX):]
     index = int(rest.split('_')[0])
     return index
-def get_program_forms_from_request(request):
+def get_program_forms_from_request(request_params):
     indices = set()
-    for param in request.POST.keys():
+    for param in request_params.keys():
         if param.startswith(PROGRAMS_PARAM_PREFIX):
             index = programs_param_index(param)
             indices.add(index)
-    program_forms = [ProgramRowForm(request.POST, prefix=programs_param_form_prefix(i)) for i in indices]
-    return program_forms
+
+    program_data = {}
+    for i in indices:
+        form = ProgramRowForm(request_params, prefix=programs_param_form_prefix(i))
+        program_data.append({
+            'form': form,
+            'index': i,
+        })
+    return program_data
+
 def get_program_forms_from_course(course):
-    program_forms = []
+    program_data = {}
     for i, program in enumerate(course.programs.all()):
-        program_form = ProgramRowForm(prefix=programs_param_form_prefix(i), initial={'program': program})
-        program_forms.append(program_form)
+        form = ProgramRowForm(prefix=programs_param_form_prefix(i), initial={'program': program})
+        program_data.append({
+            'form': form,
+            'index': i,
+        })
     
-    if len(program_forms) == 0:
-        program_forms.append(ProgramRowForm(prefix=programs_param_form_prefix(0)))
+    if len(program_data) == 0:
+        program_data.append({
+            'form': ProgramRowForm(prefix=programs_param_form_prefix(0)),
+            'index': 0,
+        })
     
-    return program_forms
+    return program_data
 
 def equiv_param_form_prefix(map_id, index):
     return f'{EQUIV_PARAM_PREFIX}{map_id}_{index}_'
@@ -158,26 +172,26 @@ def course_general_edit(request, course_id):
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
 
-        program_forms = get_program_forms_from_request(request)
+        program_data = get_program_forms_from_request(request.POST)
 
-        if form.is_valid() and all(program_form.is_valid() for program_form in program_forms):
+        if form.is_valid() and all(data['form'].is_valid() for data in program_data):
             form.save()
 
             course.programs.set([
-                program_form.cleaned_data['program']
-                for program_form in program_forms
-                if program_form.cleaned_data.get('program')
+                data['form'].cleaned_data['program']
+                for data in program_data
+                if data['form'].cleaned_data.get('program')
             ])
         
             return redirect('courses:general_view', course_id=course_id)
     else:
         form = CourseForm(instance=course)
-        program_forms = get_program_forms_from_course(course)
+        program_data = get_program_forms_from_course(course)
 
     return render(request, 'courses/general_edit.html', {
         'course': course,
         'form': form,
-        'program_forms': program_forms,
+        'program_data': program_data,
     })
 def course_general_program_form(request):
     index = int(request.GET.get('index', 0))

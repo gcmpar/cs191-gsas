@@ -5,8 +5,8 @@
 
 {% block extra_head %}
   {{ form.media.css }}
-  {% for program_form in program_forms %}
-    {{ program_form.media.css }}
+  {% for data in program_data %}
+    {{ data.form.media.css }}
   {% endfor %}
 {% endblock extra_head %}
 
@@ -23,7 +23,7 @@
   </form>
 </div>
 
-<form method="post" id="courseEditForm">
+<form method="post">
   {% csrf_token %}
 
   <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
@@ -33,8 +33,8 @@
       <div class="mb-4">
         <label class="label pb-1"><span class="label-text font-semibold">Programs</span></label>
         <div id="program-forms" class="space-y-2 mb-2">
-          {% for program_form in program_forms %}
-            {% include "courses/partials/program_form.html" with index=forloop.counter0 %}
+          {% for data in program_data %}
+            {% include "courses/partials/program_form.html" with index=data.index %}
           {% endfor %}
         </div>
         <button
@@ -64,8 +64,8 @@
 {% block extra_javascript %}
 {{ form.media.js }}
 
-{% for program_form in program_forms %}
-  {{ program_form.media.js }}
+{% for data in program_data %}
+  {{ data.form.media.js }}
 {% endfor %}
 
 <script>
