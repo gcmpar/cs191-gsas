@@ -17,55 +17,108 @@
 
 {% include "applications/app_view.html" %}
 
-<div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl" id="prereq-mappings-section">
-  <div class="card-body p-0">
-    <div class="p-4 border-b border-base-200 m-0 flex items-center justify-between">
-      <h2 class="card-title text-xl">Prerequisite Mappings</h2>
-      <form method="post" action="{% url 'applications:application_export' application.application_id %}?next={{ request.path }}">
-          {% csrf_token %}
-          <div class="py-4 border-b border-base-200 flex flex-wrap justify-end items-center gap-4 bg-base-100">
-            <div class="flex items-center gap-2">
-              <div class="w-48">
-                {% render_field export_form.export_format class="w-full" %}
-              </div>
-              <button type="submit" class="btn btn-sm btn-outline btn-primary">Export Prereq Mappings</button>
+{% for map in prereq_maps %}
+<div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
+    <div class="card-body">
+        <div class="flex justify-between items-center mb-4 border-b border-base-200 pb-2">
+            <h5 class="card-title text-lg m-0">Prerequisite Map</h5>
+        </div>
+        
+        <div class="flex flex-col mb-6">
+            <label class="label">
+                <span class="label-text font-semibold">Target Prerequisite Course</span>
+            </label>
+            <span>
+                {% if map.target_course %}
+                    <a
+                        href="{% url 'courses:general_view' map.target_course.course_id %}"
+                        class="link link-hover link-primary text-xl"
+                    >
+                        {{ map.target_course.course_code }}
+                    </a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+            </span>
+        </div>
+        
+        <label class="label">
+            <div class="label-text font-semibold">Potentially Equivalent Prerequisite Courses</div>
+        </label>
+        <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
+        <div class="grid grid-cols-[3fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center p-4 border-b border-base-300">
+            <div class="label">Course</div>
+            <div class="label">Similarity</div>
+            <div class="label">Grade</div>
+            <div class="label">Units</div>
+            <div class="label">Description</div>
+            <div></div>
+        </div>
+        <div class="space-y-4 mb-4">
+          {% for c in map.prerequisitemapcourses_set.all %}
+            <div class="border border-base-300 p-4 rounded bg-base-100 shadow-lg">
+                <div class="grid grid-cols-[3fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
+
+                    <div class="min-w-0">
+                        <div>
+                          <a href="{% url 'courses:general_view' c.course.course_id %}" class="link link-hover link-primary text-lg">{{ c.course.course_code }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="min-w-0">
+                        <div
+                            class="font-bold text-lg"
+                        >
+                            {% if similarity != None %}
+                                {{ similarity }}%
+                            {% else %}
+                                &mdash;
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="min-w-0">
+                        <div
+                            class="badge badge-info badge-lg"
+                        >
+                            {{ grade|default:"&mdash;" }}
+                        </div>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div
+                            class="badge badge-neutral badge-lg"
+                        >
+                          {{ c.course.units }}
+                        </div>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div class="bg-base-200 p-3 rounded text-base-content/80">
+                            <div
+                                class="text-sm inline-block truncate max-w-[20ch]"
+                            >
+                              {{ c.course.description }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div></div>
+                </div>
             </div>
-          </div>
-        </form>  
+            {% endfor %}
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mt-4 min-h-16">
+            <button
+                class="btn btn-sm btn-success"
+                type="button"
+            >Save to Equivalence Mappings</button>
+            <div class="ml-auto">
+                {% include "applications/partials/prereq_detect_alert.html" with update=False result=None %}
+            </div>
+        </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="table table-zebra w-full mb-0">
-        <thead class="bg-base-300 text-base-content/70">
-          <tr>
-            <th>Target Course</th>
-            <th>Prerequisite Courses</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for mapping in prereq_maps %}
-          <tr>
-            <td>
-              {% if mapping.target_course %}
-                <a href="{% url 'courses:general_view' mapping.target_course.course_id %}" class="link link-hover link-primary font-bold">{{ mapping.target_course.course_code }}</a>
-              {% else %}
-                <span class="text-base-content/50">None</span>
-              {% endif %}
-            </td>
-            <td>
-              {% for c in mapping.prerequisitemapcourses_set.all %}
-                <a href="{% url 'courses:general_view' c.course.course_id %}" class="link link-hover link-primary">{{ c.course.course_code }}</a>{% if not forloop.last %} <span class="text-base-content/50">+</span> {% endif %}
-              {% empty %}
-                <span class="text-base-content/50">None</span>
-              {% endfor %}
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="2" class="text-center text-base-content/50 py-4">No prerequisite mappings exist for this application.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
+{% endfor %}
 
 {% endblock content %}

@@ -2975,6 +2975,9 @@
   .grid-cols-\[3fr-3fr-2fr-2fr-3fr\] {
     grid-template-columns: 3fr-3fr-2fr-2fr-3fr;
   }
+  .grid-cols-\[3fr_1fr_1fr_1fr_3fr_0\.5fr\] {
+    grid-template-columns: 3fr 1fr 1fr 1fr 3fr 0.5fr;
+  }
   .grid-cols-\[3fr_2fr_1fr_1fr_1fr_3fr\] {
     grid-template-columns: 3fr 2fr 1fr 1fr 1fr 3fr;
   }
