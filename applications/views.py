@@ -108,24 +108,24 @@ def get_prereq_snapshot_from_request(request_params, application):
         indices = indices_map[map_id]
         map_form = PrereqMapForm(request_params, prefix=prereq_map_form_prefix(map_id))
         
+        target_course = None
+        target_course_id = request_params.get(map_form['target_course'].html_name)
+        if target_course_id and str(target_course_id).isdigit():
+            target_course = Course.objects.filter(pk=target_course_id).first()
+
         course_data = []
         for i in indices:
             prefix = prereq_course_form_prefix(map_id, i)
             form = PrereqCourseForm(request_params, application=application, prefix=prefix)
             
             course_id = request_params.get(form['course'].html_name)
-            target_course_id = request_params.get(map_form['target_course'].html_name)
-            
-            course, target_course = None, None
+            course = None
 
             similarity = None
             grade = None
             
             if course_id and str(course_id).isdigit():
                 course = Course.objects.filter(pk=course_id).first()
-                
-            if target_course_id and str(target_course_id).isdigit():
-                target_course = Course.objects.filter(pk=target_course_id).first()
                 
             if course:
                 transcript = ApplicationTranscript.objects.filter(application=application, course=course).first()
@@ -145,6 +145,7 @@ def get_prereq_snapshot_from_request(request_params, application):
             
         snapshot[map_id] = {
             'map_form': map_form,
+            'target_course': target_course,
             'course_data': course_data
         }
     return snapshot
@@ -204,6 +205,7 @@ def get_prereq_snapshot_from_application(application):
             
         snapshot[prereq_map.map_id] = {
             'map_form': map_form,
+            'target_course': prereq_map.target_course,
             'course_data': course_data
         }
     return snapshot
@@ -580,6 +582,7 @@ def application_prereq_map(request, application_id):
         {
             'map_id': prereq_map.map_id,
             'map_form': PrereqMapForm(prefix=prereq_map_form_prefix(prereq_map.map_id)),
+            'target_course': prereq_map.target_course,
             'course_data': [],
             'application': application,
         }
@@ -600,6 +603,7 @@ def application_prereq_map_update(request, application_id, map_id):
         {
             'map_id': prereq_map.map_id,
             'map_form': map_snapshot['map_form'],
+            'target_course': map_snapshot['target_course'],
             'course_data': map_snapshot['course_data'],
             'application': application,
             'update': True,
@@ -692,6 +696,9 @@ def application_prereq_detect_equiv(request, application_id, map_id):
         form = PrereqCourseForm(prefix=prefix, application=application)
         matched_forms_data.append({
             'course_form': form,
+            'course': None,
+            'grade': None,
+            'similarity': None,
             'map_id': map_id,
             'index': 0
         })
@@ -744,6 +751,9 @@ def application_prereq_detect_similar(request, application_id, map_id):
         form = PrereqCourseForm(prefix=prefix, application=application)
         matched_forms_data.append({
             'course_form': form,
+            'course': None,
+            'grade': None,
+            'similarity': None,
             'map_id': map_id,
             'index': 0
         })

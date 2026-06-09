@@ -33,7 +33,7 @@
 
   <div id="prereq-maps">
   {% for map_id, info in prereq_snapshot.items %}
-    {% include "applications/partials/prereq_map.html" with map_form=info.map_form course_data=info.course_data %}
+    {% include "applications/partials/prereq_map.html" with map_form=info.map_form target_course=info.target_course course_data=info.course_data %}
   {% endfor %}
   </div>
   <button
