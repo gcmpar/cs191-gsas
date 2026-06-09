@@ -37,12 +37,12 @@
 </div>
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6 max-w-4xl">
   <div class="card-body">
-    <h2 class="card-title text-xl border-b border-base-200 pb-2 mb-4">Application #{{ application.application_id }}</h2>
+    <h2 class="card-title text-xl border-b border-base-200 pb-2">Application #{{ application.application_id }}</h2>
     <div class="flex flex-row items-start justify-start mb-6">
       <p><strong class="font-semibold text-base-content/70">Application Number:</strong><br/><span class="font-semibold text-xl">{{ application.application_number }}</span></p>
     </div>
     <div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 items-start">
         <p><strong class="font-semibold text-base-content/70">Date Applied:</strong><br/>{{ application.date_applied }}</p>
         <p><strong class="font-semibold text-base-content/70">Status:</strong><br/>
           <span class="badge badge-primary">{{ application.application_status }}</span>
@@ -55,7 +55,7 @@
       </div>
 
       <!-- New Fields -->
-       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 items-start">
         <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">Academic Information</div>
         <p><strong class="font-semibold text-base-content/70">Unit:</strong><br/>{{ application.unit|default:"&mdash;" }}</p>
         <p><strong class="font-semibold text-base-content/70">Special Project Topic Interest:</strong><br/>{{ application.special_project_topic_interest|default:"&mdash;" }}</p>
@@ -63,7 +63,7 @@
         <p><strong class="font-semibold text-base-content/70">Research Field 2:</strong><br/>{{ application.research_field_2|default:"&mdash;" }}</p>
         <p><strong class="font-semibold text-base-content/70">Research Field 3:</strong><br/>{{ application.research_field_3|default:"&mdash;" }}</p>
       </div>
-      <div class="grid grid-cols-2 gap-8 mt-2 items-start">
+      <div class="grid grid-cols-2 gap-8 mt-4 items-start">
         <div class="flex flex-col items-start justify-center">
           <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">Undergraduate Details</div>
           <p><strong class="font-semibold text-base-content/70">Undergraduate GWA:</strong><br/><span class="badge badge-info">{{ application.undergraduate_gwa|default:"&mdash;" }}</span></p>
@@ -76,7 +76,7 @@
         </div>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 items-start">
         <div class="col-span-1 md:col-span-2 divider mb-2 text-lg text-base-content/70 font-semibold">NGSE Details</div>
         <p><strong class="font-semibold text-base-content/70">Requirements Complete:</strong><br/>
           {% if application.ngse_requirements_complete %}
@@ -90,7 +90,7 @@
         <p><strong class="font-semibold text-base-content/70">NGSE Remarks:</strong><br/>{{ application.ngse_remarks|default:"&mdash;" }}</p>
       </div>
 
-      <div class="col-span-1 md:col-span-2 divider mb-2 mt-2 text-lg text-base-content/70 font-semibold">Other</div>
+      <div class="col-span-1 md:col-span-2 divider mb-2 gap-8 mt-4 text-lg text-base-content/70 font-semibold">Other</div>
       <p class="col-span-1 md:col-span-2"><strong class="font-semibold text-base-content/70">Notes:</strong><br/>{{ application.notes|default:"&mdash;" }}</p>
     </div>
   </div>
