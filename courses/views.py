@@ -29,7 +29,7 @@ def get_program_forms_from_request(request_params):
             index = programs_param_index(param)
             indices.add(index)
 
-    program_data = {}
+    program_data = []
     for i in indices:
         form = ProgramRowForm(request_params, prefix=programs_param_form_prefix(i))
         program_data.append({
@@ -39,7 +39,7 @@ def get_program_forms_from_request(request_params):
     return program_data
 
 def get_program_forms_from_course(course):
-    program_data = {}
+    program_data = []
     for i, program in enumerate(course.programs.all()):
         form = ProgramRowForm(prefix=programs_param_form_prefix(i), initial={'program': program})
         program_data.append({
