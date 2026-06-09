@@ -32,6 +32,7 @@
       <table class="table table-zebra w-full mb-0">
         <thead class="bg-base-300 text-base-content/70">
           <tr>
+            <th>Map ID</th>
             <th>Source Courses</th>
             <th>Target</th>
           </tr>
@@ -39,6 +40,7 @@
         <tbody>
           {% for mapping in as_target %}
           <tr>
+            <td>{{ mapping.map_id }}</td>
             <td>
               {% for c in mapping.equivalencemapcourses_set.all %}
                 <a href="{% url 'courses:general_view' c.course.course_id %}" class="link link-hover link-primary">{{ c.course.course_code }}</a>{% if not forloop.last %} <span class="text-base-content/50">+</span> {% endif %}
@@ -64,6 +66,7 @@
       <table class="table table-zebra w-full mb-0">
         <thead class="bg-base-300 text-base-content/70">
           <tr>
+            <th>Map ID</th>
             <th>Target Course</th>
             <th>Source Courses in Mapping</th>
           </tr>
@@ -71,6 +74,7 @@
         <tbody>
           {% for entry in as_source %}
           <tr>
+            <td>{{ entry.map.map_id }}</td>
             <td>
               <a href="{% url 'courses:general_view' entry.map.target_course.course_id %}" class="link link-hover link-primary font-semibold">{{ entry.map.target_course.course_code }}</a>
             </td>
