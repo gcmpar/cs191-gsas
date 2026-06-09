@@ -33,7 +33,7 @@
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-similarity"
                 {% if update %}hx-swap-oob="true"{% endif %}
-                class="font-bold"
+                class="font-bold text-lg"
             >
                 {% if similarity != None %}
                     {{ similarity }}%
@@ -47,6 +47,7 @@
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-grade"
                 {% if update %}hx-swap-oob="true"{% endif %}
+                class="badge badge-info"
             >
                 {{ grade|default:"&mdash;" }}
             </div>
@@ -56,6 +57,7 @@
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-units"
                 {% if update %}hx-swap-oob="true"{% endif %}
+                class="badge badge-neutral"
             >
                 {% if course %}
                     {{ course.units }}
