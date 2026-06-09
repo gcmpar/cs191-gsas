@@ -741,50 +741,73 @@ def application_prereq_detect_similar(request, application_id, map_id):
     target_course = None
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
-        
-    if not target_course:
-        return HttpResponse("")
-        
-    transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
-    
-    taken_courses = [t.course for t in transcripts]
-    all_descs = [c.description for c in Course.objects.all()]
-    similarities = compute_similarity_batch(taken_courses, target_course, all_descs)
-    
-    matched_forms_data = []
-    index = 0
-    for i, transcript in enumerate(transcripts):
-        course = transcript.course
-        sim = similarities[i]
-        if sim > 30.0:
-            prefix = prereq_course_form_prefix(map_id, index)
-            form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
-            matched_forms_data.append({
-                'course_form': form,
-                'course': course,
-                'grade': transcript.grade,
-                'similarity': sim,
-                'map_id': map_id,
-                'index': index
-            })
-            index += 1
-            
-    if not matched_forms_data:
-        prefix = prereq_course_form_prefix(map_id, 0)
-        form = PrereqCourseForm(prefix=prefix, application=application)
-        matched_forms_data.append({
-            'course_form': form,
-            'course': None,
-            'grade': None,
-            'similarity': None,
-            'map_id': map_id,
-            'index': 0
-        })
     
     html_data = []
-    for data in matched_forms_data:
-        data['application'] = application
-        html_data.append(render_to_string('applications/partials/prereq_form.html', data, request=request))
+    result, message = None, None
+    if target_course:
+        
+        transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        
+        taken_courses = [t.course for t in transcripts]
+        all_descs = [c.description for c in Course.objects.all()]
+        similarities = compute_similarity_batch(taken_courses, target_course, all_descs)
+        
+        matched_forms_data = []
+        index = 0
+        found = False
+        lower_bound = 30.0
+        for i, transcript in enumerate(transcripts):
+            course = transcript.course
+            sim = similarities[i]
+            if sim > lower_bound:
+                prefix = prereq_course_form_prefix(map_id, index)
+                form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
+                matched_forms_data.append({
+                    'course_form': form,
+                    'course': course,
+                    'grade': transcript.grade,
+                    'similarity': sim,
+                    'map_id': map_id,
+                    'index': index
+                })
+                index += 1
+                found = True
+                
+        if not matched_forms_data:
+            prefix = prereq_course_form_prefix(map_id, 0)
+            form = PrereqCourseForm(prefix=prefix, application=application)
+            matched_forms_data.append({
+                'course_form': form,
+                'course': None,
+                'grade': None,
+                'similarity': None,
+                'map_id': map_id,
+                'index': 0
+            })
+
+        for data in matched_forms_data:
+            data['application'] = application
+            html_data.append(render_to_string('applications/partials/prereq_form.html', data, request=request))
+        
+        if found:
+            result = 'success'
+            message = f'{len(matched_forms_data)} similar courses found (above {lower_bound}%).'
+        else:
+            result = 'warning'
+            message = 'No similar courses found.'
+    else:
+        result = 'error'
+        message = 'No target course selected!'
+    
+    # Alert
+    html_data.append(
+        render_to_string('applications/partials/prereq_detect_alert.html', {
+            'map_id': map_id,
+            'result': result,
+            'message': message,
+            'update': True,
+        })
+    )
         
     return HttpResponse(''.join(html_data))
 
