@@ -34,7 +34,7 @@
         <label class="label pb-1"><span class="label-text font-semibold">Programs</span></label>
         <div id="program-forms" class="space-y-2 mb-2">
           {% for data in program_data %}
-            {% include "courses/partials/program_form.html" with index=data.index %}
+            {% include "courses/partials/program_form.html" with program_form=data.form index=data.index %}
           {% endfor %}
         </div>
         <button
