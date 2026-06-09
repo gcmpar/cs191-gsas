@@ -215,7 +215,7 @@ def get_equiv_transcripts(transcripts, target_course):
         target_course=target_course
     ).prefetch_related('equivalencemapcourses_set__course')
     course_groups = [
-        [entry.course for entry in m.equivalencemapcourses_set.all()]
+        (m.map_id, [entry.course for entry in m.equivalencemapcourses_set.all()])
         for m in maps
     ]
     transcripts_map = {
@@ -225,9 +225,9 @@ def get_equiv_transcripts(transcripts, target_course):
 
     # Get the first group in which ALL courses were taken by applicant (has transcript).
     # Return its corresponding transcripts.
-    for group in course_groups:
+    for (map_id, group) in course_groups:
         if all(c.course_id in transcripts_map for c in group):
-            return [
+            return map_id, [
                 transcripts_map[c.course_id] for c in group
             ]
     return None
@@ -662,53 +662,76 @@ def application_prereq_detect_equiv(request, application_id, map_id):
     target_course = None
     if target_course_id and str(target_course_id).isdigit():
         target_course = Course.objects.filter(pk=target_course_id).first()
-        
-    if not target_course:
-        return HttpResponse("")
-        
-    transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
-    valid_transcripts = get_equiv_transcripts(transcripts, target_course)
+    
+    html_data = []
+    result, message = None, None
+    if target_course:
+            
+        transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        detected_equiv = get_equiv_transcripts(transcripts, target_course)
 
-    matched_forms_data = []
-    if valid_transcripts:
-        valid_taken_courses = [t.course for t in valid_transcripts]
-        all_descs = [c.description for c in Course.objects.all()]
-        similarities = compute_similarity_batch(valid_taken_courses, target_course, all_descs)
+        matched_forms_data = []
+        if detected_equiv:
+            (valid_map_id, valid_transcripts) = detected_equiv
+            valid_taken_courses = [t.course for t in valid_transcripts]
+            all_descs = [c.description for c in Course.objects.all()]
+            similarities = compute_similarity_batch(valid_taken_courses, target_course, all_descs)
 
-        index = 0
-        for i, transcript in enumerate(valid_transcripts):
-            course = transcript.course
-            sim = similarities[i]
-            prefix = prereq_course_form_prefix(map_id, index)
-            form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
+            index = 0
+            for i, transcript in enumerate(valid_transcripts):
+                course = transcript.course
+                sim = similarities[i]
+                prefix = prereq_course_form_prefix(map_id, index)
+                form = PrereqCourseForm(prefix=prefix, application=application, initial={'course': course.pk})
+                matched_forms_data.append({
+                    'course_form': form,
+                    'course': course,
+                    'grade': transcript.grade,
+                    'similarity': sim,
+                    'map_id': map_id,
+                    'index': index
+                })
+                index += 1
+                
+        else:
+            prefix = prereq_course_form_prefix(map_id, 0)
+            form = PrereqCourseForm(prefix=prefix, application=application)
             matched_forms_data.append({
                 'course_form': form,
-                'course': course,
-                'grade': transcript.grade,
-                'similarity': sim,
+                'course': None,
+                'grade': None,
+                'similarity': None,
                 'map_id': map_id,
-                'index': index
+                'index': 0
             })
-            index += 1
-            
-    else:
-        prefix = prereq_course_form_prefix(map_id, 0)
-        form = PrereqCourseForm(prefix=prefix, application=application)
-        matched_forms_data.append({
-            'course_form': form,
-            'course': None,
-            'grade': None,
-            'similarity': None,
-            'map_id': map_id,
-            'index': 0
-        })
-    
-    html = ""
-    for data in matched_forms_data:
-        data['application'] = application
-        html += render_to_string('applications/partials/prereq_form.html', data, request=request)
+
+        for data in matched_forms_data:
+            data['application'] = application
+            html_data.append(render_to_string('applications/partials/prereq_form.html', data, request=request))
         
-    return HttpResponse(html)
+        if detected_equiv:
+            (valid_map_id, _) = detected_equiv
+            result = 'success'
+            message = f'Loaded Equivalence Map #{valid_map_id} from "{target_course.course_code}".'
+        else:
+            result = 'warning'
+            message = f'No detected equivalences found for "{target_course.course_code}".'
+    else:
+        result = 'error'
+        message = f'No target course selected!'
+
+    
+    # Alert
+    html_data.append(
+        render_to_string('applications/partials/prereq_detect_alert.html', {
+            'map_id': map_id,
+            'result': result,
+            'message': message,
+            'update': True,
+        })
+    )
+        
+    return HttpResponse(''.join(html_data))
 
 def application_prereq_detect_similar(request, application_id, map_id):
     application = get_object_or_404(Application, pk=application_id)
@@ -758,12 +781,12 @@ def application_prereq_detect_similar(request, application_id, map_id):
             'index': 0
         })
     
-    html = ""
+    html_data = []
     for data in matched_forms_data:
         data['application'] = application
-        html += render_to_string('applications/partials/prereq_form.html', data, request=request)
+        html_data.append(render_to_string('applications/partials/prereq_form.html', data, request=request))
         
-    return HttpResponse(html)
+    return HttpResponse(''.join(html_data))
 
 
 def application_delete(request, application_id):

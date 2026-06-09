@@ -6,8 +6,8 @@
         <div class="text-error text-sm mb-2">{{ course_form.errors }}</div>
     {% endif %}
 
-    <div class="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
-        <div>
+    <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
+        <div class="min-w-0">
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}
@@ -16,7 +16,7 @@
             {% endwith %}
         </div>
 
-        <div>
+        <div class="min-w-0">
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-course_id"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -29,7 +29,7 @@
             </div>
         </div>
         
-        <div>
+        <div class="min-w-0">
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-similarity"
                 {% if update %}hx-swap-oob="true"{% endif %}
@@ -43,21 +43,21 @@
             </div>
         </div>
         
-        <div>
+        <div class="min-w-0">
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-grade"
                 {% if update %}hx-swap-oob="true"{% endif %}
-                class="badge badge-info"
+                class="badge badge-info badge-lg"
             >
                 {{ grade|default:"&mdash;" }}
             </div>
         </div>
 
-        <div>
+        <div class="min-w-0">
             <div
                 id="prereq-form-{{ map_id }}-{{ index }}-swap-units"
                 {% if update %}hx-swap-oob="true"{% endif %}
-                class="badge badge-neutral"
+                class="badge badge-neutral badge-lg"
             >
                 {% if course %}
                     {{ course.units }}
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="min-w-0">
             <div class="bg-base-200 p-3 rounded text-base-content/80">
                 <div
                     id="prereq-form-{{ map_id }}-{{ index }}-swap-description"

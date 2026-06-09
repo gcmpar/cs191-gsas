@@ -35,7 +35,7 @@
             <div class="label-text font-semibold">Potentially Equivalent Prerequisite Courses</div>
         </label>
         <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
-        <div class="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center p-4 border-b border-base-200">
+        <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center p-4 border-b border-base-300">
             <div class="label">Course</div>
             <div class="label">Course Link</div>
             <div class="label">Similarity</div>
@@ -49,7 +49,7 @@
                 {% include "applications/partials/prereq_form.html" with course_form=data.form course=data.course grade=data.grade similarity=data.similarity index=data.index %}
             {% endfor %}
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap items-center gap-2 mt-4 min-h-16">
             <button
                 class="btn btn-sm btn-neutral"
                 type="button"
@@ -75,6 +75,9 @@
                 hx-target="#prereq-forms-{{ map_id }}"
                 hx-swap="innerHTML"
             >Detect similar courses</button>
+            <div class="ml-auto">
+                {% include "applications/partials/prereq_detect_alert.html" with update=False result=None %}
+            </div>
         </div>
     </div>
 </div>
