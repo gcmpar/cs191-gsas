@@ -69,6 +69,7 @@
           <thead class="bg-base-300 text-base-content/70">
             <tr>
               <th class="w-1/4">Course</th>
+              <th class="w-1/4">Course Link</th>
               <th class="w-1/5">AY</th>
               <th>Semester</th>
               <th>Grade</th>
@@ -78,7 +79,7 @@
           </thead>
           <tbody id="transcript-forms">
             {% for data in transcript_data %}
-              {% include "applications/partials/transcript_form.html" with application_id=application.application_id index=forloop.counter0 transcript_form=data.form course_units=data.course_units %}
+              {% include "applications/partials/transcript_form.html" with application=application transcript_form=data.form course=data.course index=data.index %}
             {% endfor %}
           </tbody>
         </table>

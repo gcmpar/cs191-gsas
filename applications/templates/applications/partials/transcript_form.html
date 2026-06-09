@@ -1,12 +1,24 @@
 {% load widget_tweaks %}
 
 <tr class="transcript-form" data-index="{{ index }}">
-    {% url 'applications:partial_transcript_form' application_id as transcript_form_url %}
+    {% url 'applications:partial_transcript_form' application.application_id as transcript_form_url %}
     {% with index_param=index|stringformat:"s" %}
         {% with transcript_form_url|add:"?index="|add:index_param|add:"&update=true" as transcript_form_full_url %}
             <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-swap="none" %}</td>
         {% endwith %}
     {% endwith %}
+    <td>
+        <span
+            id="transcript-form-{{ index }}-swap-course_id"
+            {% if update %}hx-swap-oob="true"{% endif %}
+        >
+            {% if course %}
+                <a href="{% url 'courses:general_view' course.course_id %}" class="link link-hover link-primary text-lg">{{ course.course_code }}</a>
+            {% else %}
+                &mdash;
+            {% endif %}
+        </span>
+    </td>
     <td class="flex items-center gap-2">
         <span class="text-base font-semibold text-base-content/50">AY</span>
         {% render_field transcript_form.academic_year class="transcript-form-ay select select-bordered select-sm w-full" %}
@@ -17,11 +29,15 @@
     <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}</td>
     <td>
         <span
-            id="transcript-form-units-{{ index }}"
+            id="transcript-form-{{ index }}-swap-units"
             {% if update %}hx-swap-oob="true"{% endif %}
             class="badge badge-neutral"
         >
-            {{ course_units|default:"&mdash;" }}
+            {% if course %}
+                {{ course.units }}
+            {% else %}
+                &mdash;
+            {% endif %}
         </span>
     </td>
     <td class="align-middle">
