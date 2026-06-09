@@ -11,7 +11,7 @@
     {% endif %}
     
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        <div class="md:col-span-5">
+        <div class="md:col-span-3">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course</span></label>
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
@@ -20,11 +20,25 @@
                 {% endwith %}
             {% endwith %}
         </div>
-        
+
         <div class="md:col-span-3">
+            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Course Link</span></label>
+            <div
+                id="prereq-form-{{ map_id }}-{{ index }}-swap-course_id"
+                {% if update %}hx-swap-oob="true"{% endif %}
+            >
+                {% if course %}
+                    <a href="{% url 'courses:general_view' course.course_id %}" class="link link-hover link-primary text-lg">{{ course.course_code }}</a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="md:col-span-2">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Similarity</span></label>
             <div
-                id="prereq-form-similarity-{{ map_id }}-{{ index }}"
+                id="prereq-form-{{ map_id }}-{{ index }}-swap-similarity"
                 {% if update %}hx-swap-oob="true"{% endif %}
                 class="font-bold"
             >
@@ -36,13 +50,27 @@
             </div>
         </div>
         
-        <div class="md:col-span-4">
+        <div class="md:col-span-2">
             <label class="label pb-1"><span class="label-text-alt text-base-content/70">Grade</span></label>
             <div
-                id="prereq-form-grade-{{ map_id }}-{{ index }}"
+                id="prereq-form-{{ map_id }}-{{ index }}-swap-grade"
                 {% if update %}hx-swap-oob="true"{% endif %}
             >
                 {{ grade|default:"&mdash;" }}
+            </div>
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="label pb-1"><span class="label-text-alt text-base-content/70">Units</span></label>
+            <div
+                id="prereq-form-{{ map_id }}-{{ index }}-swap-units"
+                {% if update %}hx-swap-oob="true"{% endif %}
+            >
+                {% if course %}
+                    {{ course.units }}
+                {% else %}
+                    &mdash;
+                {% endif %}
             </div>
         </div>
     </div>
@@ -50,10 +78,14 @@
     <div class="mt-4 text-sm bg-base-200 p-3 rounded text-base-content/80">
         <strong>Description:</strong>
         <span
-            id="prereq-form-description-{{ map_id }}-{{ index }}"
+            id="prereq-form-{{ map_id }}-{{ index }}-swap-description"
             {% if update %}hx-swap-oob="true"{% endif %}
         >
-            {{ description|default:"&mdash;" }}
+            {% if course %}
+                {{ course.description }}
+            {% else %}
+                &mdash;
+            {% endif %}
         </span>
     </div>
 </div>
