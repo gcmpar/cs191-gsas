@@ -790,8 +790,9 @@ def application_prereq_detect_similar(request, application_id, map_id):
             html_data.append(render_to_string('applications/partials/prereq_form.html', data, request=request))
         
         if found:
+            count = len(matched_forms_data)
             result = 'success'
-            message = f'{len(matched_forms_data)} similar courses found (above {lower_bound}%).'
+            message = f'{count} similar course{'s' if count > 1 else ''} found (above {lower_bound}%).'
         else:
             result = 'warning'
             message = 'No similar courses found.'
