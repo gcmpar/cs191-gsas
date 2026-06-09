@@ -93,7 +93,7 @@
                 {% endfor %}
               </td>
               <td>{{ course.units }}</td>
-              <td class="inline-block truncate max-w-[20ch]">{{ course.notes|default:"" }}</td>
+              <td><span class="inline-block truncate max-w-[20ch]">{{ course.notes|default:"" }}</span></td>
             </tr>
           {% empty %}
             <tr>

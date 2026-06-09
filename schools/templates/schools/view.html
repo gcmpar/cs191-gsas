@@ -63,7 +63,7 @@
                     <td>
                       <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary">{{ program.program_name }}</a>
                     </td>
-                    <td class="inline-block truncate max-w-[10ch]">{{ program.description|default:"&mdash;" }}</td>
+                    <td><span class="inline-block truncate max-w-[10ch]">{{ program.description|default:"&mdash;" }}</span></td>
                   </tr>
                 {% empty %}
                   <tr>
