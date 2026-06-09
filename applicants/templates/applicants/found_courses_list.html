@@ -19,7 +19,7 @@
             </td>
             <td>
               {% for app in entry.applications %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
+                <a class="badge badge-neutral whitespace-nowrap m-1" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>
@@ -59,7 +59,7 @@
             </td>
             <td>
               {% for app in entry.applications %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
+                <a class="badge badge-neutral whitespace-nowrap m-1" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>
@@ -119,7 +119,7 @@
             </td>
             <td>
               {% for app in entry.applications %}
-                <a class="badge badge-neutral" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
+                <a class="badge badge-neutral whitespace-nowrap m-1" href="{% url 'applications:general_view' app.application_id %}">(#{{ app.application_id }}) {{ app.application_number }}</a>
               {% endfor %}
             </td>
           </tr>

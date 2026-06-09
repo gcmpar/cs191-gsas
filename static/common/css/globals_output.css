@@ -2341,6 +2341,9 @@
   .m-0\! {
     margin: calc(var(--spacing) * 0) !important;
   }
+  .m-1 {
+    margin: calc(var(--spacing) * 1);
+  }
   .m-8 {
     margin: calc(var(--spacing) * 8);
   }
@@ -2388,6 +2391,9 @@
         }
       }
     }
+  }
+  .mx-1 {
+    margin-inline: calc(var(--spacing) * 1);
   }
   .mx-2 {
     margin-inline: calc(var(--spacing) * 2);
