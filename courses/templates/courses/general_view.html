@@ -23,7 +23,7 @@
         {% for school in course.unique_schools %}
         <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary text-lg">
           {{ school.school_name }}
-        </a>{% if not forloop.last %}, {% endif %}
+        </a>
         {% empty %}
         <span class="text-base-content/50">&mdash;</span>
         {% endfor %}
@@ -32,7 +32,7 @@
         {% for program in course.programs.all %}
         <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary text-lg">
           {{ program.program_name }}
-        </a>{% if not forloop.last %}, {% endif %}
+        </a>
         {% empty %}
         <span class="text-base-content/50">&mdash;</span>
         {% endfor %}
