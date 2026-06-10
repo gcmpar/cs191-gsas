@@ -20,22 +20,26 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div><strong class="font-semibold text-base-content/70">School:</strong><br/>
-        {% for school in course.unique_schools %}
-        <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary text-lg">
-          {{ school.school_name }}
-        </a>
-        {% empty %}
-        <span class="text-base-content/50">&mdash;</span>
-        {% endfor %}
+        <div class="flex flex-col">
+          {% for school in course.unique_schools %}
+            <a href="{% url 'schools:view' school.school_id %}" class="link link-hover link-primary text-lg">
+              {{ school.school_name }}
+            </a>
+          {% empty %}
+            <span class="text-base-content/50">&mdash;</span>
+          {% endfor %}
+        </div>
       <div>
       <div><strong class="font-semibold text-base-content/70">Program(s):</strong><br/>
-        {% for program in course.programs.all %}
-        <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary text-lg">
-          {{ program.program_name }}
-        </a>
-        {% empty %}
-        <span class="text-base-content/50">&mdash;</span>
-        {% endfor %}
+        <div class="flex flex-col">
+          {% for program in course.programs.all %}
+            <a href="{% url 'programs:view' program.program_id %}" class="link link-hover link-primary text-lg">
+              {{ program.program_name }}
+            </a>
+          {% empty %}
+            <span class="text-base-content/50">&mdash;</span>
+          {% endfor %}
+        </div>
       </div>
     </div>
 
