@@ -47,13 +47,14 @@ COPY --chown=appuser:appuser . .
  
 # Set environment variables to optimize Python
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1 
- 
+ENV PYTHONUNBUFFERED=1
+
 # Switch to non-root user
 USER appuser
  
 # Expose the application port
 EXPOSE 8000
 
-# Start the application: collectstatic, migrate, then gunicorn
-CMD ["/bin/sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python -m gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-1} gsas.wsgi:application"]
+# Collect static files, run migrations, then start gunicorn
+# NOTE: Keep GUNICORN_WORKERS at 1 if using Django Select2 without caching layer
+CMD ["/bin/sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python -m gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS} gsas.wsgi:application"]
