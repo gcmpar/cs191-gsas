@@ -490,10 +490,46 @@ def application_prereq_view(request, application_id):
         application=application
     ).prefetch_related('prerequisitemapcourses_set__course').order_by('map_id')
 
+    mappings = []
+    all_descs = [c.description for c in Course.objects.all()]
+
+    grades_map = {}
+    for transcript in ApplicationTranscript.objects.filter(application=application):
+        grades_map[transcript.course.course_id] = transcript.grade
+
+    for prereq_map in prereq_maps:
+        course_data = []
+
+        target_course = prereq_map.target_course
+        taken_courses = [entry.course for entry in prereq_map.prerequisitemapcourses_set.all()]
+
+        if target_course:
+            similarities = compute_similarity_batch(taken_courses, target_course, all_descs)
+
+            for i, course in enumerate(taken_courses):
+                sim = similarities[i]
+                course_data.append({
+                    'course': course,
+                    'grade': grades_map.get(course.course_id),
+                    'similarity': sim,
+                })
+        else:
+            for course in taken_courses:
+                course_data.append({
+                    'course': course,
+                    'grade': grades_map.get(course.course_id),
+                    'similarity': None,
+                })
+        
+        mappings.append({
+            'map': prereq_map,
+            'course_data': course_data,
+        })
+
     return render(request, 'applications/prereq_view.html', {
         'applicant':   applicant,
         'application': application,
-        'prereq_maps': prereq_maps,
+        'mappings': mappings,
         'export_form': ExportOptionsForm()
     })
 

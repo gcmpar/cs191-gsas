@@ -17,7 +17,7 @@
 
 {% include "applications/app_view.html" %}
 
-{% for map in prereq_maps %}
+{% for map_info in mappings %}
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
     <div class="card-body">
         <div class="flex justify-between items-center mb-4 border-b border-base-200 pb-2">
@@ -29,12 +29,12 @@
                 <span class="label-text font-semibold">Target Prerequisite Course</span>
             </label>
             <span>
-                {% if map.target_course %}
+                {% if map_info.map.target_course %}
                     <a
-                        href="{% url 'courses:general_view' map.target_course.course_id %}"
+                        href="{% url 'courses:general_view' map_info.map.target_course.course_id %}"
                         class="link link-hover link-primary text-xl"
                     >
-                        {{ map.target_course.course_code }}
+                        {{ map_info.map.target_course.course_code }}
                     </a>
                 {% else %}
                     &mdash;
@@ -55,13 +55,13 @@
             <div></div>
         </div>
         <div class="space-y-4 mb-4">
-          {% for c in map.prerequisitemapcourses_set.all %}
+          {% for data in map_info.course_data %}
             <div class="border border-base-300 p-4 rounded bg-base-100 shadow-lg">
                 <div class="grid grid-cols-[3fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
 
                     <div class="min-w-0">
                         <div>
-                          <a href="{% url 'courses:general_view' c.course.course_id %}" class="link link-hover link-primary text-lg">{{ c.course.course_code }}</a>
+                          <a href="{% url 'courses:general_view' data.course.course_id %}" class="link link-hover link-primary text-lg">{{ data.course.course_code }}</a>
                         </div>
                     </div>
                     
@@ -69,8 +69,8 @@
                         <div
                             class="font-bold text-lg"
                         >
-                            {% if similarity != None %}
-                                {{ similarity }}%
+                            {% if data.similarity != None %}
+                                {{ data.similarity }}%
                             {% else %}
                                 &mdash;
                             {% endif %}
@@ -81,7 +81,7 @@
                         <div
                             class="badge badge-info badge-lg"
                         >
-                            {{ grade|default:"&mdash;" }}
+                            {{ data.grade|default:"&mdash;" }}
                         </div>
                     </div>
 
@@ -89,7 +89,7 @@
                         <div
                             class="badge badge-neutral badge-lg"
                         >
-                          {{ c.course.units }}
+                          {{ data.course.units }}
                         </div>
                     </div>
 
@@ -98,7 +98,7 @@
                             <div
                                 class="text-sm inline-block truncate max-w-[20ch]"
                             >
-                              {{ c.course.description }}
+                              {{ data.course.description }}
                             </div>
                         </div>
                     </div>
