@@ -46,13 +46,12 @@
             <div class="label-text font-semibold">Potentially Equivalent Prerequisite Courses</div>
         </label>
         <span class="mb-3 text-sm text-base-content/70">(across all of this applicant's recorded/taken courses)</span>
-        <div class="grid grid-cols-[3fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center p-4 border-b border-base-300">
+        <div class="grid grid-cols-[3fr_1fr_1fr_1fr_3fr] gap-4 items-center p-4 border-b border-base-300">
             <div class="label">Course</div>
             <div class="label">Similarity</div>
             <div class="label">Grade</div>
             <div class="label">Units</div>
             <div class="label">Description</div>
-            <div></div>
         </div>
         <div class="space-y-4 mb-4">
           {% for data in map_info.course_data %}
@@ -102,8 +101,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <div></div>
+                    
                 </div>
             </div>
             {% endfor %}
