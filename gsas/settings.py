@@ -99,12 +99,12 @@ WSGI_APPLICATION = 'gsas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': f'django.db.backends.{os.get('DATABASE_ENGINE', 'sqlite3')}',
-        'NAME': os.get('DATABASE_NAME', 'polls'),
-        'USER': os.get('DATABASE_USER', 'mydatabaseuser'),
-        'PASSWORD': os.get('DATABASE_PASSWORD', 'password'),
-        'HOST': os.get('DATABASE_HOST', '127.0.0.1'),
-        'PORT': os.get('DATABASE_PORT', 3306),
+        'ENGINE': f'django.db.backends.{os.getenv('DATABASE_ENGINE', 'sqlite3')}',
+        'NAME': os.getenv('DATABASE_NAME', 'polls'),
+        'USER': os.getenv('DATABASE_USER', 'mydatabaseuser'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'password'),
+        'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DATABASE_PORT', 3306),
     }
 }
 
