@@ -6,7 +6,7 @@
         <div class="text-error text-sm mb-2">{{ course_form.errors }}</div>
     {% endif %}
 
-    <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_3fr_0.5fr] gap-4 items-center">
+    <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_4fr_0.5fr] gap-4 items-center">
         <div class="min-w-0">
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
@@ -72,7 +72,7 @@
                 <div
                     id="prereq-form-{{ map_id }}-{{ index }}-swap-description"
                     {% if update %}hx-swap-oob="true"{% endif %}
-                    class="text-sm inline-block truncate max-w-[20ch]"
+                    class="text-sm inline-block truncate max-w-[40ch]"
                 >
                     {% if course %}
                         {{ course.description }}
