@@ -22,7 +22,7 @@ class ApplicationForm(ModelForm):
             'applicant': ApplicantsWidget(
                 attrs={
                     'data-placeholder': 'Applicant',
-                    'data-minimum-input-length': 0,
+                    'data-minimum-input-length': 1,
                 },
             ),
             'application_status': Select2Widget(
@@ -82,7 +82,7 @@ class ApplicationTranscriptForm(ModelForm):
             'course': CoursesWidget(
                 attrs={
                     'data-placeholder': 'Course',
-                    'data-minimum-input-length': 0,
+                    'data-minimum-input-length': 1,
                 },
             ),
             'academic_year': Select2Widget(
@@ -109,7 +109,7 @@ class PrereqMapForm(Form):
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select Target Course',
-                'data-minimum-input-length': 0,
+                'data-minimum-input-length': 1,
             }
         ),
     )
@@ -156,7 +156,7 @@ class BatchImportRowForm(ModelForm):
             'applicant': ApplicantsWidget(
                 attrs={
                     'data-placeholder': 'Select Applicant...',
-                    'data-minimum-input-length': 0,
+                    'data-minimum-input-length': 1,
                 },
             ),
             'program': Select2Widget(
@@ -208,7 +208,7 @@ class OCRRowForm(Form):
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select course...',
-                'data-minimum-input-length': 0,
+                'data-minimum-input-length': 1,
             },
         )
     )
@@ -228,7 +228,7 @@ class ExportOptionsForm(Form):
         choices=EXPORT_CHOICES,
         widget=Select2Widget(
             attrs={
-                'data-minimum-input-length': 0,
+                'data-placeholder': 'Export Type',
             }
         ),
         required=True

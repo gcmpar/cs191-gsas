@@ -13,7 +13,7 @@ class ProgramForm(ModelForm):
             'school': SchoolsWidget(
                 attrs={
                     'data-placeholder': 'School',
-                    'data-minimum-input-length': 0
+                    'data-minimum-input-length': 1
                 }
             ),
         }
@@ -26,7 +26,7 @@ class ProgramsQueryForm(Form):
         widget=SchoolsWidget(
             attrs={
                 'data-placeholder': 'Filter by School',
-                'data-minimum-input-length': 0
+                'data-minimum-input-length': 1
             }
         )
     )

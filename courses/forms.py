@@ -25,7 +25,7 @@ class CoursesQueryForm(Form):
         widget=ProgramsWidget(
             attrs={
                 'data-placeholder': 'Filter by Program',
-                'data-minimum-input-length': 0
+                'data-minimum-input-length': 1
             },
             dependent_fields={'school': 'school'}
         )
@@ -36,7 +36,7 @@ class CoursesQueryForm(Form):
         widget=SchoolsWidget(
             attrs={
                 'data-placeholder': 'Filter by School',
-                'data-minimum-input-length': 0
+                'data-minimum-input-length': 1
             }
         )
     )
@@ -77,7 +77,7 @@ class ProgramRowForm(Form):
         widget=ProgramsWidget(
             attrs={
                 'data-placeholder': 'Select associated Program',
-                'data-minimum-input-length': 0,
+                'data-minimum-input-length': 1,
             }
         ),
     )
@@ -89,7 +89,7 @@ class EquivRowForm(Form):
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select Course',
-                'data-minimum-input-length': 0,
+                'data-minimum-input-length': 1,
             }
         ),
     )
