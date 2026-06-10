@@ -2877,8 +2877,14 @@
   .grid-cols-\[1fr_1fr\] {
     grid-template-columns: 1fr 1fr;
   }
+  .grid-cols-\[2fr1fr_1fr_1fr_3fr\] {
+    grid-template-columns: 2fr1fr 1fr 1fr 3fr;
+  }
   .grid-cols-\[2fr_1fr_1fr_1fr_1fr_3fr_0\.5fr\] {
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr 3fr 0.5fr;
+  }
+  .grid-cols-\[2fr_1fr_1fr_1fr_3fr\] {
+    grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
   }
   .grid-cols-\[3fr_1fr_1fr_1fr_3fr\] {
     grid-template-columns: 3fr 1fr 1fr 1fr 3fr;
