@@ -26,6 +26,7 @@ urlpatterns = [
     
     # Partial HTMX endpoints
     path('partials/transcript_form/<int:application_id>/', views.application_transcript_form, name='partial_transcript_form'),
+    path('partials/prereq_save_to_equiv/<int:application_id>/', views.application_prereq_save_to_equiv, name='partial_prereq_save_to_equiv'),
     path('partials/prereq_map/<int:application_id>/', views.application_prereq_map, name='partial_prereq_map'),
     path('partials/prereq_map_update/<int:application_id>/<int:map_id>/', views.application_prereq_map_update, name='partial_prereq_map_update'),
     path('partials/prereq_form/<int:application_id>/<int:map_id>/', views.application_prereq_form, name='partial_prereq_form'),

@@ -14,7 +14,7 @@ from .models import (
     Application, ApplicationTranscript,
     PrerequisiteMap, PrerequisiteMapCourses, BatchImport
 )
-from courses.models import EquivalenceMap
+from courses.models import EquivalenceMap, EquivalenceMapCourses
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
@@ -532,6 +532,72 @@ def application_prereq_view(request, application_id):
         'mappings': mappings,
         'export_form': ExportOptionsForm()
     })
+def application_prereq_save_to_equiv(request, application_id):
+    application = get_object_or_404(Application, pk=application_id)
+
+    if request.method == 'POST':
+        map_ids_param = request.POST.getlist('map_id')
+        map_ids = []
+        for id in map_ids_param:
+            if str(id).isdigit():
+                map_ids.append(int(id))
+                
+        prereq_maps = PrerequisiteMap.objects.filter(
+            application=application,
+            map_id__in=map_ids,
+        ).prefetch_related('prerequisitemapcourses_set__course').order_by('map_id')
+
+
+        target_course_ids = []
+        for prereq_map in prereq_maps:
+            if prereq_map.target_course:
+                target_course_ids.append(prereq_map.target_course.course_id)
+        target_equiv_maps = EquivalenceMap.objects.select_related('target_course').prefetch_related('equivalencemapcourses_set__course').filter(target_course__course_id__in=target_course_ids)
+
+        html_data = []
+        for prereq_map in prereq_maps:
+            result, message = None, None
+
+            target_course = prereq_map.target_course
+            if target_course:
+                courses = [entry.course for entry in prereq_map.prerequisitemapcourses_set.all()]
+                course_set = set([c.course_id for c in courses])
+
+                found = None
+                related_equiv_maps = target_equiv_maps.filter(target_course=target_course)
+                for equiv_map in related_equiv_maps:
+                    equiv_course_set = set([entry.course.course_id for entry in equiv_map.equivalencemapcourses_set.all()])
+                    if course_set == equiv_course_set:
+                        found = equiv_map
+                        break
+                
+                if found is None:
+                    new_equiv_map = EquivalenceMap.objects.create(target_course=target_course)
+                    for course in courses:
+                        EquivalenceMapCourses.objects.create(map=new_equiv_map, course=course)
+
+                    result = 'success'
+                    message = f'Saved to Equivalence Map #{new_equiv_map.map_id} for "{target_course.course_code}".'
+                else:
+                    result = 'warning'
+                    message = f'This mapping combination already exists (Equivalence Map #{found.map_id}) for "{target_course.course_code}"!'
+
+            else:
+                result = 'error'
+                message = f'No target course selected!'
+            
+            html_data.append(
+                render_to_string('applications/partials/prereq_alert.html', {
+                    'map_id': prereq_map.map_id,
+                    'result': result,
+                    'message': message,
+                    'update': True,
+                })
+            )
+
+        return HttpResponse(''.join(html_data))
+
+    raise Http404()
 
 def application_prereq_edit(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
