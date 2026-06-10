@@ -1197,7 +1197,7 @@ def batch_import_confirm(request):
             
             for form in formset:
                 application = form.save(commit=False)
-                application.date_applied = timezone.now()
+                application.date_applied = timezone.localdate()
                 application.batch_import = batch_import
                 application.save()
                 
