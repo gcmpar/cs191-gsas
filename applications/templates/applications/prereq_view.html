@@ -17,6 +17,20 @@
 
 {% include "applications/app_view.html" %}
 
+<div class="flex flex-col gap-4 mb-10 mt-4 py-4 border-b border-base-200">
+    <h4 class="text-xl font-bold">Prerequisite Mappings for Application {{ application.application_number }}</h4>
+
+    <form method="post" action="{% url 'applications:application_export' application.application_id %}?next={{ request.path }}">
+        {% csrf_token %}
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="w-48">
+                {% render_field export_form.export_format class="w-full" %}
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline btn-primary">Export Prereq Mappings</button>
+        </div>
+    </form>
+</div>
+
 {% for map_info in mappings %}
 <div class="card bg-base-100 border border-base-300 shadow-sm mb-10">
     <div class="card-body">
