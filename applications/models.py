@@ -44,7 +44,7 @@ class Application(models.Model):
     batch_import        = models.ForeignKey(BatchImport, on_delete=models.SET_NULL, null=True, blank=True, related_name='applications')
     application_number  = models.CharField('Application Number', max_length=20)
     application_status  = models.CharField('Applicant Status', max_length=Status.max_length(), choices=Status)
-    date_applied        = models.DateField('Date Applied')
+    date_applied        = models.DateTimeField('Date Applied')
     program             = models.CharField('Degree Program', max_length=Degree.max_length(), choices=Degree)
     folder_link         = models.CharField('Folder Link', max_length=255, blank=True, null=True)
     study_load          = models.CharField('Study Load', max_length=StudyLoad.max_length(), choices=StudyLoad)

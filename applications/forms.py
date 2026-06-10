@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateInput, CharField, TypedChoiceField, TextInput, BooleanField, HiddenInput, ChoiceField
+from django.forms import ModelForm, Form, ModelChoiceField, MultipleChoiceField, DateTimeInput, CharField, TypedChoiceField, TextInput, BooleanField, HiddenInput, ChoiceField
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from .models import Application, ApplicationTranscript
 from applicants.forms import ApplicantsWidget
@@ -18,7 +18,7 @@ class ApplicationForm(ModelForm):
             'notes',
         ]
         widgets = {
-            'date_applied': DateInput(attrs={'type': 'date'}),
+            'date_applied': DateTimeInput(attrs={'type': 'datetime-local'}),
             'applicant': ApplicantsWidget(
                 attrs={
                     'data-placeholder': 'Applicant',

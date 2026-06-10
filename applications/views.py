@@ -2,7 +2,8 @@ import tempfile
 import os
 import difflib
 import openpyxl
-from datetime import date
+
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -995,7 +996,7 @@ def application_ocr_preview(request, application_id):
                         application=application,
                         course=course,
                         defaults={
-                            'academic_year': date.today().year,
+                            'academic_year': timezone.now().year,
                             'semester':      ApplicationTranscript.Semester.Sem_1,
                             'grade':         grade,
                         },
@@ -1196,7 +1197,7 @@ def batch_import_confirm(request):
             
             for form in formset:
                 application = form.save(commit=False)
-                application.date_applied = date.today()
+                application.date_applied = timezone.now()
                 application.batch_import = batch_import
                 application.save()
                 
