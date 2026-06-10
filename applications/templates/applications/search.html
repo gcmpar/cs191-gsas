@@ -9,6 +9,7 @@
 
 {% block content %}
 
+{# Flash messages here are received from applications_export and application_export views (e.g. invalid export format or empty selection). #}
 {% if messages %}
 <div class="mb-3">
   {% for message in messages %}

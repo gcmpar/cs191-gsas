@@ -6,6 +6,7 @@
 
 {% block content %}
 
+{# Flash messages here are received from the application_ocr_preview view when form validation errors occur during save. #}
 {% if messages %}
 <div class="mb-3 mt-4">
   {% for message in messages %}

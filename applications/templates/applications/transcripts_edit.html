@@ -12,6 +12,7 @@
 
 {% block content %}
 
+{# Flash messages here are received from the ocr_upload and application_ocr_preview views (e.g. invalid PDF, OCR failure, or successful save). #}
 {% if messages %}
 <div class="mb-3">
   {% for message in messages %}
