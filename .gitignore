@@ -4,3 +4,4 @@
 .prettierignore
 node_modules
 *.xlsx
+.env
