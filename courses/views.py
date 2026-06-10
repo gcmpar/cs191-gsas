@@ -392,7 +392,7 @@ class CoursesGroupedAutoResponseView(AutoResponseView):
         if applicant_id == 'none':
             return Course.objects.none()
         
-        queryset = Course.objects.prefetch_related('programs__school')
+        queryset = super().get_queryset().prefetch_related('programs__school')
         if applicant_id:
             queryset = queryset.filter(
                 applicationtranscript__application__applicant_id=applicant_id
