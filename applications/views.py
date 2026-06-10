@@ -759,7 +759,7 @@ def application_prereq_detect_equiv(request, application_id, map_id):
     
     # Alert
     html_data.append(
-        render_to_string('applications/partials/prereq_detect_alert.html', {
+        render_to_string('applications/partials/prereq_alert.html', {
             'map_id': map_id,
             'result': result,
             'message': message,
@@ -838,7 +838,7 @@ def application_prereq_detect_similar(request, application_id, map_id):
     
     # Alert
     html_data.append(
-        render_to_string('applications/partials/prereq_detect_alert.html', {
+        render_to_string('applications/partials/prereq_alert.html', {
             'map_id': map_id,
             'result': result,
             'message': message,
