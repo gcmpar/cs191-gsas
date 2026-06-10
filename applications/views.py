@@ -536,7 +536,7 @@ def application_prereq_save_to_equiv(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
 
     if request.method == 'POST':
-        map_ids_param = request.POST.getlist('map_id')
+        map_ids_param = request.POST.getlist('map_ids[]')
         map_ids = []
         for id in map_ids_param:
             if str(id).isdigit():

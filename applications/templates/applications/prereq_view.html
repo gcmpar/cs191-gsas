@@ -111,7 +111,7 @@
                 class="btn btn-sm btn-success"
                 type="button"
                 hx-post="{% url 'applications:partial_prereq_save_to_equiv' application.application_id %}"
-                hx-vals="js:{map_id: {{ map_info.map.map_id }}}"
+                hx-vals="js:{'map_ids[]': {{ map_info.map.map_id }}}"
                 hx-swap="none"
             >Save to Equivalence Mappings</button>
             <div class="ml-auto">
