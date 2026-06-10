@@ -1,6 +1,13 @@
 # Stage 1: Base build stage
 FROM python:3.12.7-slim AS builder
  
+# Install build dependencies for mysqlclient and other packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-libmysqlclient-dev \
+    build-essential \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create the app directory
 RUN mkdir /app
  
@@ -18,6 +25,11 @@ RUN pip install --no-cache-dir -r requirements.txt
  
 # Stage 2: Production stage
 FROM python:3.12.7-slim
+
+# Install runtime dependencies for mysqlclient
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
  
 RUN useradd -m -r appuser && \
    mkdir /app && \
