@@ -12,6 +12,13 @@
             {% with index_param=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}
                     {% render_field course_form.course class="w-full" hx-get=prereq_form_full_url hx-include="closest .prereq-map" hx-trigger="change" hx-swap="none" %}
+{% if course_form.course.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in course_form.course.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                 {% endwith %}
             {% endwith %}
         </div>

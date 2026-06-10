@@ -45,21 +45,63 @@
                     </thead>
                     <tbody>
                         {% for form in formset %}
-                        <tr>
-                            <td>{% render_field form.application_number class="input input-sm input-bordered w-auto" %}</td>
+                        
+{% if form.non_field_errors %}
+<tr>
+    <td colspan="100%">
+        <div class="alert alert-error shadow-sm my-2">
+            <ul>
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </td>
+</tr>
+{% endif %}
+<tr>
+                            <td>{% render_field form.application_number class="input input-sm input-bordered w-auto" %}
+{% if form.application_number.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.application_number.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}</td>
                             <td>
                                 <div class="flex flex-row gap-2">
                                     <div class="flex flex-col">
                                         <span class="font-semibold text-base-content/70">Last Name</span>
                                         {% render_field form.scanned_last_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+{% if form.scanned_last_name.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.scanned_last_name.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     </div>
                                     <div class="flex flex-col">
                                         <span class="font-semibold text-base-content/70">First Name</span>
                                         {% render_field form.scanned_first_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+{% if form.scanned_first_name.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.scanned_first_name.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     </div>
                                     <div class="flex flex-col">
                                         <span class="font-semibold text-base-content/70">Middle Name</span>
                                         {% render_field form.scanned_middle_name class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true %}
+{% if form.scanned_middle_name.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.scanned_middle_name.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     </div>
                                 </div>
                             </td>
@@ -68,10 +110,24 @@
                                     <div class="flex flex-col">
                                         <span class="font-semibold text-base-content/70">Email</span>
                                         {% render_field form.scanned_email class="input input-sm input-bordered w-auto mb-1 bg-base-300/50 cursor-not-allowed" readonly=true placeholder="Email" %}
+{% if form.scanned_email.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.scanned_email.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     </div>
                                     <div class="flex flex-col">
                                         <span class="font-semibold text-base-content/70">Contact No.</span>
                                         {% render_field form.scanned_contact_number class="input input-sm input-bordered w-auto bg-base-300/50 cursor-not-allowed" readonly=true placeholder="Contact #" %}
+{% if form.scanned_contact_number.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.scanned_contact_number.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     </div>
                                 </div>
                             </td>
@@ -80,6 +136,13 @@
                                     {% url 'applications:batch_import_confirm' as batch_import_confirm_url %}
                                     {% with batch_import_confirm_full_url=batch_import_confirm_url|add:"?update=true" %}
                                         {% render_field form.applicant class="select select-sm select-bordered w-auto" hx-get=batch_import_confirm_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+{% if form.applicant.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.applicant.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                                     {% endwith %}
                                 </span>
                             </td>
@@ -96,48 +159,160 @@
                                 {% endif %}
                                 </span>
                             </td>
-                            <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}</td>
+                            <td>{% render_field form.application_status class="select select-sm select-bordered w-auto" %}
+{% if form.application_status.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.application_status.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}</td>
                             <td>
                                 {% render_field form.folder_link class="input input-sm input-bordered w-auto" %}
+{% if form.folder_link.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.folder_link.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
-                            <td>{% render_field form.program class="select select-sm select-bordered w-auto" %}</td>
-                            <td>{% render_field form.study_load class="select select-sm select-bordered w-auto" %}</td>
+                            <td>{% render_field form.program class="select select-sm select-bordered w-auto" %}
+{% if form.program.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.program.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}</td>
+                            <td>{% render_field form.study_load class="select select-sm select-bordered w-auto" %}
+{% if form.study_load.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.study_load.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}</td>
                             
                             <td>
                                 {% render_field form.unit class="input input-sm input-bordered w-auto" %}
+{% if form.unit.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.unit.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.research_field_1 class="input input-sm input-bordered w-auto" %}
+{% if form.research_field_1.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.research_field_1.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.research_field_2 class="input input-sm input-bordered w-auto" %}
+{% if form.research_field_2.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.research_field_2.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.research_field_3 class="input input-sm input-bordered w-auto" %}
+{% if form.research_field_3.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.research_field_3.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.special_project_topic_interest class="input input-sm input-bordered w-auto" %}
+{% if form.special_project_topic_interest.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.special_project_topic_interest.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.undergraduate_gwa class="input input-sm input-bordered w-auto" %}
+{% if form.undergraduate_gwa.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.undergraduate_gwa.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.undergraduate_failed_subjects class="input input-sm input-bordered w-auto" %}
+{% if form.undergraduate_failed_subjects.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.undergraduate_failed_subjects.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.graduate_gwa class="input input-sm input-bordered w-auto" %}
+{% if form.graduate_gwa.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.graduate_gwa.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.graduate_failed_subjects class="input input-sm input-bordered w-auto" %}
+{% if form.graduate_failed_subjects.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.graduate_failed_subjects.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.ngse_requirements_complete class+="select select-sm select-bordered w-auto" %}
+{% if form.ngse_requirements_complete.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.ngse_requirements_complete.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.ngse_remarks rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
+{% if form.ngse_remarks.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.ngse_remarks.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                             <td>
                                 {% render_field form.notes rows="2" class="textarea textarea-bordered textarea-sm w-full" %}
+{% if form.notes.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in form.notes.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
                             </td>
                         </tr>
                         {% endfor %}

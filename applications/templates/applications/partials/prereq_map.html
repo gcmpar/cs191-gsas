@@ -10,13 +10,17 @@
         
         <div class="flex flex-col mb-6">
             <label class="label">
-                <span class="label-text font-semibold">Target Prerequisite Course</span>
+                <span class="label-text font-semibold">Target Prerequisite Course <span class="text-error ml-1">*</span></span>
             </label>
-            {% if map_form.target_course.errors %}
-                <div class="text-error text-sm mb-1">{{ map_form.target_course.errors }}</div>
-            {% endif %}
             {% url 'applications:partial_prereq_map_update' application.application_id map_id as prereq_map_update_url %}
             {% render_field map_form.target_course class="w-full" hx-get=prereq_map_update_url hx-include="closest .prereq-map" hx-trigger="change" hx-swap="none" %}
+            {% if map_form.target_course.errors %}
+              <div class="label pb-0">
+                <span class="label-text-alt text-error">
+                  {% for error in map_form.target_course.errors %}{{ error }} {% endfor %}
+                </span>
+              </div>
+            {% endif %}
             <span id="prereq-map-{{ map_id }}-swap-target_course_id" {% if update %}hx-swap-oob="true"{% endif %} class="mt-4">
                 {% if target_course %}
                     <a

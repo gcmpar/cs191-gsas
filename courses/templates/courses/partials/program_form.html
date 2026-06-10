@@ -6,6 +6,13 @@
     {% endif %}
     <div class="flex-grow max-w-md">
         {% render_field program_form.program class="select select-bordered select-sm w-full" %}
+{% if program_form.program.errors %}
+  <div class="label pb-0">
+    <span class="label-text-alt text-error">
+      {% for error in program_form.program.errors %}{{ error }} {% endfor %}
+    </span>
+  </div>
+{% endif %}
     </div>
 
     <button
