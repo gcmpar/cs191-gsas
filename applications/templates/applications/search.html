@@ -8,6 +8,18 @@
 {% endblock extra_head %}
 
 {% block content %}
+
+{% if messages %}
+<div class="mb-3">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <div class="flex justify-between items-center mb-6 mt-4">
   <h2 class="text-2xl font-bold">Applications</h2>
   <div class="flex gap-2 items-center">
