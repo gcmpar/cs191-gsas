@@ -12,9 +12,12 @@ services:
     image: nginx:latest
     ports:
       - "8001:80"
+      - "8443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - staticfiles:/static:ro
+      - ./certs:/etc/nginx/certs
+    command: /bin/sh -c "mkdir -p /etc/nginx/certs && [ -f /etc/nginx/certs/cert.pem ] || openssl req -x509 -newkey rsa:4096 -keyout /etc/nginx/certs/key.pem -out /etc/nginx/certs/cert.pem -days 365 -nodes -subj '/CN=localhost' && nginx -g 'daemon off;'"
     depends_on:
       - django-web
 
