@@ -48,7 +48,7 @@
                     </thead>
                     <tbody>
                         {% for form in formset %}
-                          {% include "applications/partials/batch_import_confirm_form.html" with form=form detect_applicants=detect_applicants update=update %}
+                          {% include "applications/partials/batch_import_confirm_form.html" with form=form %}
                         {% endfor %}
                     </tbody>
                 </table>
