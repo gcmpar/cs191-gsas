@@ -2,6 +2,7 @@ services:
   django-web:
     build: .
     container_name: gsas_web
+    mem_limit: 4g
     volumes:
       - staticfiles:/app/staticfiles
     env_file:
