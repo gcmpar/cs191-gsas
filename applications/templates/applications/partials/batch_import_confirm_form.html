@@ -1,6 +1,7 @@
-                        
+{% load widget_tweaks %}
+
 {% if form.non_field_errors %}
-<tr>
+<tr id="{{ form.prefix }}-root-other">
     <td colspan="100%">
         <div class="alert alert-error shadow-sm my-2">
             <ul>
@@ -12,7 +13,7 @@
     </td>
 </tr>
 {% endif %}
-<tr>
+<tr id="{{ form.prefix }}-root">
                             <td>{% render_field form.application_number class="input input-sm input-bordered w-auto" %}
 {% if form.application_number.errors %}
   <div class="label pb-0">
@@ -85,19 +86,37 @@
                                 </div>
                             </td>
                             <td>
-                                <span id="{{ form.prefix }}-swap-applicant" {% if detect_applicants %}hx-swap-oob="true"{% endif %}>
-                                    {% url 'applications:batch_import_confirm' as batch_import_confirm_url %}
-                                    {% with batch_import_confirm_full_url=batch_import_confirm_url|add:"?update=true" %}
-                                        {% render_field form.applicant class="select select-sm select-bordered w-auto" hx-get=batch_import_confirm_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
-{% if form.applicant.errors %}
-  <div class="label pb-0">
-    <span class="label-text-alt text-error">
-      {% for error in form.applicant.errors %}{{ error }} {% endfor %}
-    </span>
-  </div>
-{% endif %}
-                                    {% endwith %}
-                                </span>
+                              <div class="grid grid-cols-[2fr_1fr] items-center gap-4">
+                                <div>
+                                  <span id="{{ form.prefix }}-swap-applicant" {% if detect_applicants %}hx-swap-oob="true"{% endif %}>
+                                      {% url 'applications:batch_import_confirm' as batch_import_confirm_url %}
+                                      {% with batch_import_confirm_full_url=batch_import_confirm_url|add:"?update=true" %}
+                                          {% render_field form.applicant class="select select-sm select-bordered w-auto" hx-get=batch_import_confirm_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+  {% if form.applicant.errors %}
+    <div class="label pb-0">
+      <span class="label-text-alt text-error">
+        {% for error in form.applicant.errors %}{{ error }} {% endfor %}
+      </span>
+    </div>
+  {% endif %}
+                                      {% endwith %}
+                                  </span>
+                                </div>
+                                <button
+                                  class="btn btn-outline btn-success btn-sm"
+                                  hx-post="{% url 'applications:batch_import_create_applicant' %}"
+                                  hx-vals="js:{prefix: '{{ form.prefix }}'}"
+                                  hx-include="#{{ form.prefix }}-root, #{{ form.prefix }}-root-other"
+                                  hx-swap="none"
+                                  hx-on:htmx:after-request="if (event.detail.successful) { this.closest('td').querySelector('.alert').classList.remove('hidden'); this.remove(); }"
+                                >Create from scanned</button>
+                                <div class="alert alert-success alert-soft alert-sm hidden">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  Applicant created!
+                                </div>
+                              </div>
                             </td>
                             <td>
                                 <span id="{{ form.prefix }}-swap-applicant_id" {% if detect_applicants or update %}hx-swap-oob="true"{% endif %} class="w-auto">

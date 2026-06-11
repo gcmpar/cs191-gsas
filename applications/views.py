@@ -19,7 +19,7 @@ from courses.models import EquivalenceMap, EquivalenceMapCourses
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
-    PrereqMapForm, PrereqCourseForm, BatchImportFormSet, OCRFormSet,
+    PrereqMapForm, PrereqCourseForm, BatchImportRowForm, BatchImportFormSet, OCRFormSet,
     ExportOptionsForm
 )
 from courses.models import Course
@@ -1273,7 +1273,7 @@ def batch_import_confirm(request):
                     row.get('email'),
                     all_applicants_list
                 )
-
+                
                 # For ngse_requirements_complete field.
                 ngse_requirements_complete_raw = row.get('ngse_requirements_complete')
                 ngse_requirements_complete = None
@@ -1320,6 +1320,39 @@ def batch_import_confirm(request):
     return render(request, 'applications/batch_import_confirm.html', {
         'formset': formset,
     })
+def batch_import_create_applicant(request):
+    post = request.POST.copy()
+    prefix = post.get('prefix')
+    form = BatchImportRowForm(post, prefix=prefix)
+    
+    scanned_first_name = form['scanned_first_name'].value() or ''
+    scanned_middle_name = form['scanned_middle_name'].value() or ''
+    scanned_last_name = form['scanned_last_name'].value() or ''
+    scanned_email = form['scanned_email'].value() or ''
+    scanned_contact_number = form['scanned_contact_number'].value() or ''
+    
+    applicant = Applicant.objects.create(
+        first_name       = scanned_first_name[:Applicant._meta.get_field('first_name').max_length],
+        middle_name      = scanned_middle_name[:Applicant._meta.get_field('middle_name').max_length],
+        last_name        = scanned_last_name[:Applicant._meta.get_field('last_name').max_length],
+        applicant_status = Applicant.Status.APPLYING,
+        email            = scanned_email[:Applicant._meta.get_field('email').max_length],
+        contact_number   = scanned_contact_number[:Applicant._meta.get_field('contact_number').max_length],
+        notes            = None,
+    )
+    post[form.add_prefix('applicant')] = applicant
+
+    form = BatchImportRowForm(post, prefix=prefix)
+    form.applicant_instance = applicant
+
+    return render(
+        request,
+        'applications/partials/batch_import_confirm_form.html',
+        {
+            'form': form,
+            'detect_applicants': True,
+        }
+    )
 
 def batch_import_history(request):
     imports = BatchImport.objects.all().order_by('-date_imported')

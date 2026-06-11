@@ -25,7 +25,7 @@
                             <th>Application No.</th>
                             <th>Scanned Name</th>
                             <th>Scanned Contact Info</th>
-                            <th class="min-w-[200px]">Applicant</th>
+                            <th class="min-w-[500px]">Applicant</th>
                             <th class="min-w-[200px]">Applicant Link</th>
                             <th>Application Status</th>
                             <th>Folder Link</th>
@@ -48,7 +48,7 @@
                     </thead>
                     <tbody>
                         {% for form in formset %}
-                          {% include "applications/partials/batch_import_confirm_form.html" with form=form %}
+                          {% include "applications/partials/batch_import_confirm_form.html" with form=form detect_applicants=detect_applicants update=update %}
                         {% endfor %}
                     </tbody>
                 </table>
