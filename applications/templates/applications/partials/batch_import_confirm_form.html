@@ -121,7 +121,7 @@
                             <td>
                                 <span id="{{ form.prefix }}-swap-applicant_id" {% if detect_applicants or update %}hx-swap-oob="true"{% endif %} class="w-auto">
                                 {% if form.applicant_instance %}
-                                    <a href={% url 'applicants:view' form.applicant_instance.applicant_id %} class="link link-hover link-primary text-lg">
+                                    <a href="{% url 'applicants:view' form.applicant_instance.applicant_id %}" class="link link-hover link-primary text-lg">
                                         {{ form.applicant_instance.first_name }}
                                         {{ form.applicant_instance.middle_name }}
                                         {{ form.applicant_instance.last_name }}
