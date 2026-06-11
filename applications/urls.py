@@ -37,5 +37,6 @@ urlpatterns = [
     path('batch-imports/', views.batch_import_history, name='batch_import_history'),
     path('batch-imports/upload/', views.batch_import_upload, name='batch_import_upload'),
     path('batch-imports/confirm/', views.batch_import_confirm, name='batch_import_confirm'),
+    path('batch-imports/create-applicant/', views.batch_import_create_applicant, name='batch_import_create_applicant'),
     path('batch-imports/<int:import_id>/', views.batch_import_detail, name='batch_import_detail'),
 ]
