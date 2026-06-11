@@ -1,9 +1,10 @@
 services:
   django-web:
     build: .
+    image: gsas-dockerimg:latest
     container_name: gsas_web
     volumes:
-      - ./static:/app/staticfiles
+      - staticfiles:/app/staticfiles
     env_file:
       - .env
   
@@ -13,6 +14,9 @@ services:
       - "8001:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./static:/static:ro
+      - staticfiles:/static:ro
     depends_on:
       - django-web
+
+volumes:
+  staticfiles:
