@@ -769,8 +769,11 @@ def application_prereq_detect_equiv(request, application_id, map_id):
     html_data = []
     result, message = None, None
     if target_course:
-            
-        transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        transcripts = None
+        if application.applicant is None:
+            transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        else:
+            transcripts = list(ApplicationTranscript.objects.filter(application__applicant=application.applicant).select_related('course'))
         detected_equiv = get_equiv_transcripts(transcripts, target_course)
 
         matched_forms_data = []
@@ -849,7 +852,11 @@ def application_prereq_detect_similar(request, application_id, map_id):
     result, message = None, None
     if target_course:
         
-        transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        transcripts = None
+        if application.applicant is None:
+            transcripts = list(ApplicationTranscript.objects.filter(application=application).select_related('course'))
+        else:
+            transcripts = list(ApplicationTranscript.objects.filter(application__applicant=application.applicant).select_related('course'))
         
         taken_courses = [t.course for t in transcripts]
         all_descs = [c.description for c in Course.objects.all()]
