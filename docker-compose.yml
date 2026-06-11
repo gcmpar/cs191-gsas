@@ -1,7 +1,6 @@
 services:
   django-web:
     build: .
-    image: gsas-dockerimg:latest
     container_name: gsas_web
     volumes:
       - staticfiles:/app/staticfiles
