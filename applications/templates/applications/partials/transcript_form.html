@@ -4,14 +4,7 @@
     {% url 'applications:partial_transcript_form' application.application_id as transcript_form_url %}
     {% with index_param=index|stringformat:"s" %}
         {% with transcript_form_url|add:"?index="|add:index_param|add:"&update=true" as transcript_form_full_url %}
-            <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-swap="none" %}
-{% if transcript_form.course.errors %}
-  <div class="label pb-0">
-    <span class="label-text-alt text-error">
-      {% for error in transcript_form.course.errors %}{{ error }} {% endfor %}
-    </span>
-  </div>
-{% endif %}</td>
+            <td>{% render_field transcript_form.course class="select select-bordered select-sm w-full" hx-get=transcript_form_full_url hx-include="closest .transcript-form" hx-trigger="change" hx-swap="none" %}</td>
         {% endwith %}
     {% endwith %}
     <td>
@@ -29,32 +22,11 @@
     <td class="flex items-center gap-2">
         <span class="text-base font-semibold text-base-content/50">AY</span>
         {% render_field transcript_form.academic_year class="transcript-form-ay select select-bordered select-sm w-full" %}
-{% if transcript_form.academic_year.errors %}
-  <div class="label pb-0">
-    <span class="label-text-alt text-error">
-      {% for error in transcript_form.academic_year.errors %}{{ error }} {% endfor %}
-    </span>
-  </div>
-{% endif %}
         <span class="text-base font-semibold text-base-content/50">/</span>
         <span class="transcript-form-ay-next text-base font-semibold text-base-content/50">&mdash;</span>
     </td>
-    <td>{% render_field transcript_form.semester class="select select-bordered select-sm w-full" %}
-{% if transcript_form.semester.errors %}
-  <div class="label pb-0">
-    <span class="label-text-alt text-error">
-      {% for error in transcript_form.semester.errors %}{{ error }} {% endfor %}
-    </span>
-  </div>
-{% endif %}</td>
-    <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}
-{% if transcript_form.grade.errors %}
-  <div class="label pb-0">
-    <span class="label-text-alt text-error">
-      {% for error in transcript_form.grade.errors %}{{ error }} {% endfor %}
-    </span>
-  </div>
-{% endif %}</td>
+    <td>{% render_field transcript_form.semester class="select select-bordered select-sm w-full" %}</td>
+    <td>{% render_field transcript_form.grade class="input input-bordered input-sm w-full max-w-[100px]" placeholder="Grade" %}</td>
     <td>
         <span
             id="transcript-form-{{ index }}-swap-units"
