@@ -22,7 +22,7 @@ class ApplicantsQueryForm(Form):
     status = ChoiceField(
         choices=Applicant.Status.choices,
         required=False,
-        widget=Select2Widget(attrs={'data-placeholder': 'Filter by Status'})
+        widget=Select2Widget(attrs={'data-placeholder': 'Status'})
     )
 
 class ApplicantsWidget(ModelSelect2Widget):
