@@ -36,6 +36,10 @@
           {{ formset.management_form }}
           {% for form in formset %}
             {% include "applications/partials/ocr_preview_form.html" with form=form %}
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
+            </tr>
           {% endfor %}
         </tbody>
       </table>

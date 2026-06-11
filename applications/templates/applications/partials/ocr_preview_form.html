@@ -1,3 +1,5 @@
+{% load widget_tweaks %}
+
 {% if form.non_field_errors %}
 <tr>
     <td colspan="100%">
@@ -69,7 +71,4 @@
                 </span>
             </td>
           </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
-          </tr>
+          
