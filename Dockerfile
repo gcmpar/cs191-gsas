@@ -26,9 +26,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Stage 2: Production stage
 FROM python:3.12.7-slim
 
-# Install runtime dependencies for mysqlclient
+# Install runtime dependencies for mysqlclient, poppler, and tesseract
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-mysql-client \
+    poppler-utils \
+    tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
  
 RUN useradd -m -r appuser && \
@@ -57,4 +59,4 @@ EXPOSE 8000
 
 # Collect static files, run migrations, then start gunicorn
 # NOTE: Keep GUNICORN_WORKERS at 1 if using Django Select2 without caching layer
-CMD ["/bin/sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python -m gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS} gsas.wsgi:application"]
+CMD ["/bin/sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python -m gunicorn --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS} --timeout ${GUNICORN_TIMEOUT} gsas.wsgi:application"]
