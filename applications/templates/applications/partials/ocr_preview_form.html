@@ -1,0 +1,75 @@
+{% if form.non_field_errors %}
+<tr>
+    <td colspan="100%">
+        <div class="alert alert-error shadow-sm my-2">
+            <ul>
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </td>
+</tr>
+{% endif %}
+<tr>
+            <td class="text-center">
+              {% render_field form.include class="checkbox checkbox-primary checkbox-sm" %}
+            </td>
+
+            <td>
+              <span class="font-mono text-sm">{{ form.scanned_code.value|default_if_none:'' }}</span>
+              {{ form.scanned_code }}
+            </td>
+            <td>
+              <span class="text-sm text-base-content/70">{{ form.scanned_description.value|default_if_none:'' }}</span>
+              {{ form.scanned_description }}
+            </td>
+
+            <td class="text-center text-base-content/70 text-sm">
+              {{ form.scanned_units.value|default_if_none:'' }}
+              {{ form.scanned_units }}
+            </td>
+
+            <td>
+              <span id="{{ form.prefix }}-swap-course" {% if detect_courses %}hx-swap-oob="true"{% endif %}>
+                {% url 'applications:ocr_preview' application.application_id as ocr_preview_url %}
+                {% with ocr_preview_full_url=ocr_preview_url|add:"?update=true" %}
+                  {% render_field form.course class+="select select-bordered select-sm w-full" hx-get=ocr_preview_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+                {% endwith %}
+                {% if form.course.errors %}
+                    <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
+                {% endif %}
+              </span>
+            </td>
+
+            <td>
+                <span id="{{ form.prefix }}-swap-course_id" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
+                  {% if form.course_instance %}
+                    <a href={% url 'courses:general_view' form.course_instance.course_id %} class="link link-hover link-primary text-lg">{{ form.course_instance.course_code }}</a>
+                  {% else %}
+                    &mdash;
+                  {% endif %}
+                </span>
+            </td>
+
+            <td>
+              {% render_field form.grade class="input input-bordered input-sm w-full" %}
+              {% if form.grade.errors %}
+                <div class="text-error text-xs mt-1">{{ form.grade.errors }}</div>
+              {% endif %}
+            </td>
+
+            <td>
+                <span id="{{ form.prefix }}-swap-course_units" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
+                  {% if form.course_instance %}
+                    {{ form.course_instance.units }}</span>
+                  {% else %}
+                    &mdash;
+                  {% endif %}
+                </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-base-content/50 py-4">No courses were extracted. Try uploading again.</td>
+          </tr>
