@@ -1049,8 +1049,8 @@ def application_ocr_preview(request, application_id):
             formset = OCRFormSet(get)
             for form in formset:
                 matching_course = get_matching_course(
-                    get[form.add_prefix('scanned_code')],
-                    get[form.add_prefix('scanned_name')],
+                    get.get(form.add_prefix('scanned_code')) or '',
+                    get.get(form.add_prefix('scanned_name')) or '',
                     all_courses_list
                 )
 
@@ -1243,10 +1243,10 @@ def batch_import_confirm(request):
             formset = BatchImportFormSet(get)
             for form in formset.forms:
                 matching_applicant = get_matching_applicant(
-                    get.get(form.add_prefix('scanned_first_name')),
-                    get.get(form.add_prefix('scanned_middle_name')),
-                    get.get(form.add_prefix('scanned_last_name')),
-                    get.get(form.add_prefix('scanned_email')),
+                    get.get(form.add_prefix('scanned_first_name')) or '',
+                    get.get(form.add_prefix('scanned_middle_name')) or '',
+                    get.get(form.add_prefix('scanned_last_name')) or '',
+                    get.get(form.add_prefix('scanned_email')) or '',
                     all_applicants_list
                 )
 
