@@ -4,6 +4,10 @@
 
 {% block title %}OCR Preview — Application #{{ application.application_id }}{% endblock title %}
 
+{% block extra_head %}
+{{ formset.media.css }}
+{% endblock extra_head %}
+
 {% block content %}
 
 {# Flash messages here are received from the application_ocr_preview view when form validation errors occur during save. #}
@@ -25,6 +29,9 @@
 {% endblock content %}
 
 {% block extra_javascript %}
+
+{{ formset.media.js }}
+
 <script>
   function bindSelect2HTMX() {
     $("select")
