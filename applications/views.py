@@ -19,7 +19,7 @@ from courses.models import EquivalenceMap, EquivalenceMapCourses
 from applicants.models import Applicant
 from .forms import (
     ApplicationForm, ApplicationsQueryForm, ApplicationTranscriptForm,
-    PrereqMapForm, PrereqCourseForm, BatchImportRowForm, BatchImportFormSet, OCRFormSet,
+    PrereqMapForm, PrereqCourseForm, BatchImportRowForm, BatchImportFormSet, OCRRowForm, OCRFormSet,
     ExportOptionsForm
 )
 from courses.models import Course
@@ -236,6 +236,9 @@ def get_equiv_transcripts(transcripts, target_course):
 def get_matching_course(course_code, course_name, all_courses_list):
     matching_course = None
     
+    course_code = course_code.strip().lower()
+    course_name = course_name.strip().lower()
+
     if course_code:
         # Exact match on course code first
         for course in all_courses_list:
@@ -267,7 +270,12 @@ def get_matching_course(course_code, course_name, all_courses_list):
 
 def get_matching_applicant(first_name, middle_name, last_name, email, applicants):
     matching_applicant = None
-    
+
+    first_name = first_name.strip().lower()
+    middle_name = middle_name.strip().lower()
+    last_name = last_name.strip().lower()
+    email = email.strip().lower()
+
     if email:
         for app in applicants:
             if (app.email or '').strip().lower() == email:
@@ -275,12 +283,12 @@ def get_matching_applicant(first_name, middle_name, last_name, email, applicants
                 break
     
     if not matching_applicant:
-        target_name = f"{first_name} {last_name}".strip().lower()
+        target_name = f"{first_name} {middle_name} {last_name}".strip().lower()
         if target_name:
             best_match = None
             best_ratio = 0.0
             for app in applicants:
-                app_name = f"{app.first_name} {app.last_name}".strip().lower()
+                app_name = f"{app.first_name} {app.middle_name} {app.last_name}".strip().lower()
                 ratio = difflib.SequenceMatcher(None, target_name, app_name).ratio()
                 if ratio > best_ratio:
                     best_ratio = ratio
@@ -1041,8 +1049,8 @@ def application_ocr_preview(request, application_id):
             formset = OCRFormSet(get)
             for form in formset:
                 matching_course = get_matching_course(
-                    (get.get(form.add_prefix('scanned_code')) or '').lower(),
-                    (get.get(form.add_prefix('scanned_name')) or '').lower(),
+                    get[form.add_prefix('scanned_code')],
+                    get[form.add_prefix('scanned_name')],
                     all_courses_list
                 )
 
@@ -1077,16 +1085,19 @@ def application_ocr_preview(request, application_id):
             # GET: build context — attempt auto-match on course_code and course_name for each scanned row.
             initial_data = []
             for idx, row in enumerate(scanned_courses):
+                scanned_code = row.get('course_code')[:OCRRowForm.base_fields['scanned_code'].max_length]
+                scanned_name = row.get('course_name')[:OCRRowForm.base_fields['scanned_name'].max_length]
+
                 matching_course = get_matching_course(
-                    (row.get('course_code') or '').strip().lower(),
-                    (row.get('course_name') or '').strip().lower(),
+                    scanned_code,
+                    scanned_name,
                     all_courses_list
                 )
 
                 initial_data.append({
                     'include': True,
-                    'scanned_code': row.get('course_code'),
-                    'scanned_name': row.get('course_name'),
+                    'scanned_code': scanned_code,
+                    'scanned_name': scanned_name,
                     'scanned_units': row.get('units'),
                     'course': matching_course.course_id if matching_course else None,
                     'grade': row.get('grade')
@@ -1266,11 +1277,17 @@ def batch_import_confirm(request):
 
             initial_data = []
             for row in data:
+                scanned_first_name = row.get('first_name')[:BatchImportRowForm.base_fields['scanned_first_name'].max_length]
+                scanned_middle_name = row.get('middle_name')[:BatchImportRowForm.base_fields['scanned_middle_name'].max_length]
+                scanned_last_name = row.get('last_name')[:BatchImportRowForm.base_fields['scanned_last_name'].max_length]
+                scanned_email = row.get('email')[:BatchImportRowForm.base_fields['scanned_email'].max_length]
+                scanned_contact_number = row.get('contact_number')[:BatchImportRowForm.base_fields['scanned_contact_number'].max_length]
+
                 matching_applicant = get_matching_applicant(
-                    row.get('first_name'),
-                    row.get('middle_name'),
-                    row.get('last_name'),
-                    row.get('email'),
+                    scanned_first_name,
+                    scanned_middle_name,
+                    scanned_last_name,
+                    scanned_email,
                     all_applicants_list
                 )
                 
@@ -1286,11 +1303,11 @@ def batch_import_confirm(request):
 
                 initial_data.append({
                     'application_number': row.get('application_number'),
-                    'scanned_last_name': row.get('last_name'),
-                    'scanned_first_name': row.get('first_name'),
-                    'scanned_middle_name': row.get('middle_name'),
-                    'scanned_email': row.get('email'),
-                    'scanned_contact_number': row.get('contact_number'),
+                    'scanned_last_name': scanned_last_name,
+                    'scanned_first_name': scanned_first_name,
+                    'scanned_middle_name': scanned_middle_name,
+                    'scanned_email': scanned_email,
+                    'scanned_contact_number': scanned_contact_number,
                     'applicant': matching_applicant.applicant_id if matching_applicant else None,
                     'application_status': row.get('application_status'),
                     'folder_link': row.get('folder_link'),
