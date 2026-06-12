@@ -1223,6 +1223,8 @@ def batch_import_confirm(request):
                 del request.session['batch_import_data']
                 
             return redirect('applications:batch_import_history')
+        else:
+            messages.error(request, 'Please correct the errors below.')
 
         for form in formset:
             applicant_id = form['applicant'].value()
@@ -1230,8 +1232,6 @@ def batch_import_confirm(request):
                 form.applicant_instance = Applicant.objects.filter(applicant_id=applicant_id).first()
             else:
                 form.applicant_instance = None
-        else:
-            messages.error(request, 'Please correct the errors below.')
         
     else:
         detect_applicants = request.GET.get('detect_applicants')
