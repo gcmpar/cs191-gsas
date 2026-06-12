@@ -1,7 +1,7 @@
 {% load widget_tweaks %}
 
 {% if form.non_field_errors %}
-<tr>
+<tr id="{{ form.prefix }}-root-other">
     <td colspan="100%">
         <div class="alert alert-error shadow-sm my-2">
             <ul>
@@ -13,7 +13,7 @@
     </td>
 </tr>
 {% endif %}
-<tr>
+<tr id="{{ form.prefix }}-root">
             <td class="text-center">
               {% render_field form.include class="checkbox checkbox-primary checkbox-sm" %}
             </td>
@@ -33,15 +33,33 @@
             </td>
 
             <td>
-              <span id="{{ form.prefix }}-swap-course" {% if detect_courses %}hx-swap-oob="true"{% endif %}>
-                {% url 'applications:ocr_preview' application.application_id as ocr_preview_url %}
-                {% with ocr_preview_full_url=ocr_preview_url|add:"?update=true" %}
-                  {% render_field form.course class+="select select-bordered select-sm w-full" hx-get=ocr_preview_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
-                {% endwith %}
-                {% if form.course.errors %}
-                    <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
-                {% endif %}
-              </span>
+              <div class="grid grid-cols-[2fr_1fr] items-center gap-4">
+                <div>
+                  <span id="{{ form.prefix }}-swap-course" {% if detect_courses %}hx-swap-oob="true"{% endif %}>
+                    {% url 'applications:ocr_preview' application.application_id as ocr_preview_url %}
+                    {% with ocr_preview_full_url=ocr_preview_url|add:"?update=true" %}
+                      {% render_field form.course class+="select select-bordered select-sm w-full" hx-get=ocr_preview_full_url hx-include="closest form" hx-trigger="change" hx-swap="none" %}
+                    {% endwith %}
+                    {% if form.course.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.course.errors }}</div>
+                    {% endif %}
+                  </span>
+                </div>
+                <button
+                  class="btn btn-outline btn-success btn-sm"
+                  hx-post="{% url 'applications:ocr_preview_create_course' %}"
+                  hx-vals="js:{prefix: '{{ form.prefix }}'}"
+                  hx-include="#{{ form.prefix }}-root, #{{ form.prefix }}-root-other"
+                  hx-swap="none"
+                  hx-on:htmx:after-request="if (event.detail.successful) { this.closest('td').querySelector('.alert').classList.remove('hidden'); this.remove(); }"
+                >Create from scanned</button>
+                <div class="alert alert-success alert-soft alert-sm hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Course created! Please update its School, Program(s) and information.
+                </div>
+              </div>
             </td>
 
             <td>
