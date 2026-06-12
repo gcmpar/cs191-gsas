@@ -1017,7 +1017,7 @@ def application_ocr_preview(request, application_id):
             for err in errors:
                 messages.warning(request, err)
 
-            messages.success(request, f'{saved} course(s) added to the transcript.')
+            messages.success(request, f'{saved} course(s) added to the transcript. Please update their AY and Semesters.')
             return redirect('applications:transcripts_edit', application_id=application_id)
         else:
             messages.error(request, 'Please correct the errors below.')
