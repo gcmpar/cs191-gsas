@@ -1116,7 +1116,7 @@ def application_ocr_preview(request, application_id):
         'formset':       formset,
     })
 
-def ocr_preview_create_course(request, application_id):
+def application_ocr_preview_create_course(request, application_id):
     post = request.POST.copy()
     prefix = post.get('prefix')
     form = OCRRowForm(post, prefix=prefix)

@@ -23,8 +23,13 @@ urlpatterns = [
     # Transcript OCR and TOR
     path('<int:application_id>/transcripts/scan-tor/', views.application_scan_tor, name='scan_tor'),
     path('<int:application_id>/transcripts/ocr-preview/', views.application_ocr_preview, name='ocr_preview'),
-    path('<int:application_id>/transcripts/ocr-preview-create-course/', views.application_ocr_preview_create_course, name='ocr_preview_create_course'),
-    
+
+    # Batch actions
+    path('batch-imports/', views.batch_import_history, name='batch_import_history'),
+    path('batch-imports/upload/', views.batch_import_upload, name='batch_import_upload'),
+    path('batch-imports/confirm/', views.batch_import_confirm, name='batch_import_confirm'),
+    path('batch-imports/<int:import_id>/', views.batch_import_detail, name='batch_import_detail'),
+
     # Partial HTMX endpoints
     path('partials/transcript_form/<int:application_id>/', views.application_transcript_form, name='partial_transcript_form'),
     path('partials/prereq_save_to_equiv/<int:application_id>/', views.application_prereq_save_to_equiv, name='partial_prereq_save_to_equiv'),
@@ -33,11 +38,7 @@ urlpatterns = [
     path('partials/prereq_form/<int:application_id>/<int:map_id>/', views.application_prereq_form, name='partial_prereq_form'),
     path('partials/prereq_detect_equiv/<int:application_id>/<int:map_id>/', views.application_prereq_detect_equiv, name='partial_prereq_detect_equiv'),
     path('partials/prereq_detect_similar/<int:application_id>/<int:map_id>/', views.application_prereq_detect_similar, name='partial_prereq_detect_similar'),
+    path('partials/batch-imports-create-applicant/', views.batch_import_create_applicant, name='batch_import_create_applicant'),
+    path('partials/transcripts-ocr-preview-create-course/<int:application_id>/', views.application_ocr_preview_create_course, name='ocr_preview_create_course'),
     
-    # Batch actions
-    path('batch-imports/', views.batch_import_history, name='batch_import_history'),
-    path('batch-imports/upload/', views.batch_import_upload, name='batch_import_upload'),
-    path('batch-imports/confirm/', views.batch_import_confirm, name='batch_import_confirm'),
-    path('batch-imports/create-applicant/', views.batch_import_create_applicant, name='batch_import_create_applicant'),
-    path('batch-imports/<int:import_id>/', views.batch_import_detail, name='batch_import_detail'),
 ]
