@@ -26,7 +26,7 @@ def _fix_grade(grade: str) -> str:
 
 _COURSE_PATTERN = re.compile(
     r"([A-Za-z]+(?:\s[A-Za-z]+)?\s*\d+(?:\.\d+)?)\s+"          # Course Code (e.g. "Eng 10", "Fil 40")
-    r"((?:\b(?:[A-Za-z&\-,]{2,}|\b[A-Za-z]\b)\s*)+?)\s+"       # Description (multiple words)
+    r"((?:\b(?:[A-Za-z&\-,]{2,}|\b[A-Za-z]\b)\s*)+?)\s+"       # Course Name/Title (multiple words)
     r"(\d+(?:[.,]\d{1,2})?|[A-Za-z]+[+-]?)?\s*[|]?\s*"         # Grade (numerical or alphabetic, e.g. "2.25", "A+", "Pass")
     r"(\d+|\(\d+\))?"                                            # Units (whole number or in parens)
 )
@@ -65,7 +65,7 @@ def _extract_structured_data(text: str, seen_keys: set) -> list[dict]:
         match = _COURSE_PATTERN.match(line)
         if match:
             course_code  = match.group(1).strip()
-            course_name         = match.group(2).strip()
+            course_name  = match.group(2).strip()
             grade        = _fix_grade(match.group(3).strip()) if match.group(3) else "N/A"
             units        = match.group(4).strip() if match.group(4) else "Unknown"
 
