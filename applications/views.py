@@ -1230,6 +1230,8 @@ def batch_import_confirm(request):
                 form.applicant_instance = Applicant.objects.filter(applicant_id=applicant_id).first()
             else:
                 form.applicant_instance = None
+        else:
+            messages.error(request, 'Please correct the errors below.')
         
     else:
         detect_applicants = request.GET.get('detect_applicants')
