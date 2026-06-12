@@ -199,7 +199,7 @@ BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 class OCRRowForm(Form):
     include = BooleanField(required=False, initial=True)
     scanned_code = CharField(required=False, widget=HiddenInput())
-    scanned_description = CharField(required=False, widget=HiddenInput())
+    scanned_name = CharField(required=False, widget=HiddenInput())
     scanned_units = CharField(required=False, widget=HiddenInput())
     
     course = ModelChoiceField(

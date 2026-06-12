@@ -1042,7 +1042,7 @@ def application_ocr_preview(request, application_id):
             for form in formset:
                 matching_course = get_matching_course(
                     (get.get(form.add_prefix('scanned_code')) or '').lower(),
-                    (get.get(form.add_prefix('scanned_description')) or '').lower(),
+                    (get.get(form.add_prefix('scanned_name')) or '').lower(),
                     all_courses_list
                 )
 
@@ -1074,19 +1074,19 @@ def application_ocr_preview(request, application_id):
             })
 
         else:
-            # GET: build context — attempt auto-match on course_code and description for each scanned row.
+            # GET: build context — attempt auto-match on course_code and course_name for each scanned row.
             initial_data = []
             for idx, row in enumerate(scanned_courses):
                 matching_course = get_matching_course(
                     (row.get('course_code') or '').strip().lower(),
-                    (row.get('description') or '').strip().lower(),
+                    (row.get('course_name') or '').strip().lower(),
                     all_courses_list
                 )
 
                 initial_data.append({
                     'include': True,
                     'scanned_code': row.get('course_code'),
-                    'scanned_description': row.get('description'),
+                    'scanned_name': row.get('course_name'),
                     'scanned_units': row.get('units'),
                     'course': matching_course.course_id if matching_course else None,
                     'grade': row.get('grade')

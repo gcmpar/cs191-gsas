@@ -65,15 +65,15 @@ def _extract_structured_data(text: str, seen_keys: set) -> list[dict]:
         match = _COURSE_PATTERN.match(line)
         if match:
             course_code  = match.group(1).strip()
-            description  = match.group(2).strip()
+            course_name         = match.group(2).strip()
             grade        = _fix_grade(match.group(3).strip()) if match.group(3) else "N/A"
             units        = match.group(4).strip() if match.group(4) else "Unknown"
 
-            key = (course_code.upper(), description.lower().strip())
+            key = (course_code.upper(), course_name.lower().strip())
             if key not in seen_keys:
                 structured_data.append({
                     "course_code":  course_code,
-                    "description":  description,
+                    "course_name":  course_name,
                     "grade":         grade,
                     "units":         units,
                 })
@@ -91,7 +91,7 @@ def extract_courses_from_pdf(pdf_path: str) -> list[dict]:
     """
     Run OCR on a TOR PDF and return a flat list of extracted course dicts.
 
-    Each dict has keys: course_code, description, grade, units.
+    Each dict has keys: course_code, course_name, grade, units.
 
     Args:
         pdf_path: Absolute path to the PDF file.
