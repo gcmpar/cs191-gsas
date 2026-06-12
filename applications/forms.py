@@ -198,14 +198,14 @@ class BatchImportRowForm(ModelForm):
 BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 
 class OCRRowForm(Form):
-    include = BooleanField(required=False, initial=True)
+    include = BooleanField(required=True, initial=True)
     scanned_code = CharField(required=True, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
     scanned_name = CharField(required=True, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
     scanned_units = CharField(required=True, widget=HiddenInput())
     
     course = ModelChoiceField(
         queryset=Course.objects.all(),
-        required=False,
+        required=True,
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select course...',
@@ -214,7 +214,7 @@ class OCRRowForm(Form):
         )
     )
     grade = CharField(
-        required=False,
+        required=True,
         widget=TextInput(attrs={'placeholder': 'Grade'})
     )
 

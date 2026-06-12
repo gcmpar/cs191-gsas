@@ -996,17 +996,12 @@ def application_ocr_preview(request, application_id):
         formset = OCRFormSet(request.POST)
         if formset.is_valid():
             saved = 0
-            errors = []
-            
+
             for i, form in enumerate(formset):
                 if form.cleaned_data.get('include'):
                     course = form.cleaned_data.get('course')
                     grade = form.cleaned_data.get('grade') or 'unknown'
                     
-                    if not course:
-                        errors.append(f"Row {i + 1}: no course selected, skipped.")
-                        continue
-                        
                     ApplicationTranscript.objects.get_or_create(
                         application=application,
                         course=course,
@@ -1021,9 +1016,6 @@ def application_ocr_preview(request, application_id):
             # Clear session data after saving.
             if session_key in request.session:
                 del request.session[session_key]
-
-            for err in errors:
-                messages.warning(request, err)
 
             messages.success(request, f'{saved} course(s) added to the transcript. Please update their AY and Semesters.')
             return redirect('applications:transcripts_edit', application_id=application_id)
