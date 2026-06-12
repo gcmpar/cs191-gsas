@@ -47,7 +47,7 @@
                 </div>
                 <button
                   class="btn btn-outline btn-success btn-sm"
-                  hx-post="{% url 'applications:ocr_preview_create_course' %}"
+                  hx-post="{% url 'applications:ocr_preview_create_course' application.application_id %}"
                   hx-vals="js:{prefix: '{{ form.prefix }}'}"
                   hx-include="#{{ form.prefix }}-root, #{{ form.prefix }}-root-other"
                   hx-swap="none"
@@ -57,7 +57,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Course created! Please update its School, Program(s) and information.
+                  Course created! You may update its School, Program(s) and other information.
                 </div>
               </div>
             </td>
@@ -65,7 +65,7 @@
             <td>
                 <span id="{{ form.prefix }}-swap-course_id" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
                   {% if form.course_instance %}
-                    <a href={% url 'courses:general_view' form.course_instance.course_id %} class="link link-hover link-primary text-lg">{{ form.course_instance.course_code }}</a>
+                    <a href="{% url 'courses:general_view' form.course_instance.course_id %}" class="link link-hover link-primary text-lg">{{ form.course_instance.course_code }}</a>
                   {% else %}
                     &mdash;
                   {% endif %}

@@ -23,6 +23,7 @@ urlpatterns = [
     # Transcript OCR and TOR
     path('<int:application_id>/transcripts/scan-tor/', views.application_scan_tor, name='scan_tor'),
     path('<int:application_id>/transcripts/ocr-preview/', views.application_ocr_preview, name='ocr_preview'),
+    path('<int:application_id>/transcripts/ocr-preview-create-course/', views.application_ocr_preview_create_course, name='ocr_preview_create_course'),
     
     # Partial HTMX endpoints
     path('partials/transcript_form/<int:application_id>/', views.application_transcript_form, name='partial_transcript_form'),

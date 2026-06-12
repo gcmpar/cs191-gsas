@@ -1116,6 +1116,40 @@ def application_ocr_preview(request, application_id):
         'formset':       formset,
     })
 
+def ocr_preview_create_course(request, application_id):
+    post = request.POST.copy()
+    prefix = post.get('prefix')
+    form = OCRRowForm(post, prefix=prefix)
+    
+    scanned_code = form['scanned_code'].value() or ''
+    scanned_name = form['scanned_name'].value() or ''
+    scanned_units = form['scanned_units'].value() or ''
+
+    units = 999
+    if scanned_units.isdigit():
+        units = max(1, min(32767, int(scanned_units)))
+
+    
+    course = Course.objects.create(
+        course_code      = scanned_code[:Course._meta.get_field('course_code').max_length],
+        course_name      = scanned_name[:Course._meta.get_field('course_name').max_length],
+        units            = units,
+        description      = '',
+        notes            = None,
+    )
+    post[form.add_prefix('course')] = course
+
+    form = OCRRowForm(post, prefix=prefix)
+    form.course_instance = course
+
+    return render(
+        request,
+        'applications/partials/ocr_preview_form.html',
+        {
+            'form': form,
+            'detect_courses': True,
+        }
+    )
 
 def batch_import_upload(request):
     if request.method == 'POST':
