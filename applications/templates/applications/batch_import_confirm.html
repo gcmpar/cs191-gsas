@@ -8,6 +8,10 @@
 {% endblock extra_head %}
 
 {% block content %}
+
+{# Flash messages here are received from the batch_import_confirm view when form validation errors occur during save. #}
+{% include "flash_messages.html" %}
+
 <div class="mb-6 mt-4">
     <h2 class="text-2xl font-bold mb-2">Confirm Batch Import</h2>
     <p class="text-base-content/70">Please review the entries to be created below. Click 'Save to Database' if correct.</p>
