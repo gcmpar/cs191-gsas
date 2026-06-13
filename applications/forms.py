@@ -133,9 +133,14 @@ class PrereqCourseForm(Form):
             },
         )
 
-        self.fields['course'].queryset = Course.objects.filter(
-            applicationtranscript__application__applicant=applicant
-        ).prefetch_related('programs__school').distinct()
+        if application.applicant is None:
+            self.fields['course'].queryset = Course.objects.filter(
+                applicationtranscript__application=application
+            ).prefetch_related('programs__school').distinct()
+        else:
+            self.fields['course'].queryset = Course.objects.filter(
+                applicationtranscript__application__applicant=applicant
+            ).prefetch_related('programs__school').distinct()
 
 class BatchImportRowForm(ModelForm):
     scanned_last_name = CharField(required=True, max_length=Applicant._meta.get_field('last_name').max_length, widget=TextInput(attrs={'readonly': True}))
