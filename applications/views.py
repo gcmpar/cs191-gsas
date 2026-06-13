@@ -474,6 +474,9 @@ def application_transcript_form(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     transcript_form = ApplicationTranscriptForm(request.GET, prefix=transcript_form_prefix(index))
 
+    # Clear errors because it's just a partial swap so we don't care.
+    transcript_form.errors.clear()
+
     course = None
     course_id = request.GET.get(transcript_form['course'].html_name)
     if course_id and str(course_id).isdigit():
