@@ -143,11 +143,11 @@ class PrereqCourseForm(Form):
             ).prefetch_related('programs__school').distinct()
 
 class BatchImportRowForm(ModelForm):
-    scanned_last_name = CharField(required=True, max_length=Applicant._meta.get_field('last_name').max_length, widget=TextInput(attrs={'readonly': True}))
-    scanned_first_name = CharField(required=True, max_length=Applicant._meta.get_field('first_name').max_length, widget=TextInput(attrs={'readonly': True}))
-    scanned_middle_name = CharField(required=True,max_length=Applicant._meta.get_field('middle_name').max_length, widget=TextInput(attrs={'readonly': True}))
-    scanned_email = CharField(required=True, max_length=Applicant._meta.get_field('email').max_length, widget=TextInput(attrs={'readonly': True}))
-    scanned_contact_number = CharField(required=True, max_length=Applicant._meta.get_field('contact_number').max_length, widget=TextInput(attrs={'readonly': True}))
+    scanned_last_name = CharField(required=False, max_length=Applicant._meta.get_field('last_name').max_length, widget=TextInput(attrs={'readonly': True}))
+    scanned_first_name = CharField(required=False, max_length=Applicant._meta.get_field('first_name').max_length, widget=TextInput(attrs={'readonly': True}))
+    scanned_middle_name = CharField(required=False,max_length=Applicant._meta.get_field('middle_name').max_length, widget=TextInput(attrs={'readonly': True}))
+    scanned_email = CharField(required=False, max_length=Applicant._meta.get_field('email').max_length, widget=TextInput(attrs={'readonly': True}))
+    scanned_contact_number = CharField(required=False, max_length=Applicant._meta.get_field('contact_number').max_length, widget=TextInput(attrs={'readonly': True}))
 
     class Meta:
         model = Application
@@ -204,8 +204,8 @@ BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 
 class OCRRowForm(Form):
     include = BooleanField(required=True, initial=True)
-    scanned_code = CharField(required=True, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
-    scanned_name = CharField(required=True, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
+    scanned_code = CharField(required=False, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
+    scanned_name = CharField(required=False, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
     scanned_units = CharField(required=True, widget=HiddenInput())
     
     course = ModelChoiceField(
