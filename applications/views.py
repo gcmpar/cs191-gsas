@@ -1417,7 +1417,7 @@ def batch_import_history(request):
 
 def batch_import_detail(request, import_id):
     batch = get_object_or_404(BatchImport, pk=import_id)
-    applications = Application.objects.filter(batch_import=batch).select_related('applicant')
+    applications = Application.objects.filter(batch_import=batch).select_related('applicant').order_by('application_id')
     
     paginator = Paginator(applications, 15)
     page_number = request.GET.get('page')
