@@ -26,7 +26,7 @@ def applicants_search(request):
         if status:
             applicants = applicants.filter(applicant_status=status)
     
-    applicants = applicants.order_by('applicant_id')
+    applicants = applicants.order_by('-applicant_id')
 
     page_param_name = 'page'
     page_number = request.GET.get(page_param_name)
