@@ -7,7 +7,7 @@
     {% endif %}
 
     <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_4fr_0.5fr] gap-4 items-center">
-        <div class="min-w-0">
+        <div class="min-w-0 flex flex-col">
             {% url 'applications:partial_prereq_form' application.application_id map_id as prereq_form_url %}
             {% with index_param=index|stringformat:"s" %}
                 {% with prereq_form_url|add:"?index="|add:index_param|add:"&update=true" as prereq_form_full_url %}

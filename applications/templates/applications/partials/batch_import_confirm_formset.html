@@ -5,7 +5,7 @@
     {{ formset.management_form }}
     <div>
         <div class="mb-6 flex gap-2 flex-wrap">
-            <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-primary">Create New Applicant</a>
+            <a href="{% url 'applicants:add' %}" target="_blank" class="btn btn-sm btn-outline btn-success">Create Applicant</a>
             <button 
                 hx-get="{% url 'applications:batch_import_confirm' %}?detect_applicants=true"
                 hx-include="closest form"

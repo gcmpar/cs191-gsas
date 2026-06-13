@@ -88,7 +88,7 @@ class ApplicationTranscriptForm(ModelForm):
             ),
             'academic_year': Select2Widget(
                 attrs={
-                    'data-placeholder': 'Academic Year',
+                    'data-placeholder': 'Year',
                 }
             ),
             'semester': Select2Widget(
