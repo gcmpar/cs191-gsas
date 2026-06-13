@@ -80,9 +80,9 @@
             </td>
 
             <td>
-                <span id="{{ form.prefix }}-swap-course_units" {% if detect_courses or update %}hx-swap-oob="true"{% endif %}>
+                <span id="{{ form.prefix }}-swap-course_units" {% if detect_courses or update %}hx-swap-oob="true"{% endif %} class="badge badge-neutral">
                   {% if form.course_instance %}
-                    {{ form.course_instance.units }}</span>
+                    {{ form.course_instance.units }}
                   {% else %}
                     &mdash;
                   {% endif %}
