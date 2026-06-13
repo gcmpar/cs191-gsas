@@ -2,7 +2,7 @@
 
 <form method="post">
   {% csrf_token %}
-  <div class="mb-6 flex gap-2 flex-wrap">
+  <div class="mb-6 flex gap-2 flex-wrap items-center">
     <a href="{% url 'courses:add' %}"
       target="_blank"
       class="btn btn-sm btn-outline btn-success">
@@ -15,6 +15,22 @@
       class="btn btn-sm btn-outline btn-secondary">
       ↺ Refresh and Auto-Detect Courses
     </button>
+    <div class="tooltip tooltip-top">
+      <div class="tooltip-content text-start">
+        <p>
+          The "Create from scanned" button automatically creates a new course using the scanned Course Code, Course Name, and Units.<br />Afterwards, you may manually update its School/Program(s) bindings, as well as other information like description.
+        </p>
+      </div>
+      <button
+        class="btn btn-ghost btn-info btn-xs flex justify-start items-center m-0 p-0"
+        type="button"
+      >
+        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" class="w-4 h-4 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        About course creation
+      </button>
+    </div>
   </div>
 
   <div class="card bg-base-100 border border-base-300 shadow-sm mb-6">
@@ -24,13 +40,13 @@
           <tr>
             <th>
               <label>
-                <input type="checkbox" class="checkbox checkbox-sm" onclick="document.querySelectorAll('.ocr-preview-form-include').forEach(cb => cb.checked = this.checked)" />
+                <input type="checkbox" class="checkbox checkbox-sm checkbox-primary" onclick="document.querySelectorAll('.ocr-preview-form-include').forEach(cb => cb.checked = this.checked)" />
               </label>
             </th>
             <th>Scanned Code</th>
             <th>Scanned Name</th>
             <th>Scanned Units</th>
-            <th>Course</th>
+            <th class="min-w-[600px]">Course</th>
             <th>Course Link</th>
             <th>Grade</th>
             <th>Units</th>

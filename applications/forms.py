@@ -203,7 +203,7 @@ class BatchImportRowForm(ModelForm):
 BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 
 class OCRRowForm(Form):
-    include = BooleanField(required=True, initial=True)
+    include = BooleanField(required=False, initial=True)
     scanned_code = CharField(required=False, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
     scanned_name = CharField(required=False, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
     scanned_units = CharField(required=True, widget=HiddenInput())
