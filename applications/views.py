@@ -62,7 +62,7 @@ def get_transcript_forms_from_request(request_params):
     return transcript_data
 
 def get_transcript_forms_from_application(application):
-    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
+    entries = ApplicationTranscript.objects.filter(application=application).select_related('course').order_by('transcript_id')
     transcript_data = []
     
     for i, entry in enumerate(entries):
@@ -418,7 +418,7 @@ def application_general_edit(request, application_id):
 def application_transcripts_view(request, application_id):
     application = get_object_or_404(Application, pk=application_id)
     applicant   = application.applicant
-    entries = ApplicationTranscript.objects.filter(application=application).select_related('course')
+    entries = ApplicationTranscript.objects.filter(application=application).select_related('course').order_by('transcript_id')
 
     return render(request, 'applications/transcripts_view.html', {
         'applicant':          applicant,
