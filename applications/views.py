@@ -1093,6 +1093,7 @@ def application_ocr_preview(request, application_id):
 
                 initial_data.append({
                     'include': True,
+                    'hidden': False,
                     'scanned_code': scanned_code,
                     'scanned_name': scanned_name,
                     'scanned_units': scanned_units,

@@ -204,6 +204,10 @@ BatchImportFormSet = formset_factory(BatchImportRowForm, extra=0)
 
 class OCRRowForm(Form):
     include = BooleanField(required=False, initial=True)
+
+    # For preserving the "removed row" state across refreshes/error displays.
+    hidden = BooleanField(required=False, initial=False, widget=HiddenInput())
+    
     scanned_code = CharField(required=False, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
     scanned_name = CharField(required=False, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
     scanned_units = CharField(required=False, max_length=10, widget=HiddenInput())

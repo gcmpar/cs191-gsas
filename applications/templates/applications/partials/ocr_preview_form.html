@@ -16,6 +16,7 @@
 <tr
   id="{{ form.prefix }}-root"
   class="
+    {% if form.hidden.value == 'True' %}hidden{% endif %}
     has-[.ocr-preview-form-include:not(:checked)]:[&_td:not(:first-child)]:opacity-30
     has-[.ocr-preview-form-include:not(:checked)]:[&_td:not(:first-child)]:grayscale
     has-[.ocr-preview-form-include:not(:checked)]:bg-gray-50
@@ -26,6 +27,7 @@
 >
             <td class="text-center">
               <div class="flex gap-2 items-center justify-start">
+                {% render_field form.hidden class="ocr-preview-form-hidden" %}
                 {% render_field form.include class="ocr-preview-form-include checkbox checkbox-sm checkbox-primary" %}
                 <button
                   type="button"
@@ -33,6 +35,7 @@
                   onclick="
                     const row = document.getElementById('{{ form.prefix }}-root');
                     row.querySelector('.ocr-preview-form-include').checked = false;
+                    row.querySelector('.ocr-preview-form-hidden').value = 'True';
                     row.classList.add('hidden');
                   "
                 >
