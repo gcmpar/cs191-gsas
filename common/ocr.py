@@ -66,8 +66,8 @@ def _extract_structured_data(text: str, seen_keys: set) -> list[dict]:
         if match:
             course_code  = match.group(1).strip()
             course_name  = match.group(2).strip()
-            grade        = _fix_grade(match.group(3).strip()) if match.group(3) else "N/A"
-            units        = match.group(4).strip() if match.group(4) else "Unknown"
+            grade        = _fix_grade(match.group(3).strip()) if match.group(3) else "unknown"
+            units        = match.group(4).strip() if match.group(4) else "unknown"
 
             key = (course_code.upper(), course_name.lower().strip())
             if key not in seen_keys:

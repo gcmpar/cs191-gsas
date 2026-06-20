@@ -1003,15 +1003,15 @@ def application_ocr_preview(request, application_id):
             for i, form in enumerate(formset):
                 if form.cleaned_data.get('include'):
                     course = form.cleaned_data.get('course')
-                    grade = form.cleaned_data.get('grade') or 'unknown'
-                    
+                    grade = form.cleaned_data.get('grade')
+
                     ApplicationTranscript.objects.get_or_create(
                         application=application,
                         course=course,
                         defaults={
                             'academic_year': timezone.now().year,
                             'semester':      ApplicationTranscript.Semester.Sem_1,
-                            'grade':         grade,
+                            'grade':         grade[:ApplicationTranscript._meta.get_field('grade').max_length],
                         },
                     )
                     saved += 1
@@ -1082,6 +1082,8 @@ def application_ocr_preview(request, application_id):
             for idx, row in enumerate(scanned_courses):
                 scanned_code = row.get('course_code')[:OCRRowForm.base_fields['scanned_code'].max_length]
                 scanned_name = row.get('course_name')[:OCRRowForm.base_fields['scanned_name'].max_length]
+                scanned_units = row.get('units')[:OCRRowForm.base_fields['scanned_units'].max_length]
+                grade = row.get('grade')[:OCRRowForm.base_fields['grade'].max_length]
 
                 matching_course = get_matching_course(
                     scanned_code,
@@ -1093,9 +1095,9 @@ def application_ocr_preview(request, application_id):
                     'include': True,
                     'scanned_code': scanned_code,
                     'scanned_name': scanned_name,
-                    'scanned_units': row.get('units'),
+                    'scanned_units': scanned_units,
                     'course': matching_course.course_id if matching_course else None,
-                    'grade': row.get('grade')
+                    'grade': grade
                 })
             
             formset = OCRFormSet(initial=initial_data)

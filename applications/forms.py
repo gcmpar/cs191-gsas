@@ -206,11 +206,11 @@ class OCRRowForm(Form):
     include = BooleanField(required=False, initial=True)
     scanned_code = CharField(required=False, max_length=Course._meta.get_field('course_code').max_length, widget=HiddenInput())
     scanned_name = CharField(required=False, max_length=Course._meta.get_field('course_name').max_length, widget=HiddenInput())
-    scanned_units = CharField(required=True, widget=HiddenInput())
+    scanned_units = CharField(required=False, max_length=10, widget=HiddenInput())
     
     course = ModelChoiceField(
         queryset=Course.objects.all(),
-        required=True,
+        required=False,
         widget=CoursesWidget(
             attrs={
                 'data-placeholder': 'Select course...',
@@ -219,9 +219,26 @@ class OCRRowForm(Form):
         )
     )
     grade = CharField(
-        required=True,
+        required=False,
+        max_length=ApplicationTranscript._meta.get_field('grade').max_length,
         widget=TextInput(attrs={'placeholder': 'Grade'})
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        include = cleaned_data.get('include')
+        course = cleaned_data.get('course')
+        grade = cleaned_data.get('grade')
+
+        if include:
+            if not course:
+                self.add_error('course', 'This field is required.')
+            if not grade:
+                self.add_error('grade', 'This field is required.')
+        
+        return cleaned_data
+
 
 OCRFormSet = formset_factory(OCRRowForm, extra=0)
 
