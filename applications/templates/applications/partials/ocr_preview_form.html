@@ -16,7 +16,7 @@
 <tr
   id="{{ form.prefix }}-root"
   class="
-    {% if form.hidden.value == 'True' %}hidden{% endif %}
+    {% if form.hidden.value|stringformat:"s" == 'True' %}hidden{% endif %}
     has-[.ocr-preview-form-include:not(:checked)]:[&_td:not(:first-child)]:opacity-30
     has-[.ocr-preview-form-include:not(:checked)]:[&_td:not(:first-child)]:grayscale
     has-[.ocr-preview-form-include:not(:checked)]:bg-gray-50
