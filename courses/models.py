@@ -8,7 +8,7 @@ class Course(models.Model):
     course_id       = models.AutoField('Course Id', primary_key=True)
     programs        = models.ManyToManyField(Program, related_name='courses')
     course_code     = models.CharField('Course Code', max_length=20, blank=True)
-    course_name     = models.CharField('Course Name', max_length=50, blank=True)
+    course_name     = models.CharField('Course Name', max_length=100, blank=True)
     units           = models.PositiveSmallIntegerField('Units', validators=[MinValueValidator(1)])
     description     = models.CharField('Description', max_length=200, blank=True)
     notes           = models.TextField('Notes', blank=True, null=True)

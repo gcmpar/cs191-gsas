@@ -5,7 +5,7 @@ from schools.models import School
 class Program(models.Model):
     program_id      = models.AutoField('Program Id', primary_key=True)
     school          = models.ForeignKey(School, on_delete=models.CASCADE)
-    program_name    = models.CharField('Program Name', max_length=50, blank=True)
+    program_name    = models.CharField('Program Name', max_length=100, blank=True)
     description     = models.TextField('Description', max_length=200, blank=True)
     notes           = models.TextField('Notes', blank=True, null=True)
 
