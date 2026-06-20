@@ -7,7 +7,12 @@
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-200: oklch(88.5% 0.062 18.334);
     --color-slate-200: oklch(92.9% 0.013 255.508);
+    --color-gray-100: oklch(96.7% 0.003 264.542);
+    --color-gray-200: oklch(92.8% 0.006 264.531);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
     --color-black: #000;
     --spacing: 0.25rem;
     --container-xs: 20rem;
@@ -34,6 +39,7 @@
     --font-weight-bold: 700;
     --tracking-wider: 0.05em;
     --radius-lg: 0.5rem;
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -852,6 +858,9 @@
         --btn-fg: color-mix(in oklch, var(--color-base-content) 20%, #0000);
       }
     }
+  }
+  .pointer-events-auto {
+    pointer-events: auto;
   }
   .pointer-events-none {
     pointer-events: none;
@@ -3069,6 +3078,12 @@
       }
     }
   }
+  .opacity-30 {
+    opacity: 30%;
+  }
+  .opacity-40 {
+    opacity: 40%;
+  }
   .shadow {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -3133,6 +3148,10 @@
   .duration-200 {
     --tw-duration: 200ms;
     transition-duration: 200ms;
+  }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
   }
   .btn-outline {
     @layer daisyui.l1 {
@@ -3245,6 +3264,21 @@
     -webkit-user-select: all;
     user-select: all;
   }
+  .peer-checked\:opacity-30 {
+    &:is(:where(.peer):checked ~ *) {
+      opacity: 30%;
+    }
+  }
+  .peer-checked\:opacity-40 {
+    &:is(:where(.peer):checked ~ *) {
+      opacity: 40%;
+    }
+  }
+  .peer-has-checked\:opacity-30 {
+    &:is(:where(.peer):has(*:checked) ~ *) {
+      opacity: 30%;
+    }
+  }
   .hover\:-translate-y-1 {
     &:hover {
       @media (hover: hover) {
@@ -3290,6 +3324,101 @@
         --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
         box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
       }
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:pointer-events-none {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      pointer-events: none;
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-gray-100 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-gray-100);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-gray-200 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-gray-200);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-gray-300 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-gray-300);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-gray-400 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-gray-400);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-red-200 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-red-200);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:bg-slate-200 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      background-color: var(--color-slate-200);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:opacity-20 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      opacity: 20%;
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:opacity-25 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      opacity: 25%;
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:opacity-30 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      opacity: 30%;
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:brightness-50 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      --tw-brightness: brightness(50%);
+      filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:brightness-75 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      --tw-brightness: brightness(75%);
+      filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:contrast-50 {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      --tw-contrast: contrast(50%);
+      filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:grayscale {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      --tw-grayscale: grayscale(100%);
+      filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+    }
+  }
+  .has-\[\.ocr-preview-form-include\:not\(\:checked\)\]\:select-none {
+    &:has(*:is(.ocr-preview-form-include:not(:checked))) {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+  }
+  .has-\[\:checked\]\:opacity-30 {
+    &:has(*:is(:checked)) {
+      opacity: 30%;
+    }
+  }
+  .has-\[input\:checked\]\:opacity-30 {
+    &:has(*:is(input:checked)) {
+      opacity: 30%;
+    }
+  }
+  .has-\[input\:not\(\:checked\)\]\:opacity-30 {
+    &:has(*:is(input:not(:checked))) {
+      opacity: 30%;
     }
   }
   .sm\:w-auto {
@@ -3693,6 +3822,10 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -3731,6 +3864,7 @@
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-duration: initial;
+      --tw-ease: initial;
     }
   }
 }

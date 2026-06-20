@@ -13,9 +13,19 @@
     </td>
 </tr>
 {% endif %}
-<tr id="{{ form.prefix }}-root">
+<tr
+  id="{{ form.prefix }}-root"
+  class="
+    has-[.ocr-preview-form-include:not(:checked)]:opacity-30
+    has-[.ocr-preview-form-include:not(:checked)]:grayscale
+    has-[.ocr-preview-form-include:not(:checked)]:bg-gray-300
+    has-[.ocr-preview-form-include:not(:checked)]:pointer-events-none
+    has-[.ocr-preview-form-include:not(:checked)]:select-none
+    transition-all duration-200 ease-in-out
+  "
+>
             <td class="text-center">
-              {% render_field form.include class="ocr-preview-form-include checkbox checkbox-sm checkbox-primary" %}
+              {% render_field form.include class="ocr-preview-form-include checkbox checkbox-sm checkbox-primary pointer-events-auto" %}
             </td>
 
             <td>
